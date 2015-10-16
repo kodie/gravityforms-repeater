@@ -1,5 +1,6 @@
 # Gravity Forms Repeater Add-On
 A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.
+<https://wordpress.org/plugins/repeater-add-on-for-gravity-forms/>
 
 ### Supported Fields
 * Date
@@ -30,5 +31,5 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 * Gravity Forms (duh)
 
 ### Installation
-1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory.
+1. Upload the `gravityforms-repeater` folder to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
