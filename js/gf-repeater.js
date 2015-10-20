@@ -271,7 +271,6 @@ function gfRepeater_start() {
 function gfRepeater_patchMask() {
     var plugin = jQuery.fn.mask;
     jQuery.fn.mask = function(mask) {
-    	console.log(this.get(0).id+' - '+mask);
         jQuery(this.get(0)).attr('data-mask', mask);
     	return plugin.apply(this, arguments);
     };
