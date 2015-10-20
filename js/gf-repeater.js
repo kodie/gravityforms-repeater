@@ -230,7 +230,7 @@ function gfRepeater_resetInputs(repeaterId, repeaterChildKey, repeaterChildEleme
 		} else { return; }
 
 		if (inputElement) {
-			if (inputElement.is(':checkbox')) {
+			if (inputElement.is(':checkbox, :radio')) {
 				inputElement.prop('checked', false);
 			} else {
 				inputElement.val('');
