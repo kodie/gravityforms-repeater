@@ -1,0 +1,6 @@
+v1.0.1 (TBA)
+- Added support for Address, Checkboxes, Name, and Number fields.
+- Added View details and GitHub links to row meta.
+
+v1.0.0 (10/11/2015)
+- Initial Release
