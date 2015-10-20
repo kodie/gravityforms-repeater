@@ -7,15 +7,19 @@ var gfRepeater_repeaters = {};
 */
 function gfRepeater_getRepeaters() {
 	var repeaterFound = 0;
-	var repeaterId = 1;
-	var repeaterChildren = [];
-	var repeaterChildrenData = [];
+	var repeaterId = 0;
+	var repeaterChildCount = 0;
+	var repeaterChildren = {};
+	var childInputData = {};
 	var dataElement;
 
 	jQuery('.gfield').each(function(){
 		if (repeaterFound == 0) {
 			if (jQuery(this).has('.gf-repeater-start').length) {
+				repeaterId += 1;
+
 				if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Start: '+jQuery(this).attr('id')); }
+
 				dataElement = jQuery('#'+this.id+' input.gform_hidden');
 				repeaterFound = 1;
 			}
@@ -23,35 +27,62 @@ function gfRepeater_getRepeaters() {
 			if (jQuery(this).has('.gf-repeater-end').length) {
 				if (gfRepeater_debug) {
 					console.log('Repeater #'+repeaterId+' - End: '+jQuery(this).attr('id'));
-					console.log('Repeater #'+repeaterId+' - Children Found: '+repeaterChildren.length);
+					console.log('Repeater #'+repeaterId+' - Children Found: '+(repeaterChildCount));
 				}
+
+				var repeaterControllers = {};
 				var addElement = jQuery('#'+this.id+' .gf-repeater-end .gf-repeater-add');
 				var removeElement = jQuery('#'+this.id+' .gf-repeater-end .gf-repeater-remove');
 				jQuery(addElement).attr('onClick', 'gfRepeater_repeatRepeater('+repeaterId+');');
 				jQuery(removeElement).attr('onClick', 'gfRepeater_unrepeatRepeater('+repeaterId+');');
+				repeaterControllers = {add:addElement,remove:removeElement,data:dataElement};
+
+				var repeaterSettings = {};
 				var repeaterStart = dataElement.attr('data-start');
 				var repeaterMin = dataElement.attr('data-min');
 				var repeaterMax = dataElement.attr('data-max');
 				if (!repeaterStart) { repeaterStart = 1; }
 				if (!repeaterMin) { repeaterMin = 1; }
 				if (repeaterMin > repeaterMax) { repeaterMax = null; }
-				gfRepeater_repeaters[repeaterId] = {count:1,start:repeaterStart,min:repeaterMin,max:repeaterMax,add:addElement,remove:removeElement,data:dataElement,children:repeaterChildren,childrenData:repeaterChildrenData};
+				repeaterSettings = {start:repeaterStart,min:repeaterMin,max:repeaterMax};
+
+				var repeaterdata = {};
+				repeaterdata = {repeatCount:1,childrenCount:repeaterChildCount,inputData:childInputData};
+
+				gfRepeater_repeaters[repeaterId] = {data:repeaterdata,settings:repeaterSettings,controllers:repeaterControllers,children:repeaterChildren};
+
 				gfRepeater_updateDataElement(repeaterId);
-				repeaterId += 1;
-				repeaterChildren = [];
-				repeaterChildrenData = [];
+
+				repeaterChildCount = 0;
+				repeaterChildren = {};
 				repeaterFound = 0;
 			} else {
-				repeaterChildren.push(jQuery(this));
+				repeaterChildCount +=1;
+				var childElement = jQuery(this);
 				var childLabel = jQuery(this).children('.gfield_label').text();
-				var childInputId = jQuery('#' + this.id + ' .ginput_container').children().first().attr('id');
-				var childInputName = jQuery('#' + this.id + ' .ginput_container').children().first().attr('name');
-				if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Child Found: '+childInputName); }
-				repeaterChildrenData.push({inputId:childInputId,inputName:childInputName,label:childLabel});
+				var childId = jQuery(this).attr('id');
+				var childInputs = {};
+				var childInputNames = [];
+				var childInputCount = 1;
+
+				if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Child #'+repeaterChildCount+' - Found: '+childId); }
+
+				jQuery(this).find(':input').each(function(){
+					childInputCount += 1;
+					var inputElement = jQuery(this);
+					var inputId = jQuery(this).attr('id');
+					var inputName = jQuery(this).attr('name');
+					if (inputName) { if (jQuery.inArray(inputName, childInputNames) == -1) { childInputNames.push(inputName) } };
+					childInputs[childInputCount] = {element:inputElement,id:inputId,name:inputName};
+					if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Child #'+repeaterChildCount+' - Input Found: '+inputId); }
+				});
+
+				repeaterChildren[repeaterChildCount] = {element:childElement,id:childId,inputs:childInputs,inputCount:childInputCount}
+				childInputData[childLabel] = childInputNames;
 			}
 		}
 	});
-	if (gfRepeater_debug) { console.log('Repeaters Found: '+(repeaterId-1)); }
+	if (gfRepeater_debug) { console.log('Repeaters Found: '+(repeaterId)); }
 }
 
 /*
@@ -63,22 +94,43 @@ function gfRepeater_getRepeaters() {
 		repeatCount (Optional)	The repeat count number to assign the child to. If a number is not specified, one will be automatically assigned. A 1 is required the first time this function is used during the setup process.
 */
 function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repeatCount) {
-	if (!repeatCount) { var repeatCount = gfRepeater_repeaters[repeaterId]['count'] + 1; }
-	var oldRootId = jQuery(repeaterChildElement).attr('id');
-	var newRootId = oldRootId.split('-')[0]+'-'+repeaterId+'-'+repeatCount;
-	jQuery(repeaterChildElement).attr('id', newRootId);
-	var inputElement = jQuery('#' + newRootId + ' .ginput_container').children().first();
-	var oldInputName = jQuery(inputElement).attr('name');
-	if (oldInputName) {
-		var newInputName = oldInputName.split('-')[0]+'-'+repeaterId+'-'+repeatCount;
-		jQuery(inputElement).attr('name', newInputName);
-	}
-	var oldInputId = jQuery(inputElement).attr('id');
-	if (oldInputId) {
-		var newInputId = oldInputId.split('-')[0]+'-'+repeaterId+'-'+repeatCount;
-		jQuery(inputElement).attr('id', newInputId);
-	}
-	jQuery(repeaterChildElement).children('.gfield_label').attr('for', newInputId);
+	if (!repeatCount) { var repeatCount = gfRepeater_repeaters[repeaterId]['data']['repeatCount'] + 1; }
+	var childId = jQuery(repeaterChildElement).attr('id').split('-')[0];
+	var childKey;
+
+	jQuery.each(gfRepeater_repeaters[repeaterId]['children'], function(key, value){
+		if (this['id'] == childId) {
+			childKey = key;
+			return;
+		}
+	});
+
+	if (childKey) {
+		var newRootId = childId+'-'+repeaterId+'-'+repeatCount;
+		jQuery(repeaterChildElement).attr('id', newRootId);
+
+		jQuery.each(gfRepeater_repeaters[repeaterId]['children'][childKey]['inputs'], function(key, value){
+			var inputId = this['id'];
+			var inputName = this['name'];
+
+			if (inputId) {
+				var inputElement = jQuery(repeaterChildElement).find(":input[id^='"+inputId+"']");
+			} else if (inputName) {
+				var inputElement = jQuery(repeaterChildElement).find(":input[name^='"+inputName+"']");
+			} else { return; }
+
+			if (inputId) {
+				var newInputId = inputId+'-'+repeaterId+'-'+repeatCount;
+				jQuery(inputElement).attr('id', newInputId);
+				jQuery(repeaterChildElement).find("label[for^='"+inputId+"']").attr('for', newInputId);
+			}
+
+			if (inputName) {
+				var newInputName = inputName+'-'+repeaterId+'-'+repeatCount;
+				jQuery(inputElement).attr('name', newInputName);
+			}
+		});
+	};
 }
 
 /*
@@ -88,22 +140,26 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 		repeaterId		The repeater ID number to repeat.
 */
 function gfRepeater_repeatRepeater(repeaterId) {
-	if (gfRepeater_repeaters[repeaterId]['max'] && gfRepeater_repeaters[repeaterId]['count'] >= gfRepeater_repeaters[repeaterId]['max']) { return; }
-	var lastElement = gfRepeater_repeaters[repeaterId]['children'][gfRepeater_repeaters[repeaterId]['children'].length - 1];
+	if (gfRepeater_repeaters[repeaterId]['settings']['max'] && gfRepeater_repeaters[repeaterId]['data']['repeatCount'] >= gfRepeater_repeaters[repeaterId]['settings']['max']) { return; }
+
+	var lastElementKey = gfRepeater_repeaters[repeaterId]['data']['childrenCount'];
+	var lastElement = gfRepeater_repeaters[repeaterId]['children'][lastElementKey]['element'];
 	lastElement = lastElement.attr('id');
-	lastElement = jQuery('#'+lastElement.slice(0, -1)+gfRepeater_repeaters[repeaterId]['count']);
+	lastElement = jQuery('#'+lastElement.slice(0, -1)+gfRepeater_repeaters[repeaterId]['data']['repeatCount']);
+
 	jQuery.each(gfRepeater_repeaters[repeaterId]['children'], function(key, value){
-		var clonedElement = jQuery(this).clone();
-		var inputElement = jQuery(clonedElement).find('.ginput_container').children().first();
-		jQuery(inputElement).val('');
+		var clonedElement = jQuery(this.element).clone();
+		gfRepeater_resetInputs(repeaterId, key, clonedElement);
 		jQuery(clonedElement).insertAfter(lastElement);
 		gfRepeater_setRepeaterChildAttrs(jQuery(clonedElement), repeaterId);
 		lastElement = clonedElement;
 	});
-	gfRepeater_repeaters[repeaterId]['count'] += 1;
+
+	gfRepeater_repeaters[repeaterId]['data']['repeatCount'] += 1;
 	gfRepeater_updateDataElement(repeaterId);
 	gfRepeater_updateRepeaterControls(repeaterId);
-	if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' repeated'); }
+
+	if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - repeated'); }
 }
 
 /*
@@ -114,17 +170,19 @@ function gfRepeater_repeatRepeater(repeaterId) {
 		repeaterChildId (Optional)	The repeater child ID number to unrepeat. If an ID number is not specified, the last one will be chosen.
 */
 function gfRepeater_unrepeatRepeater(repeaterId, repeaterChildId) {
-	if (gfRepeater_repeaters[repeaterId]['count'] <= gfRepeater_repeaters[repeaterId]['min']) { return; }
-	if (!repeaterChildId) { var repeaterChildId = gfRepeater_repeaters[repeaterId]['count']; }
+	if (gfRepeater_repeaters[repeaterId]['data']['repeatCount'] <= gfRepeater_repeaters[repeaterId]['settings']['min']) { return; }
+	if (!repeaterChildId) { var repeaterChildId = gfRepeater_repeaters[repeaterId]['data']['repeatCount']; }
+
 	jQuery.each(gfRepeater_repeaters[repeaterId]['children'], function(key, value){
-		var thisId = jQuery(this).attr('id');
-		var childElement = jQuery('#'+thisId.slice(0, -1)+repeaterChildId);
+		var childElement = jQuery('#'+this['id']+'-'+repeaterId+'-'+repeaterChildId);
 		jQuery(childElement).remove();
 	});
-	gfRepeater_repeaters[repeaterId]['count'] -= 1;
+
+	gfRepeater_repeaters[repeaterId]['data']['repeatCount'] -= 1;
 	gfRepeater_updateDataElement(repeaterId);
 	gfRepeater_updateRepeaterControls(repeaterId);
-	if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' unrepeated'); }
+
+	if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Child #'+repeaterChildId+' - unrepeated'); }
 }
 
 /*
@@ -134,18 +192,48 @@ function gfRepeater_unrepeatRepeater(repeaterId, repeaterChildId) {
 		repeaterId		The repeater ID number to update the controls for.
 */
 function gfRepeater_updateRepeaterControls(repeaterId) {
-	if (gfRepeater_repeaters[repeaterId]['max']) {
-		if (gfRepeater_repeaters[repeaterId]['count'] == gfRepeater_repeaters[repeaterId]['max']) {
-			jQuery(gfRepeater_repeaters[repeaterId]['add']).hide();
+	if (gfRepeater_repeaters[repeaterId]['settings']['max']) {
+		if (gfRepeater_repeaters[repeaterId]['data']['repeatCount'] == gfRepeater_repeaters[repeaterId]['settings']['max']) {
+			jQuery(gfRepeater_repeaters[repeaterId]['controllers']['add']).hide();
 		} else {
-			jQuery(gfRepeater_repeaters[repeaterId]['add']).show();
+			jQuery(gfRepeater_repeaters[repeaterId]['controllers']['add']).show();
 		}
 	}
-	if (gfRepeater_repeaters[repeaterId]['count'] == gfRepeater_repeaters[repeaterId]['min']) {
-		jQuery(gfRepeater_repeaters[repeaterId]['remove']).hide();
+
+	if (gfRepeater_repeaters[repeaterId]['data']['repeatCount'] == gfRepeater_repeaters[repeaterId]['settings']['min']) {
+		jQuery(gfRepeater_repeaters[repeaterId]['controllers']['remove']).hide();
 	} else {
-		jQuery(gfRepeater_repeaters[repeaterId]['remove']).show();
+		jQuery(gfRepeater_repeaters[repeaterId]['controllers']['remove']).show();
 	}
+}
+
+/*
+	gfRepeater_resetInputs(repeaterId, repeaterChildKey, repeaterChildElement)
+		Resets all input elements inside of a repeater child.
+
+		repeaterId				The repeater ID.
+		repeaterChildKey		The repeater child ID number.
+		repeaterChildElement	The repeater child element.
+*/
+function gfRepeater_resetInputs(repeaterId, repeaterChildKey, repeaterChildElement) {
+	jQuery.each(gfRepeater_repeaters[repeaterId]['children'][repeaterChildKey]['inputs'], function(key, value){
+		var inputId = this['id'];
+		var inputName = this['name'];
+
+		if (inputId) {
+			var inputElement = jQuery(repeaterChildElement).find("[id^='"+inputId+"']");
+		} else if (inputName) {
+			var inputElement = jQuery(repeaterChildElement).find("[name^='"+inputName+"']");
+		} else { return; }
+
+		if (inputElement) {
+			if (inputElement.is(':checkbox')) {
+				inputElement.prop('checked', false);
+			} else {
+				inputElement.val('');
+			}
+		}
+	});
 }
 
 /*
@@ -155,8 +243,8 @@ function gfRepeater_updateRepeaterControls(repeaterId) {
 		repeaterId		The repeater ID number to update the data element for.
 */
 function gfRepeater_updateDataElement(repeaterId) {
-	var dataElement = jQuery(gfRepeater_repeaters[repeaterId]['data']);
-	var dataArray = JSON.stringify({repeaterId:repeaterId,repeatCount:gfRepeater_repeaters[repeaterId]['count'],childrenData:gfRepeater_repeaters[repeaterId]['childrenData']});
+	var dataElement = jQuery(gfRepeater_repeaters[repeaterId]['controllers']['data']);
+	var dataArray = JSON.stringify({repeaterId:repeaterId,repeatCount:gfRepeater_repeaters[repeaterId]['data']['repeatCount'],inputData:gfRepeater_repeaters[repeaterId]['data']['inputData']});
 	jQuery(dataElement).val(dataArray);
 }
 
@@ -167,8 +255,9 @@ function gfRepeater_updateDataElement(repeaterId) {
 function gfRepeater_start() {
 	jQuery.each(gfRepeater_repeaters, function(key, value){
 		var repeaterId = key;
-		jQuery.each(gfRepeater_repeaters[repeaterId]['children'], function(key, value){ gfRepeater_setRepeaterChildAttrs(jQuery(this), repeaterId, 1); });
-		for (i = 0; i < gfRepeater_repeaters[repeaterId]['start'] - 1; i++) {
+		jQuery.each(gfRepeater_repeaters[repeaterId]['children'], function(key, value){ gfRepeater_setRepeaterChildAttrs(jQuery(gfRepeater_repeaters[repeaterId]['children'][key]['element']), repeaterId, 1); });
+
+		for (i = 1; i < gfRepeater_repeaters[repeaterId]['settings']['start']; i++) {
 			gfRepeater_repeatRepeater(repeaterId);
 		}
 		gfRepeater_updateRepeaterControls(repeaterId);
@@ -181,9 +270,9 @@ jQuery(document).ready(function($) {
 	gfRepeater_start();
 });
 
-// Debug function - Display a table filled with the contents of "gfRepeater_repeaters" in the developer console if the "Up" arrow is pressed on the keyboard.
+// Debug function - Prints the contents of "gfRepeater_repeaters" in the developer console if the "Up" arrow is pressed on the keyboard.
 if (gfRepeater_debug) {
 	jQuery(window).keydown(function(event){
-		if (event.which == 38) { console.table(gfRepeater_repeaters); }
+		if (event.which == 38) { console.log(gfRepeater_repeaters); }
 	});
 }

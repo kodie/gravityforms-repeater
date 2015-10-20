@@ -100,9 +100,14 @@ class GF_Field_Repeater extends GF_Field {
 		$value = Array();
 
 		for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
-			foreach ($dataArray['childrenData'] as $childData) {
-				if (!array_key_exists('inputName', $childData)) { continue; }
-				$childValue[$childData['label']] = rgpost($childData['inputName'].'-'.$dataArray['repeaterId'].'-'.$i);
+			foreach ($dataArray['inputData'] as $inputLabel=>$inputNames) {
+				$inputData = Array();
+				foreach ($inputNames as $inputName) {
+					$getInputName = $inputName.'-'.$dataArray['repeaterId'].'-'.$i;
+					$getInputData = rgpost(str_replace('.', '_', strval($getInputName)));
+					if (!empty($getInputData)) { $inputData[] = $getInputData; }
+				}
+				$childValue[$inputLabel] = $inputData;
 			}
 			$value[$i] = $childValue;
 		}
@@ -129,16 +134,33 @@ class GF_Field_Repeater extends GF_Field {
 			$arrayCount = count($dataArray);
 			$output = "";
 			$count = 0;
+
 			foreach ($dataArray as $key=>$value) {
 				$output .= "<table cellspacing=\"0\" class=\"widefat fixed entry-detail-view\">\n";
 				foreach ($value as $childKey=>$childValue) {
-					if (!$childValue) { continue; } else { $count++; }
+					if (count($childValue) == 0) { continue; } else { $count++; }
+
 					$output .= "<tr>\n<td colspan=\"2\" class=\"entry-view-field-name\">".$childKey."</td>\n</tr>\n";
-					$output .= "<tr>\n<td colspan=\"2\" class=\"entry-view-field-value\">".$childValue."</td>\n</tr>\n";
+
+					if (count($childValue) == 1) {
+						$childValueOutput = $childValue[0];
+					} elseif (count($childValue) > 1) {
+						$childValueOutput = "<ul>\n";
+
+						foreach ($childValue as $childValueData) {
+							$childValueOutput .= "<li>".$childValueData."</li>";
+						}
+						
+						$childValueOutput .= "</ul>\n";
+					}
+
+					$output .= "<tr>\n<td colspan=\"2\" class=\"entry-view-field-value\">".$childValueOutput."</td>\n</tr>\n";
 				}
+
 				$output .= "</table>\n";
 			}
 		}
+
 		if ($count !== 0) { return $output; } else { return ''; }
 	}
 }

@@ -4,9 +4,13 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 <https://wordpress.org/plugins/repeater-add-on-for-gravity-forms/>
 
 ### Supported Fields
+* Address
+* Checkboxes
 * Date
 * Drop Down
 * Email
+* Name
+* Number
 * Paragraph Text
 * Phone
 * Single Line Text
@@ -21,11 +25,12 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 * Fields inside of a repeater are not able to use Input Masks.
 
 ### Version
-1.0.0
+1.0.1
 
 ### Changelog
-##### 1.0.0
-* Initial Release
+##### 1.0.1 (TBA)
+* Added support for Address, Checkboxes, Name, and Number fields.
+* Added View details and GitHub links to row meta.
 
 ### Requirements
 * Wordpress (duh)
