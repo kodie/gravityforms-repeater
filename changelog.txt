@@ -1,6 +1,7 @@
-v1.0.1 (TBA)
+v1.0.1 (10/20/2015)
 - Added support for Address, Checkboxes, Name, and Number fields.
 - Added View details and GitHub links to row meta.
+- Fixed input masks!
 
 v1.0.0 (10/11/2015)
 - Initial Release
