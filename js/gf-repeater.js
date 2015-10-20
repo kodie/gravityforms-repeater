@@ -1,4 +1,4 @@
-var gfRepeater_debug = false;
+var gfRepeater_debug = true;
 var gfRepeater_repeaters = {};
 
 /*
@@ -129,6 +129,9 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 				var newInputName = inputName+'-'+repeaterId+'-'+repeatCount;
 				jQuery(inputElement).attr('name', newInputName);
 			}
+
+			var inputMask = jQuery(inputElement).attr('data-mask');
+			if (inputMask) { jQuery(inputElement).mask(inputMask); }
 		});
 	};
 }
@@ -264,10 +267,24 @@ function gfRepeater_start() {
 	});
 }
 
+// Patch the mask plugin
+function gfRepeater_patchMask() {
+    var plugin = jQuery.fn.mask;
+    jQuery.fn.mask = function(mask) {
+    	console.log(this.get(0).id+' - '+mask);
+        jQuery(this.get(0)).attr('data-mask', mask);
+    	return plugin.apply(this, arguments);
+    };
+}
+
 // Initiation
-jQuery(document).ready(function($) {
+jQuery(window).load(function() {
 	gfRepeater_getRepeaters();
 	gfRepeater_start();
+});
+
+jQuery(document).ready(function($) {
+	gfRepeater_patchMask();
 });
 
 // Debug function - Prints the contents of "gfRepeater_repeaters" in the developer console if the "Up" arrow is pressed on the keyboard.
