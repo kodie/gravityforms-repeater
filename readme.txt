@@ -27,6 +27,7 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 * Not all fields are currently supported.
 * Fields inside of a repeater will return a duplicated item with a blank result outside of the repeater when viewing an indiviual entry (These are only visible if "show empty fields" is checked).
 * Fields inside of a repeater sometimes show a blank colum in the "entries" page. (These can be hidden by changing which columns to display by clicking the gear icon in the upper right-hand corner).
+* Making fields that are inside of a repeater required will make the form unsubmittable.
 
 = Check out the source on GitHub! =
 <https://github.com/kodie/gravityforms-repeater>
