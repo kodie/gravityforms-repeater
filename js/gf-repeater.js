@@ -1,30 +1,43 @@
 var gfRepeater_debug = false;
 var gfRepeater_repeaters = {};
+var gfRepeater_submitted = false;
 
 /*
 	gfRepeater_getRepeaters()
 		Collects all repeater info and stores it inside of the global array "gfRepeater_repeaters". - First phase of setup.
 */
 function gfRepeater_getRepeaters() {
-	var repeaterFound = 0;
 	var repeaterId = 0;
+
+	var repeaterFound = 0;
 	var repeaterChildCount = 0;
 	var repeaterChildren = {};
-	var childInputData = {};
+	var repeaterChildrenInputData = {};
 	var dataElement;
+	var startElement;
+	var repeaterRequiredChildren;
 
 	jQuery('.gfield').each(function(){
 		if (repeaterFound == 0) {
 			if (jQuery(this).has('.gf-repeater-start').length) {
+				// Repeater Start
+
 				repeaterId += 1;
 
 				if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Start: '+jQuery(this).attr('id')); }
 
 				dataElement = jQuery('#'+this.id+' input.gform_hidden');
+				startElement = jQuery(this);
+
+				repeaterRequired = dataElement.attr('data-required');
+				repeaterRequired = repeaterRequired.split(',');
+
 				repeaterFound = 1;
 			}
 		} else {
 			if (jQuery(this).has('.gf-repeater-end').length) {
+				// Repeater End
+
 				if (gfRepeater_debug) {
 					console.log('Repeater #'+repeaterId+' - End: '+jQuery(this).attr('id'));
 					console.log('Repeater #'+repeaterId+' - Children Found: '+(repeaterChildCount));
@@ -33,9 +46,10 @@ function gfRepeater_getRepeaters() {
 				var repeaterControllers = {};
 				var addElement = jQuery('#'+this.id+' .gf-repeater-end .gf-repeater-add');
 				var removeElement = jQuery('#'+this.id+' .gf-repeater-end .gf-repeater-remove');
+				var endElement = jQuery(this);
 				jQuery(addElement).attr('onClick', 'gfRepeater_repeatRepeater('+repeaterId+');');
 				jQuery(removeElement).attr('onClick', 'gfRepeater_unrepeatRepeater('+repeaterId+');');
-				repeaterControllers = {add:addElement,remove:removeElement,data:dataElement};
+				repeaterControllers = {add:addElement,remove:removeElement,data:dataElement,start:startElement,end:endElement};
 
 				var repeaterSettings = {};
 				var repeaterStart = dataElement.attr('data-start');
@@ -47,38 +61,48 @@ function gfRepeater_getRepeaters() {
 				repeaterSettings = {start:repeaterStart,min:repeaterMin,max:repeaterMax};
 
 				var repeaterdata = {};
-				repeaterdata = {repeatCount:1,childrenCount:repeaterChildCount,inputData:childInputData};
+				repeaterdata = {repeatCount:1,childrenCount:repeaterChildCount,inputData:repeaterChildrenInputData};
 
 				gfRepeater_repeaters[repeaterId] = {data:repeaterdata,settings:repeaterSettings,controllers:repeaterControllers,children:repeaterChildren};
 
 				gfRepeater_updateDataElement(repeaterId);
 
+				// Set back to defaults for the next repeater
+				repeaterFound = 0;
 				repeaterChildCount = 0;
 				repeaterChildren = {};
-				repeaterFound = 0;
+				repeaterChildrenInputData = {};
+				repeaterRequiredChildren = null;
 			} else {
+				// Repeater Child
+
 				repeaterChildCount +=1;
 				var childElement = jQuery(this);
 				var childLabel = jQuery(this).children('.gfield_label').text();
 				var childId = jQuery(this).attr('id');
+				var childIdNum = childId.split('_')[2];
 				var childInputs = {};
 				var childInputNames = [];
-				var childInputCount = 1;
+				var childInputCount = 0;
+				var childRequired = false;
+
+				if (jQuery.inArray(childIdNum, repeaterRequiredChildren) !== -1) { childRequired = true; }
 
 				if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Child #'+repeaterChildCount+' - Found: '+childId); }
 
 				jQuery(this).find(':input').each(function(){
 					childInputCount += 1;
 					var inputElement = jQuery(this);
-					var inputId = jQuery(this).attr('id');
+					var inputId = jQuery(this).attr('id');1
 					var inputName = jQuery(this).attr('name');
+					var inputDefaultValue = gfRepeater_getInputValue(inputElement);
 					if (inputName) { if (jQuery.inArray(inputName, childInputNames) == -1) { childInputNames.push(inputName) } };
-					childInputs[childInputCount] = {element:inputElement,id:inputId,name:inputName};
+					childInputs[childInputCount] = {element:inputElement,id:inputId,name:inputName,defaultValue:inputDefaultValue};
 					if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Child #'+repeaterChildCount+' - Input Found: '+inputId); }
 				});
 
-				repeaterChildren[repeaterChildCount] = {element:childElement,id:childId,inputs:childInputs,inputCount:childInputCount}
-				childInputData[childLabel] = childInputNames;
+				repeaterChildren[repeaterChildCount] = {element:childElement,id:childId,inputs:childInputs,inputCount:childInputCount,required:childRequired}
+				repeaterChildrenInputData[childLabel] = childInputNames;
 			}
 		}
 	});
@@ -112,12 +136,7 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 		jQuery.each(gfRepeater_repeaters[repeaterId]['children'][childKey]['inputs'], function(key, value){
 			var inputId = this['id'];
 			var inputName = this['name'];
-
-			if (inputId) {
-				var inputElement = jQuery(repeaterChildElement).find(":input[id^='"+inputId+"']");
-			} else if (inputName) {
-				var inputElement = jQuery(repeaterChildElement).find(":input[name^='"+inputName+"']");
-			} else { return; }
+			var inputElement = gfRepeater_findElementByIdOrName(repeaterChildElement, inputId, inputName);
 
 			if (inputId) {
 				var newInputId = inputId+'-'+repeaterId+'-'+repeatCount;
@@ -132,6 +151,14 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 
 			var inputMask = jQuery(inputElement).attr('data-mask');
 			if (inputMask) { jQuery(inputElement).mask(inputMask); }
+
+			if (gfRepeater_submitted && newInputName) {
+				var savedValue = jQuery.captures(newInputName);
+				if (savedValue) {
+					if (savedValue == 'on') { savedValue = true; }
+					gfRepeater_setInputValue(inputElement, savedValue);
+				}
+			}
 		});
 	};
 }
@@ -222,21 +249,60 @@ function gfRepeater_resetInputs(repeaterId, repeaterChildKey, repeaterChildEleme
 	jQuery.each(gfRepeater_repeaters[repeaterId]['children'][repeaterChildKey]['inputs'], function(key, value){
 		var inputId = this['id'];
 		var inputName = this['name'];
-
-		if (inputId) {
-			var inputElement = jQuery(repeaterChildElement).find("[id^='"+inputId+"']");
-		} else if (inputName) {
-			var inputElement = jQuery(repeaterChildElement).find("[name^='"+inputName+"']");
-		} else { return; }
+		var inputDefaultValue = this['defaultValue'];
+		var inputElement = gfRepeater_findElementByIdOrName(repeaterChildElement, inputId, inputName);
 
 		if (inputElement) {
-			if (inputElement.is(':checkbox, :radio')) {
-				inputElement.prop('checked', false);
-			} else {
-				inputElement.val('');
-			}
+			gfRepeater_setInputValue(inputElement, inputDefaultValue);
 		}
 	});
+}
+
+/*
+	gfRepeater_findElementByIdOrName(searchElement, inputId, inputName)
+		Searches for an an element inside of another element by ID or Name. If both an ID and a Name are supplied it will first try the ID and then the Name.
+
+		searchElement			Element to search inside.
+		inputId (Optional)		A element ID to search for.
+		inputName (Optional)	A element name to search for.
+*/
+function gfRepeater_findElementByIdOrName(searchElement, elementId, elementName) {
+	if (elementId) {
+		var foundElement = jQuery(searchElement).find("[id^='"+elementId+"']");
+	} else if (elementName) {
+		var foundElement = jQuery(searchElement).find("[name^='"+elementName+"']");
+	} else { return false; }
+
+	if (foundElement) { return foundElement; } else { return false; }
+}
+
+/*
+	gfRepeater_getInputValue(inputElement)
+		Gets the value of an input.
+
+		inputElement	The input element.
+*/
+function gfRepeater_getInputValue(inputElement) {
+	if (inputElement.is(':checkbox, :radio')) {
+		if (inputElement.prop('checked') == true) { return true; } else { return false; }
+	} else {
+		return inputElement.val();
+	}
+}
+
+/*
+	gfRepeater_setInputValue(inputElement, value)
+		Sets the value of an input.
+
+		inputElement	The input element.
+		inputValue		The value to set to the input.
+*/
+function gfRepeater_setInputValue(inputElement, inputValue) {
+	if (inputElement.is(':checkbox, :radio')) {
+		if (inputValue) { inputElement.prop('checked', true) } else { inputElement.prop('checked', false) }
+	} else {
+		inputElement.val(inputValue);
+	}
 }
 
 /*
@@ -258,11 +324,21 @@ function gfRepeater_updateDataElement(repeaterId) {
 function gfRepeater_start() {
 	jQuery.each(gfRepeater_repeaters, function(key, value){
 		var repeaterId = key;
+		var repeatCount = gfRepeater_repeaters[repeaterId]['settings']['start'];
+
 		jQuery.each(gfRepeater_repeaters[repeaterId]['children'], function(key, value){ gfRepeater_setRepeaterChildAttrs(jQuery(gfRepeater_repeaters[repeaterId]['children'][key]['element']), repeaterId, 1); });
 
-		for (i = 1; i < gfRepeater_repeaters[repeaterId]['settings']['start']; i++) {
+		if (gfRepeater_submitted) {
+			var dataElement = gfRepeater_repeaters[repeaterId]['controllers']['data'];
+			var dataElementName = dataElement.attr('name');
+			var dataArray = JSON.parse(jQuery.captures(dataElementName));
+			repeatCount = dataArray['repeatCount'];
+		}
+
+		for (i = 1; i < repeatCount; i++) {
 			gfRepeater_repeatRepeater(repeaterId);
 		}
+
 		gfRepeater_updateRepeaterControls(repeaterId);
 	});
 }
@@ -276,19 +352,26 @@ function gfRepeater_patchMask() {
     };
 }
 
-// Initiation
-jQuery(window).load(function() {
+// Initiation after gform has rendered
+jQuery(document).bind('gform_post_render', function(event, formId, currentPage){
 	gfRepeater_getRepeaters();
 	gfRepeater_start();
 });
 
+// Initiation right away
 jQuery(document).ready(function($) {
 	gfRepeater_patchMask();
+	jQuery('.gform_wrapper form').capture();
+	if (jQuery.captures()) { gfRepeater_submitted = true; }
 });
 
-// Debug function - Prints the contents of "gfRepeater_repeaters" in the developer console if the "Up" arrow is pressed on the keyboard.
+// Debug shortcuts
 if (gfRepeater_debug) {
 	jQuery(window).keydown(function(event){
+		// Up Arrow - Prints the contents of gfRepeater_repeaters into the console.
 		if (event.which == 38) { console.log(gfRepeater_repeaters); }
+
+		// Down Arrow - Prints the captured form values into the console.
+		if (event.which == 40) { console.log(jQuery.captures()); }
 	});
 }

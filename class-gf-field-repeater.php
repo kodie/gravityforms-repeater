@@ -15,6 +15,7 @@ class GF_Field_Repeater extends GF_Field {
 	public static function gform_enqueue_scripts($form, $is_ajax) {
 		if (!empty($form)) {
 			if (in_array('GF_Field_Repeater', $form)) {
+				wp_enqueue_script('_gf_postcapture', plugins_url('js/jquery.postcapture.min.js', __FILE__), array('jquery'));
     			wp_enqueue_script('_gf_repeater', plugins_url('js/gf-repeater.min.js', __FILE__), array('jquery'));
     		}
 		}
@@ -68,11 +69,34 @@ class GF_Field_Repeater extends GF_Field {
 		return $tooltips;
 	}
 
+	function validate( $value, $form ) {
+		$repeater_required = $this->repeaterRequiredChildren;
+
+		if (!empty($repeater_required)) {
+			$dataArray = json_decode($value, true);
+
+			for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
+				foreach ($dataArray['inputData'] as $inputLabel=>$inputNames) {
+					foreach ($inputNames as $inputName) {
+						$getInputName = $inputName.'-'.$dataArray['repeaterId'].'-'.$i;
+						$getInputData = rgpost(str_replace('.', '_', strval($getInputName)));
+						$getInputIdNum = explode("_", $inputName)[1];
+
+						if (in_array($getInputIdNum, $repeater_required) && empty($getInputData)) {
+							$this->failed_validation  = true;
+							$this->validation_message = "A required field was left blank.";
+						}
+					}
+				}
+			}
+		}
+	}
+
 	public function get_field_content($value, $force_frontend_label, $form) {
 		if (is_admin()) {
 			$admin_buttons = $this->get_admin_buttons();
 			$field_content = "{$admin_buttons}
-							<div class=\"gf-pagebreak-first gf-pagebreak-container gf-repeater\">
+							<div class=\"gf-pagebreak-first gf-pagebreak-container gf-repeater gf-repeater-start\">
 								<div class=\"gf-pagebreak-text-before\">begin repeater</div>
 								<div class=\"gf-pagebreak-text-main\"><span>REPEATER</span></div>
 								<div class=\"gf-pagebreak-text-after\">top of repeater</div>
@@ -89,10 +113,11 @@ class GF_Field_Repeater extends GF_Field {
 		$is_form_editor		= $this->is_form_editor();
 		$id					= (int) $this->id;
 		$field_id			= $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
-		$disabled_text		= $is_form_editor ? 'disabled="disabled"' : '';
+		$repeater_start		= $this->min;
 		$repeater_min		= $this->min;
 		$repeater_max		= $this->max;
-		return sprintf("<input name='input_%d' id='%s' type='hidden' class='gform_hidden' data-start='".$repeater_min."' data-min='".$repeater_min."' data-max='".$repeater_max."' value='' %s/>", $id, $field_id, esc_attr($value), $disabled_text);
+		if (!empty($this->repeaterRequiredChildren)) { $repeater_required = implode(',', $this->repeaterRequiredChildren); }
+		return sprintf("<input name='input_%d' id='%s' type='hidden' class='gform_hidden' data-start='%s' data-min='%s' data-max='%s' data-required='%s' value='%s' />", $id, $field_id, $repeater_start, $repeater_min, $repeater_max, $repeater_required, $value);
 	}
 
 	public function get_value_save_entry($value, $form, $input_name, $lead_id, $lead) {

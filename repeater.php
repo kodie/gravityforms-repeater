@@ -28,6 +28,26 @@ if (class_exists("GFForms")) {
 		protected $_full_path = __FILE__;
 		protected $_title = "Gravity Forms Repeater Add-On";
 		protected $_short_title = "Repeater Add-On";
+
+		public function scripts() {
+			$scripts = array(
+				array(
+					"handle"	=> "gf_repeater_js_admin",
+					"src"		=> $this->get_base_url() . "/js/gf-repeater-admin.min.js",
+					"version"	=> $this->_version,
+					"deps"		=> array('jquery'),
+					"in_footer"	=> false,
+					"callback"	=> array($this, 'localize_scripts'),
+					"strings"	=> array('page' => rgget('page')),
+					"enqueue"	=> array(
+						array(
+							"admin_page" => array('form_editor', 'entry_view', 'entry_detail')
+						)
+					)
+				)
+			);
+			return array_merge(parent::scripts(), $scripts);
+		}
     }
     new GFRepeater();
 
