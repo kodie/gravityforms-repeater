@@ -27,7 +27,8 @@ class GF_Field_Repeater extends GF_Field {
 
 	public function get_form_editor_field_settings() {
 		return array(
-			'admin_label_setting'
+			'admin_label_setting',
+			'error_message_setting'
 		);
 	}
 
@@ -69,7 +70,7 @@ class GF_Field_Repeater extends GF_Field {
 		return $tooltips;
 	}
 
-	function validate( $value, $form ) {
+	function validate($value, $form) {
 		$repeater_required = $this->repeaterRequiredChildren;
 
 		if (!empty($repeater_required)) {
@@ -102,7 +103,8 @@ class GF_Field_Repeater extends GF_Field {
 								<div class=\"gf-pagebreak-text-after\">top of repeater</div>
 							</div>";
 		} else {
-			$field_content = "<div class=\"gf-repeater-start\"></div>{FIELD}";
+			$validation_message = ( $this->failed_validation && ! empty( $this->validation_message ) ) ? sprintf( "<div class='gfield_description validation_message'>%s</div>", $this->validation_message ) : '';
+			$field_content = "<div class=\"ginput_container ginput_container_repeater\">{FIELD}</div>{$validation_message}";
 		}
 		return $field_content;
 	}
@@ -116,7 +118,8 @@ class GF_Field_Repeater extends GF_Field {
 		$repeater_start		= $this->min;
 		$repeater_min		= $this->min;
 		$repeater_max		= $this->max;
-		if (!empty($this->repeaterRequiredChildren)) { $repeater_required = implode(',', $this->repeaterRequiredChildren); }
+		$repeater_required	= $this->repeaterRequiredChildren;
+		if (!empty($repeater_required)) { $repeater_required = implode(',', $repeater_required); } else { $repeater_required = ''; }
 		return sprintf("<input name='input_%d' id='%s' type='hidden' class='gform_hidden' data-start='%s' data-min='%s' data-max='%s' data-required='%s' value='%s' />", $id, $field_id, $repeater_start, $repeater_min, $repeater_max, $repeater_required, $value);
 	}
 

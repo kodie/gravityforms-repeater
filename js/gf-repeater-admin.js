@@ -15,6 +15,9 @@ function gfRepeater_editforms_getRepeaters() {
 				if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Start: '+jQuery(this).attr('id')); }
 				repeaterStartId = this.id;
 				repeaterFound = 1;
+			} else {
+				var getField = gfRepeater_getField(jQuery(this).attr('id'));
+				if (getField['repeaterId']) { getField['repeaterId'] = null; }
 			}
 		} else {
 			if (jQuery(this).has('.gf-repeater-end').length) {
@@ -24,7 +27,6 @@ function gfRepeater_editforms_getRepeaters() {
 				repeaterFound = 0;
 			} else {
 				repeaterChildren.push(this);
-				jQuery(this).addClass('gf-repeater-child');
 
 				var getField = gfRepeater_getField(jQuery(this).attr('id'));
 				getField['repeaterId'] = repeaterId;
@@ -81,7 +83,7 @@ function gfRepeater_SetFieldRequired(isRequired, field) {
 		repeaterRequiredChildren.push(idNum);
 		getRepeaterField['repeaterRequiredChildren'] = repeaterRequiredChildren;
 	} else if (requiredCheck && !isRequired) {
-		repeaterRequiredChildren.splice(repeaterRequiredChildren.indexOf(idNum),1);
+		repeaterRequiredChildren.splice(repeaterRequiredChildren.indexOf(idNum), 1);
 		getRepeaterField['repeaterRequiredChildren'] = repeaterRequiredChildren;
 	}
 }
@@ -89,21 +91,6 @@ function gfRepeater_SetFieldRequired(isRequired, field) {
 function gfRepeater_editforms_updateRequired(isRequired, field) {
 	var required = isRequired ? "*" : "";
 	jQuery(field).find('.gfield_required').html(required);
-}
-
-function gfRepeater_editforms_init() {
-	gfRepeater_editforms_getRepeaters();
-
-	jQuery.each(gfRepeater_repeaters, function(key, value){
-		var repeaterId = key;
-		var getField = gfRepeater_getField(gfRepeater_repeaters[repeaterId]['startId']);
-
-		if (!getField['repeaterRequiredChildren']) { getField['repeaterRequiredChildren'] = []; }
-
-		jQuery.each(gfRepeater_repeaters[repeaterId]['children'], function(key, value){
-			gfRepeater_editforms_unsetRequired(this);
-		});
-	});
 }
 
 function gfRepeater_editforms_updateClick() {
@@ -115,13 +102,52 @@ function gfRepeater_editforms_updateClick() {
 	});
 }
 
+function gfRepeater_editforms_undoChild(field) {
+	var getField = gfRepeater_getField(field.id);
+	var requiredCheckbox = jQuery(field).find('input#field_required');
+	jQuery(field).removeClass('gf-repeater-child');
+	requiredCheckbox.attr('onclick', 'SetFieldRequired(this.checked)');
+	if (getField['repeaterField_isRequired']) {
+		getField['repeaterField_isRequired'] = null;
+		getField['isRequired'] = true;
+	}
+}
+
+function gfRepeater_editforms_refresh(field) {
+	gfRepeater_editforms_getRepeaters();
+
+	if (field) {
+		var getField = gfRepeater_getField(field.id);
+		var idNum = gfRepeater_getId(field.id);
+		if (getField['repeaterId']) {
+			jQuery(field).addClass('gf-repeater-child');
+			gfRepeater_editforms_unsetRequired(field);
+			if (gfRepeater_debug) { console.log(field.id+' is a child of Repeater #'+getField['repeaterId']); }
+		}
+	}
+
+	jQuery.each(gfRepeater_repeaters, function(key, value){
+		var repeaterId = key;
+		var repeaterField = gfRepeater_getField(gfRepeater_repeaters[repeaterId]['startId']);
+		if (!repeaterField['repeaterRequiredChildren']) { repeaterField['repeaterRequiredChildren'] = []; }
+		var repeaterRequiredChildren = repeaterField['repeaterRequiredChildren'];
+		if (field && !getField['repeaterId'] && jQuery.inArray(idNum, repeaterRequiredChildren) !== -1) {
+			gfRepeater_editforms_undoChild(field);
+			repeaterRequiredChildren.splice(repeaterRequiredChildren.indexOf(idNum), 1);
+			repeaterField['repeaterRequiredChildren'] = repeaterRequiredChildren;
+			if (gfRepeater_debug) { console.log(field.id+' is no longer a child of Repeater #'+repeaterId); }
+		}
+	});
+
+	gfRepeater_editforms_updateClick();
+}
+
 jQuery(window).load(function() {
 	if (gfRepeater_page == 'gf_edit_forms') {
-		gfRepeater_editforms_init();
-		gfRepeater_editforms_updateClick();
+		gfRepeater_editforms_refresh();
 
 		jQuery('#gform_fields').sortable({
-			activate: function(event, ui) { gfRepeater_editforms_init(); }
+			stop: function(event, ui) { gfRepeater_editforms_refresh(ui.item[0]); }
 		});
 	}
 });
