@@ -18,7 +18,7 @@ function gfrepeater_row_meta($links, $file) {
 }
 
 if (class_exists("GFForms")) {
-    GFForms::include_addon_framework();
+	GFForms::include_addon_framework();
 
 	class GFRepeater extends GFAddOn {
 		protected $_version = "1.0.1";
@@ -48,11 +48,12 @@ if (class_exists("GFForms")) {
 			);
 			return array_merge(parent::scripts(), $scripts);
 		}
-    }
-    new GFRepeater();
+	}
+	new GFRepeater();
 
-    add_action('init',  array('GF_Field_Repeater', 'init'), 20);
+	add_action('init',  array('GF_Field_Repeater', 'init'), 20);
+	add_action('init',  array('GF_Field_Repeater_End', 'init'), 20);
 
-    require_once('class-gf-field-repeater.php');
-    require_once('class-gf-field-repeater-end.php');
+	require_once('class-gf-field-repeater.php');
+	require_once('class-gf-field-repeater-end.php');
 }
