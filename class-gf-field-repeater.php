@@ -1,4 +1,6 @@
 <?php
+add_action('init',  array('GF_Field_Repeater', 'init'), 20);
+
 class GF_Field_Repeater extends GF_Field {
 	public $type = 'repeater';
 
