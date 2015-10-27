@@ -134,6 +134,9 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 		var newRootId = childId+'-'+repeaterId+'-'+repeatCount;
 		jQuery(repeaterChildElement).attr('id', newRootId);
 
+		gfRepeater_replaceShortcodes(repeaterChildElement);
+		gfRepeater_doShortcode(repeaterChildElement, 'count', repeatCount);
+
 		if (gfRepeater_repeaters[repeaterId]['children'][childKey]['required']) {
 			var childLabel = repeaterChildElement.children('.gfield_label');
 
@@ -178,10 +181,39 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 }
 
 /*
+	gfRepeater_doShortcode(element, shortcode, value)
+		Finds the 'shortcode' inside of 'element' and replaces it's contents with 'value'.
+
+		element			The element to search inside.
+		shortcode		The shortcode to search for.
+		value			The value to put inside the shortcode.
+*/
+function gfRepeater_doShortcode(element, shortcode, value) {
+	element.find('.gfRepeater-shortcode-'+shortcode).each(function(){
+		jQuery(this).html(value);
+	});
+}
+
+/*
+	gfRepeater_replaceShortcodes(element)
+		Replaces any repeater shortcodes with spans for those shortcodes.
+
+		element			The element to search and replace.
+*/
+function gfRepeater_replaceShortcodes(element) {
+	var shortcodes = ['count'];
+	var html = element.html();
+
+	jQuery.each(shortcodes, function(key, shortcode){
+		element.html(html.replace('[gfRepeater-'+shortcode+']', '<span class=\"gfRepeater-shortcode-'+shortcode+'\"></span>'));
+	});
+}
+
+/*
 	gfRepeater_repeatRepeater(repeaterId)
 		Repeats the repeater once.
 
-		repeaterId		The repeater ID number to repeat.
+		repeaterId			The repeater ID number to repeat.
 */
 function gfRepeater_repeatRepeater(repeaterId) {
 	if (gfRepeater_repeaters[repeaterId]['settings']['max'] && gfRepeater_repeaters[repeaterId]['data']['repeatCount'] >= gfRepeater_repeaters[repeaterId]['settings']['max']) { return; }
@@ -234,6 +266,55 @@ function gfRepeater_unrepeatRepeater(repeaterId, repeaterChildId) {
 	gfRepeater_updateRepeaterControls(repeaterId);
 
 	if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Child #'+repeaterChildId+' - unrepeated'); }
+}
+
+/*
+	gfRepeater_repeatRepeaterTimes(repeaterId, timesX)
+		Repeats the repeater a multiple number of times depeneding on the 'timesX' variable.
+
+		repeaterId			The repeater ID number to repeat.
+		timesX (Optional)	The number of times to repeat the repeater. Default is 1.
+*/
+function gfRepeater_repeatRepeaterTimes(repeaterId, timesX) {
+	if (!timesX) { var timesX = 1; }
+	for (i = 0; i < timesX; i++) {
+		gfRepeater_repeatRepeater(repeaterId);
+	}
+}
+
+/*
+	gfRepeater_unrepeatRepeaterTimes(repeaterId, timesX)
+		UnRepeats the repeater a multiple number of times depeneding on the 'timesX' variable.
+
+		repeaterId			The repeater ID number to unrepeat.
+		timesX (Optional)	The number of times to unrepeat the repeater. Default is 1.
+*/
+function gfRepeater_unrepeatRepeaterTimes(repeaterId, timesX) {
+	if (!timesX) { var timesX = 1; }
+	for (i = 0; i < timesX; i++) {
+		gfRepeater_unrepeatRepeater(repeaterId);
+	}
+}
+
+/*
+	gfRepeater_setRepeater(repeaterId, timesX)
+		Repeats or unrepeats the repeater to set it to timesX.
+
+		repeaterId		The repeater ID number to repeat or unrepeat.
+		timesX			The number to set the repeater to.
+*/
+function gfRepeater_setRepeater(repeaterId, timesX) {
+	var currentRepeatCount = gfRepeater_repeaters[repeaterId]['data']['repeatCount'];
+
+	if (timesX == currentRepeatCount) {
+		return;
+	} else if (timesX > currentRepeatCount) {
+		var timesY = timesX - currentRepeatCount;
+		gfRepeater_repeatRepeaterTimes(repeaterId, timesY);
+	} else if (timesX < currentRepeatCount) {
+		var timesY = currentRepeatCount - timesX;
+		gfRepeater_unrepeatRepeaterTimes(repeaterId, timesY);
+	}
 }
 
 /*
@@ -377,9 +458,7 @@ function gfRepeater_start() {
 
 		if (gfRepeater_submitted) { repeatCount = this['data']['prevRepeatCount']; }
 
-		for (i = 1; i < repeatCount; i++) {
-			gfRepeater_repeatRepeater(repeaterId);
-		}
+		gfRepeater_setRepeater(repeaterId, repeatCount);
 
 		gfRepeater_updateRepeaterControls(repeaterId);
 	});
