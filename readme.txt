@@ -28,7 +28,7 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 * Repeat groups of fields multiple times
 * Use multiple repeaters on the same form
 * Use shortcodes to display data to the user
-* Use Javascript to manipulate the repeater (See [GitHub]<https://github.com/kodie/gravityforms-repeater> Page)
+* Use Javascript to manipulate the repeater (See GitHub Page)
 * Customize the add and remove button's HTML
 
 = Issues =
