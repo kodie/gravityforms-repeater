@@ -28,19 +28,30 @@ class GF_Field_Repeater extends GF_Field {
 	public function get_form_editor_field_settings() {
 		return array(
 			'admin_label_setting',
-			'error_message_setting'
+			'description_setting',
+			'error_message_setting',
+			'label_setting'
 		);
 	}
 
 	public static function gform_settings($position, $form_id) {
 		if ($position == 25) {
 			echo "<li class=\"repeater_settings field_setting\">
+					<label for=\"field_repeater_start\">Start ";
+
+			gform_tooltip('form_field_repeater_start');
+
+			echo "	</label>
+					<input type=\"number\" id=\"field_repeater_start\" min=\"1\" value=\"1\" onchange=\"SetFieldProperty('start', this.value);\">
+				</li>";
+
+			echo "<li class=\"repeater_settings field_setting\">
 					<label for=\"field_repeater_min\">Min ";
 
 			gform_tooltip('form_field_repeater_min');
 
 			echo "	</label>
-					<input type=\"number\" id=\"field_repeater_min\" min=\"1\" value=\"1\" onchange=\"SetFieldProperty('min', this.value);\" required>
+					<input type=\"number\" id=\"field_repeater_min\" min=\"1\" value=\"1\" onchange=\"SetFieldProperty('min', this.value);\">
 				</li>";
 
 			echo "<li class=\"repeater_settings field_setting\">
@@ -58,6 +69,7 @@ class GF_Field_Repeater extends GF_Field {
 		echo "<script type=\"text/javascript\">
 				fieldSettings['repeater'] += ', .repeater_settings';
 				jQuery(document).bind('gform_load_field_settings', function(event, field, form){
+					jQuery('#field_repeater_start').val(field['start']);
 					jQuery('#field_repeater_min').val(field['min']);
 					jQuery('#field_repeater_max').val(field['max']);
 				});
@@ -65,7 +77,8 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public static function gform_tooltips($tooltips) {
-		$tooltips['form_field_repeater_min'] = "The minimum number of times the repeater is allowed to be repeated. Leaving this field blank is the same as setting it to 1.";
+		$tooltips['form_field_repeater_start'] = "The number of times the repeater will be repeated when the form is rendered. Leaving this field blank or setting it to a number higher than the maximum number is the same as setting it to 1.";
+		$tooltips['form_field_repeater_min'] = "The minimum number of times the repeater is allowed to be repeated. Leaving this field blank or setting it to a number higher than the maximum field is the same as setting it to 1.";
 		$tooltips['form_field_repeater_max'] = "The maximum number of times the repeater is allowed to be repeated. Leaving this field blank or setting it to a number lower than the minimum field is the same as setting it to unlimited.";
 		return $tooltips;
 	}
@@ -76,6 +89,18 @@ class GF_Field_Repeater extends GF_Field {
 		if (!empty($repeater_required)) {
 			$dataArray = json_decode($value, true);
 
+			if ($dataArray['repeatCount'] < $this->min) {
+				$this->failed_validation  = true;
+				$this->validation_message = "A minimum number of ".$this->min." is required.";
+				return;
+			}
+
+			if ($this->max && $dataArray['repeatCount'] > $this->max) {
+				$this->failed_validation  = true;
+				$this->validation_message = "A maximum number of ".$this->max." is allowed.";
+				return;
+			}
+
 			for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
 				foreach ($dataArray['inputData'] as $inputLabel=>$inputNames) {
 					foreach ($inputNames as $inputName) {
@@ -85,7 +110,8 @@ class GF_Field_Repeater extends GF_Field {
 
 						if (in_array($getInputIdNum, $repeater_required) && empty($getInputData)) {
 							$this->failed_validation  = true;
-							$this->validation_message = "A required field was left blank.";
+							if ($this->errorMessage) { $this->validation_message = $this->errorMessage; } else { $this->validation_message = "A required field was left blank."; }
+							return;
 						}
 					}
 				}
@@ -103,8 +129,11 @@ class GF_Field_Repeater extends GF_Field {
 								<div class=\"gf-pagebreak-text-after\">top of repeater</div>
 							</div>";
 		} else {
+			$field_label		= $this->get_field_label($force_frontend_label, $value);
+			$description		= $this->get_description($this->description, 'gsection_description repeater_description');
 			$validation_message = ( $this->failed_validation && ! empty( $this->validation_message ) ) ? sprintf( "<div class='gfield_description validation_message'>%s</div>", $this->validation_message ) : '';
-			$field_content = "<div class=\"ginput_container ginput_container_repeater\">{FIELD}</div>{$validation_message}";
+			if (!empty($field_label)) { $field_label = "<h2 class='gsection_title repeater_title'>{$field_label}</h2>"; } else { $field_label = ''; }
+			$field_content = "<div class=\"ginput_container ginput_container_repeater\">{$field_label}{FIELD}</div>{$description}{$validation_message}";
 		}
 		return $field_content;
 	}
@@ -115,7 +144,7 @@ class GF_Field_Repeater extends GF_Field {
 		$is_form_editor		= $this->is_form_editor();
 		$id					= (int) $this->id;
 		$field_id			= $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
-		$repeater_start		= $this->min;
+		$repeater_start		= $this->start;
 		$repeater_min		= $this->min;
 		$repeater_max		= $this->max;
 		$repeater_required	= $this->repeaterRequiredChildren;

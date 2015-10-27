@@ -244,14 +244,14 @@ function gfRepeater_unrepeatRepeater(repeaterId, repeaterChildId) {
 */
 function gfRepeater_updateRepeaterControls(repeaterId) {
 	if (gfRepeater_repeaters[repeaterId]['settings']['max']) {
-		if (gfRepeater_repeaters[repeaterId]['data']['repeatCount'] == gfRepeater_repeaters[repeaterId]['settings']['max']) {
+		if (gfRepeater_repeaters[repeaterId]['data']['repeatCount'] >= gfRepeater_repeaters[repeaterId]['settings']['max']) {
 			jQuery(gfRepeater_repeaters[repeaterId]['controllers']['add']).hide();
 		} else {
 			jQuery(gfRepeater_repeaters[repeaterId]['controllers']['add']).show();
 		}
 	}
 
-	if (gfRepeater_repeaters[repeaterId]['data']['repeatCount'] == gfRepeater_repeaters[repeaterId]['settings']['min']) {
+	if (gfRepeater_repeaters[repeaterId]['data']['repeatCount'] <= gfRepeater_repeaters[repeaterId]['settings']['min']) {
 		jQuery(gfRepeater_repeaters[repeaterId]['controllers']['remove']).hide();
 	} else {
 		jQuery(gfRepeater_repeaters[repeaterId]['controllers']['remove']).show();
