@@ -1,3 +1,13 @@
+v1.0.2 (10/27/2015)
+- Fixed bug where if any fields in a form with a repeater in it would be unsubmittable.
+- Fixed repeater field validation.
+- Added custom validation message feature.
+- Added repeater "start" number feature.
+- Added repeater label and description options.
+- Added custom Add and Remove button HTML feature.
+- Added "Do not use add and remove buttons" feature.
+- Added new "[gfRepeater-count]" shortcode.
+
 v1.0.1 (10/20/2015)
 - Added support for Address, Checkboxes, Name, and Number fields.
 - Added View details and GitHub links to row meta.
