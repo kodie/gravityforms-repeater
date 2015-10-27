@@ -101,6 +101,7 @@ Yes!
 
 ##### Some of my repeated fields are showing they are required when they shouldn't be! What do I do?
 If you experience any problems with required fields, follow the following steps for the field:
+
 1. Uncheck the "Required" checkbox for the field.
 1. Move the field outside of the repeater.
 1. Make sure that the "Required" checkbox is still unchecked. If it's checked again, uncheck it.
