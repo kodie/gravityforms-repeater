@@ -55,8 +55,8 @@ function gfRepeater_getRepeaters() {
 				var repeaterStart = dataElement.attr('data-start');
 				var repeaterMin = dataElement.attr('data-min');
 				var repeaterMax = dataElement.attr('data-max');
-				if (!repeaterStart) { repeaterStart = 1; }
-				if (!repeaterMin) { repeaterMin = 1; }
+				if (!repeaterStart || repeaterStart > repeaterMax) { repeaterStart = 1; }
+				if (!repeaterMin || repeaterMin > repeaterMax) { repeaterMin = 1; }
 				if (repeaterMin > repeaterMax) { repeaterMax = null; }
 				repeaterSettings = {start:repeaterStart,min:repeaterMin,max:repeaterMax};
 
