@@ -217,6 +217,7 @@ function gfRepeater_replaceShortcodes(element) {
 */
 function gfRepeater_repeatRepeater(repeaterId) {
 	if (gfRepeater_repeaters[repeaterId]['settings']['max'] && gfRepeater_repeaters[repeaterId]['data']['repeatCount'] >= gfRepeater_repeaters[repeaterId]['settings']['max']) { return; }
+	jQuery(gfRepeater_repeaters[repeaterId]['controllers']['start']).closest('form').trigger('beforeRepeat', [repeaterId, gfRepeater_repeaters[repeaterId]['data']['repeatCount'] + 1]);
 
 	var lastElementKey = gfRepeater_repeaters[repeaterId]['data']['childrenCount'];
 	var lastElement = gfRepeater_repeaters[repeaterId]['children'][lastElementKey]['element'];
@@ -242,6 +243,7 @@ function gfRepeater_repeatRepeater(repeaterId) {
 	gfRepeater_updateDataElement(repeaterId);
 	gfRepeater_updateRepeaterControls(repeaterId);
 
+	jQuery(gfRepeater_repeaters[repeaterId]['controllers']['start']).closest('form').trigger('afterRepeat', [repeaterId, gfRepeater_repeaters[repeaterId]['data']['repeatCount']]);
 	if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - repeated'); }
 }
 
@@ -255,6 +257,7 @@ function gfRepeater_repeatRepeater(repeaterId) {
 function gfRepeater_unrepeatRepeater(repeaterId, repeaterChildId) {
 	if (gfRepeater_repeaters[repeaterId]['data']['repeatCount'] <= gfRepeater_repeaters[repeaterId]['settings']['min']) { return; }
 	if (!repeaterChildId) { var repeaterChildId = gfRepeater_repeaters[repeaterId]['data']['repeatCount']; }
+	jQuery(gfRepeater_repeaters[repeaterId]['controllers']['start']).closest('form').trigger('beforeUnRepeat', [repeaterId, repeaterChildId]);
 
 	jQuery.each(gfRepeater_repeaters[repeaterId]['children'], function(key, value){
 		var childElement = jQuery('#'+this['id']+'-'+repeaterId+'-'+repeaterChildId);
@@ -265,6 +268,7 @@ function gfRepeater_unrepeatRepeater(repeaterId, repeaterChildId) {
 	gfRepeater_updateDataElement(repeaterId);
 	gfRepeater_updateRepeaterControls(repeaterId);
 
+	jQuery(gfRepeater_repeaters[repeaterId]['controllers']['start']).closest('form').trigger('afterUnRepeat', [repeaterId, repeaterChildId]);
 	if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Child #'+repeaterChildId+' - unrepeated'); }
 }
 
