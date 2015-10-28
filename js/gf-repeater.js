@@ -131,25 +131,14 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 	});
 
 	if (childKey) {
+		var failedValidation = false;
+		var childRequired = gfRepeater_repeaters[repeaterId]['children'][childKey]['required'];
+
 		var newRootId = childId+'-'+repeaterId+'-'+repeatCount;
 		jQuery(repeaterChildElement).attr('id', newRootId);
 
 		gfRepeater_replaceShortcodes(repeaterChildElement);
 		gfRepeater_doShortcode(repeaterChildElement, 'count', repeatCount);
-
-		if (gfRepeater_repeaters[repeaterId]['children'][childKey]['required']) {
-			var childLabel = repeaterChildElement.children('.gfield_label');
-
-			repeaterChildElement.addClass('gfield_contains_required');
-
-			if (!childLabel.has('.gfield_required').length) {
-				childLabel.append("<span class=\"gfield_required\">*</span>");
-			}
-
-			if (gfRepeater_submitted && !repeaterChildElement.hasClass('gfield_error')) { 
-				gfRepeater_childValidation(repeaterId, childKey);
-			}
-		}
 
 		jQuery.each(gfRepeater_repeaters[repeaterId]['children'][childKey]['inputs'], function(key, value){
 			var inputId = this['id'];
@@ -170,13 +159,42 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 			var inputMask = jQuery(inputElement).attr('data-mask');
 			if (inputMask) { jQuery(inputElement).mask(inputMask); }
 
-			if (gfRepeater_submitted && newInputName) {
-				var savedValue = jQuery.captures(newInputName);
-				if (savedValue) {
-					gfRepeater_setInputValue(inputElement, savedValue);
+			if (gfRepeater_submitted) {
+				if (newInputName) {
+					var savedValue = jQuery.captures(newInputName);
+					if (savedValue) {
+						gfRepeater_setInputValue(inputElement, savedValue);
+					}
+				}
+
+				if (childRequired) {
+					var inputValue = gfRepeater_getInputValue(inputElement);
+					if (!inputValue && repeatCount <= gfRepeater_repeaters[repeaterId]['data']['prevRepeatCount']) {
+						failedValidation = true;
+					}
 				}
 			}
 		});
+
+		if (childRequired) {
+			var childLabel = repeaterChildElement.children('.gfield_label');
+
+			repeaterChildElement.addClass('gfield_contains_required');
+
+			if (!childLabel.has('.gfield_required').length) {
+				childLabel.append("<span class=\"gfield_required\">*</span>");
+			}
+
+			if (gfRepeater_submitted) {
+				if (failedValidation) {
+					repeaterChildElement.addClass('gfield_error');
+					repeaterChildElement.append("<div class=\"gfield_description validation_message\">This field is required.</div>");
+				} else {
+					repeaterChildElement.removeClass('gfield_error');
+					repeaterChildElement.find('.validation_message').remove();
+				}
+			}
+		}
 	};
 }
 
@@ -229,11 +247,6 @@ function gfRepeater_repeatRepeater(repeaterId) {
 
 		gfRepeater_resetInputs(repeaterId, key, clonedElement);
 		gfRepeater_setRepeaterChildAttrs(clonedElement, repeaterId);
-
-		if (gfRepeater_submitted && gfRepeater_repeaters[repeaterId]['data']['repeatCount'] >= gfRepeater_repeaters[repeaterId]['data']['prevRepeatCount']) {
-			clonedElement.removeClass('gfield_error');
-			clonedElement.find('.validation_message').remove();
-		}
 
 		clonedElement.insertAfter(lastElement);
 		lastElement = clonedElement;
@@ -340,30 +353,6 @@ function gfRepeater_updateRepeaterControls(repeaterId) {
 		jQuery(gfRepeater_repeaters[repeaterId]['controllers']['remove']).hide();
 	} else {
 		jQuery(gfRepeater_repeaters[repeaterId]['controllers']['remove']).show();
-	}
-}
-
-/*
-	gfRepeater_childValidation(repeaterId, childKey)
-		Checks if the child has been filled out if it's a required child and add the error message and classes if it fails validation.
-
-		repeaterId		The repeater ID.
-		childKey		The child key.
-*/
-function gfRepeater_childValidation(repeaterId, childKey) {
-	if (!gfRepeater_repeaters[repeaterId]['children'][childKey]['required']) { return; }
-	var passedValidation = false;
-
-	jQuery.each(gfRepeater_repeaters[repeaterId]['children'][childKey]['inputs'], function(key, value){
-		var inputElement = this['element'];
-		var inputValue = gfRepeater_getInputValue(inputElement);
-		if (inputValue) { passedValidation = true; }
-	});
-
-	if (!passedValidation) {
-		var childElement = gfRepeater_repeaters[repeaterId]['children'][childKey]['element'];
-		childElement.addClass('gfield_error');
-		childElement.append("<div class=\"gfield_description validation_message\">This field is required.</div>");
 	}
 }
 
