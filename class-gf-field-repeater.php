@@ -107,8 +107,9 @@ class GF_Field_Repeater extends GF_Field {
 				foreach ($dataArray['inputData'] as $inputLabel=>$inputNames) {
 					foreach ($inputNames as $inputName) {
 						$getInputName = $inputName.'-'.$dataArray['repeaterId'].'-'.$i;
-						$getInputData = rgpost(str_replace('.', '_', strval($getInputName)));
-						$getInputIdNum = explode("_", $inputName)[1];
+						$getFilterdInputName = str_replace('.', '_', strval($getInputName));
+						$getInputData = rgpost($getFilterdInputName);
+						$getInputIdNum = explode("_", $getFilterdInputName)[1];
 
 						if (in_array($getInputIdNum, $repeater_required) && empty($getInputData)) {
 							$this->failed_validation  = true;
