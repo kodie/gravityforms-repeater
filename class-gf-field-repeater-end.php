@@ -79,6 +79,7 @@ class GF_Field_Repeater_End extends GF_Field {
 			$add_html		= $this->add;
 			$remove_html	= $this->remove;
 			$donotuse		= $this->donotuse;
+			$tabindex		= GFCommon::get_tabindex();
 
 			if (empty($add_html)) { $add_html = "<img class=\"gf_repeater_add_default\" alt=\"+\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\">"; }
 			if (empty($remove_html)) { $remove_html = "<img class=\"gf_repeater_remove_default\" alt=\"-\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\">"; }
@@ -86,8 +87,8 @@ class GF_Field_Repeater_End extends GF_Field {
 			$field_content = "<div class=\"ginput_container ginput_container_repeater-end\">\n";
 
 			if (!$donotuse) {
-				$field_content .= "<span class=\"gf_repeater_add\">{$add_html}</span>";
-				$field_content .= "<span class=\"gf_repeater_remove\">{$remove_html}</span>";
+				$field_content .= "<span class=\"gf_repeater_add\" {$tabindex}>{$add_html}</span>";
+				$field_content .= "<span class=\"gf_repeater_remove\" {$tabindex}>{$remove_html}</span>";
 			}
 
 			$field_content .= "</div>";

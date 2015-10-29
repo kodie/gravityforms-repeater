@@ -47,8 +47,10 @@ function gfRepeater_getRepeaters() {
 				var endElement = jQuery(this);
 				var addElement = endElement.find('.gf_repeater_add');
 				var removeElement = endElement.find('.gf_repeater_remove');
-				jQuery(addElement).attr('onClick', 'gfRepeater_repeatRepeater('+repeaterId+');');
-				jQuery(removeElement).attr('onClick', 'gfRepeater_unrepeatRepeater('+repeaterId+');');
+				var addFunction = 'gfRepeater_repeatRepeater('+repeaterId+');';
+				var removeFunction = 'gfRepeater_unrepeatRepeater('+repeaterId+');';
+				jQuery(addElement).attr({onclick:addFunction,onkeypress:addFunction});
+				jQuery(removeElement).attr({onclick:removeFunction,onkeypress:removeFunction});
 				repeaterControllers = {add:addElement,remove:removeElement,data:dataElement,start:startElement,end:endElement};
 
 				var repeaterSettings = {};
