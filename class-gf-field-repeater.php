@@ -18,7 +18,8 @@ class GF_Field_Repeater extends GF_Field {
 		if (!empty($form)) {
 			if (in_array('GF_Field_Repeater', $form)) {
 				wp_enqueue_script('_gf_postcapture', plugins_url('js/jquery.postcapture.min.js', __FILE__), array('jquery'));
-    			wp_enqueue_script('_gf_repeater', plugins_url('js/gf-repeater.min.js', __FILE__), array('jquery'));
+    			wp_enqueue_script('_gf_repeater', plugins_url('js/gf-repeater.min.js', __FILE__), array('jquery'), '1.0.2');
+    			wp_enqueue_style('_gf_repeater', plugins_url('gf-repeater.css', __FILE__), array(), '1.0.2');
     		}
 		}
 	}
@@ -133,9 +134,9 @@ class GF_Field_Repeater extends GF_Field {
 							</div>";
 		} else {
 			$field_label		= $this->get_field_label($force_frontend_label, $value);
-			$description		= $this->get_description($this->description, 'gsection_description repeater_description');
+			$description		= $this->get_description($this->description, 'gsection_description gf_repeater_description');
 			$validation_message = ( $this->failed_validation && ! empty( $this->validation_message ) ) ? sprintf( "<div class='gfield_description validation_message'>%s</div>", $this->validation_message ) : '';
-			if (!empty($field_label)) { $field_label = "<h2 class='gsection_title repeater_title'>{$field_label}</h2>"; } else { $field_label = ''; }
+			if (!empty($field_label)) { $field_label = "<h2 class='gf_repeater_title'>{$field_label}</h2>"; } else { $field_label = ''; }
 			$field_content = "<div class=\"ginput_container ginput_container_repeater\">{$field_label}{FIELD}</div>{$description}{$validation_message}";
 		}
 		return $field_content;
