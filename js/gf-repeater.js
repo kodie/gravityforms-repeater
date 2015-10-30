@@ -8,7 +8,6 @@ var gfRepeater_submitted = false;
 */
 function gfRepeater_getRepeaters() {
 	var repeaterId = 0;
-	var repeaterError = false;
 
 	var repeaterFound = 0;
 	var repeaterChildCount = 0;
