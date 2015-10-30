@@ -3,7 +3,7 @@ Contributors: KodieGrantham
 Tags: gravity, forms, repeater
 Requires at least: 3.0.1
 Tested up to: 4.3.1
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 
 A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.
 
@@ -33,6 +33,7 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 
 = Issues =
 * Not all fields are currently supported.
+* Ajax enabled forms are not supported.
 * Fields inside of a repeater will return a duplicated item with a blank result outside of the repeater when viewing an indiviual entry (These are only visible if "show empty fields" is checked).
 * Fields inside of a repeater sometimes show a blank colum in the "entries" page. (These can be hidden by changing which columns to display by clicking the gear icon in the upper right-hand corner).
 
@@ -52,14 +53,8 @@ You can place shortcodes inside of input labels, input descriptions, and HTML bl
 = Can I use multiple repeaters in one form? =
 Yes!
 
-= Some of my repeated fields are showing they are required when they shouldn't be! What do I do? =
-If you experience any problems with required fields, follow the following steps for the field:
-
-1. Uncheck the "Required" checkbox for the field.
-1. Move the field outside of the repeater.
-1. Make sure that the "Required" checkbox is still unchecked. If it's checked again, uncheck it.
-1. Move the field back inside of the repeater.
-1. If desired, make the field required again.
+= Can I nest repeaters? =
+Unfortunately nesting repeaters is not supported at this time.
 
 == Screenshots ==
 1. Any supported fields placed between the `Repeater` and `Repeater End` will be repeated.
@@ -68,6 +63,16 @@ If you experience any problems with required fields, follow the following steps 
 4. A view of the front-end. The only visible difference will be the added `+` and `-` buttons.
 
 == Changelog ==
+= 1.0.3 =
+* Fixed bug where repeated fields would look like they failed validation if any repeated fields before them failed.
+* Fixed bug with validation on fields with multiple inputs.
+* Fixed bugs with form editor and setting repeater children required option.
+* Added beforeRepeat, afterRepeat, beforeUnRepeat, and AfterUnRepeat form triggers.
+* Added a stylesheet with some default styles for repeater releated stuff.
+* Added keypress event and tab index to add and remove buttons.
+* Added a little bit of error handing to the javascript just in case the admin forgets to add a repeater-end or trys to nest repeaters.
+* Repeater start field label now defaults to blank instead of "Untitled".
+
 = 1.0.2 =
 * Fixed bug where if any fields in a form with a repeater in it would be unsubmittable.
 * Fixed repeater field validation.

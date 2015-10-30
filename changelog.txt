@@ -1,3 +1,13 @@
+v1.0.3 (10/30/2015)
+- Fixed bug where repeated fields would look like they failed validation if any repeated fields before them failed.
+- Fixed bug with validation on fields with multiple inputs.
+- Fixed bugs with form editor and setting repeater children required option.
+- Added beforeRepeat, afterRepeat, beforeUnRepeat, and AfterUnRepeat form triggers.
+- Added a stylesheet with some default styles for repeater releated stuff.
+- Added keypress event and tab index to add and remove buttons.
+- Added a little bit of error handing to the javascript just in case the admin forgets to add a repeater-end or trys to nest repeaters.
+- Repeater start field label now defaults to blank instead of "Untitled".
+
 v1.0.2 (10/27/2015)
 - Fixed bug where if any fields in a form with a repeater in it would be unsubmittable.
 - Fixed repeater field validation.

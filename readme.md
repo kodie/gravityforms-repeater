@@ -26,6 +26,7 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 
 ### Issues
 * Not all fields are currently supported.
+* Ajax enabled forms are not supported.
 * Fields inside of a repeater will return a duplicated item with a blank result outside of the repeater when viewing an indiviual entry (These are only visible if "show empty fields" is checked).
 * Fields inside of a repeater sometimes show a blank colum in the "entries" page. (These can be hidden by changing which columns to display by clicking the gear icon in the upper right-hand corner).
 
@@ -59,6 +60,15 @@ gfRepeater_unrepeatRepeaterTimes(repeaterId, timesX);
 ```
 gfRepeater_setRepeater(repeaterId, timesX);
   Repeats or unrepeats the repeater to get it to whatever timesX is.
+```
+
+##### Triggers
+These triggers are assigned to the form will be fired during different repeater related events with the repeaterId and repeaterChildId attached to them.
+```
+beforeRepeat - Fires right before a repeater is about to be repeated.
+afterRepeat - Fires right after a repeater has been repeated.
+beforeUnRepeat - Fires right before a repeater is about to be un-repeated.
+afterUnRepeat - Fires right after a repeater has been un-repeated.
 ```
 
 ##### Information
@@ -95,32 +105,47 @@ gfRepeater_repeaters
                     ['defaultValue'] - The default value for the input.
 ```
 
+##### Usage Examples
+Repeat the repeater a number of times depending on the value of a drop down field:
+```
+jQuery('#gform_6 #input_6_7').change(function(){
+    var attendees = jQuery(this).val();
+    gfRepeater_setRepeater(1, attendees);
+})
+```
+
+Change the value of a field if the repeater is repeated or un-repeated:
+```
+jQuery('#gform_9').on('afterRepeat afterUnRepeat', function(event, repeaterId, repeaterChildId){
+    if (repeaterId == 1) {
+        var repeatCount = gfRepeater_repeaters[repeaterId]['data']['repeatCount'];
+        var totalPrice = 27.47 * repeatCount;
+        jQuery('#gform_9 #input_9_4').val('$'+totalPrice);
+    }
+});
+```
+
+
 ### Frequently Asked Questions
 ##### Can I use multiple repeaters in one form?
 Yes!
 
-##### Some of my repeated fields are showing they are required when they shouldn't be! What do I do?
-If you experience any problems with required fields, follow the following steps for the field:
-
-1. Uncheck the "Required" checkbox for the field.
-1. Move the field outside of the repeater.
-1. Make sure that the "Required" checkbox is still unchecked. If it's checked again, uncheck it.
-1. Move the field back inside of the repeater.
-1. If desired, make the field required again.
+##### Can I nest repeaters?
+Unfortunately nesting repeaters is not supported at this time.
 
 ### Version
-1.0.2
+1.0.3
 
 ### Changelog
-##### 1.0.2
-* Fixed bug where if any fields in a form with a repeater in it would be unsubmittable.
-* Fixed repeater field validation.
-* Added custom validation message feature.
-* Added repeater "start" number feature.
-* Added repeater label and description options.
-* Added custom Add and Remove button HTML feature.
-* Added "Do not use add and remove buttons" feature.
-* Added new "[gfRepeater-count]" shortcode.
+##### 1.0.3
+* Fixed bug where repeated fields would look like they failed validation if any repeated fields before them failed.
+* Fixed bug with validation on fields with multiple inputs.
+* Fixed bugs with form editor and setting repeater children required option.
+* Added beforeRepeat, afterRepeat, beforeUnRepeat, and AfterUnRepeat form triggers.
+* Added a stylesheet with some default styles for repeater releated stuff.
+* Added keypress event and tab index to add and remove buttons.
+* Added a little bit of error handing to the javascript just in case the admin forgets to add a repeater-end or trys to nest repeaters.
+* Repeater start field label now defaults to blank instead of "Untitled".
 
 ### Requirements
 * Wordpress (duh)
