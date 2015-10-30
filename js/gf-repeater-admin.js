@@ -18,6 +18,7 @@ function gfRepeater_editforms_getRepeaters() {
 				repeaterFound = 1;
 			}
 		} else {
+			if (jQuery(this).has('.gf-repeater-start').length) { return false; }
 			if (jQuery(this).has('.gf-repeater-end').length) {
 				if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - End: '+jQuery(this).attr('id')); }
 				gfRepeater_repeaters[repeaterId] = {startId:repeaterStartId,childrenIds:repeaterChildrenIds,children:repeaterChildren};
@@ -31,6 +32,9 @@ function gfRepeater_editforms_getRepeaters() {
 			}
 		}
 	});
+
+	if (repeaterFound !== 0) { return false; }
+	return true;
 }
 
 function gfRepeater_getId(id) {
@@ -52,7 +56,7 @@ function gfRepeater_editforms_getRepeaterId(elementId) {
 }
 
 function gfRepeater_editforms_updateRequired(leaving) {
-	gfRepeater_editforms_getRepeaters();
+	if (!gfRepeater_editforms_getRepeaters()) { return; }
 	UpdateFormObject();
 
 	jQuery.each(gfRepeater_repeaters, function(key, value){

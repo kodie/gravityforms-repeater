@@ -8,6 +8,7 @@ var gfRepeater_submitted = false;
 */
 function gfRepeater_getRepeaters() {
 	var repeaterId = 0;
+	var repeaterError = false;
 
 	var repeaterFound = 0;
 	var repeaterChildCount = 0;
@@ -35,6 +36,7 @@ function gfRepeater_getRepeaters() {
 				repeaterFound = 1;
 			}
 		} else {
+			if (jQuery(this).has('.ginput_container_repeater').length) { return false; }
 			if (jQuery(this).has('.ginput_container_repeater-end').length) {
 				// Repeater End
 
@@ -109,7 +111,10 @@ function gfRepeater_getRepeaters() {
 			}
 		}
 	});
+
 	if (gfRepeater_debug) { console.log('Repeaters Found: '+(repeaterId)); }
+	if (repeaterFound !== 0) { return false; }
+	return true;
 }
 
 /*
@@ -470,8 +475,11 @@ function gfRepeater_patchMask() {
 
 // Initiation after window has loaded
 jQuery(window).load(function() {
-	gfRepeater_getRepeaters();
-	gfRepeater_start();
+	if (gfRepeater_getRepeaters()) {
+		gfRepeater_start();
+	} else {
+		console.log('There was an error with one of your repeaters. This is usually caused by forgetting to include a repeater-end field or by trying to nest repeaters.');
+	}
 });
 
 // Initiation right away
