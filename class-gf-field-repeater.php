@@ -9,6 +9,7 @@ class GF_Field_Repeater extends GF_Field {
 			add_action('gform_enqueue_scripts', array('GF_Field_Repeater', 'gform_enqueue_scripts'), 10, 2);
 		} else {
 			add_action('gform_field_standard_settings' , array('GF_Field_Repeater', 'gform_settings'), 10, 2);
+			add_action('gform_editor_js_set_default_values', array('GF_Field_Repeater', 'gform_set_defaults'));
 			add_action('gform_editor_js', array('GF_Field_Repeater', 'gform_editor'));
 			add_filter('gform_tooltips', array('GF_Field_Repeater', 'gform_tooltips'));
 		}
@@ -35,6 +36,14 @@ class GF_Field_Repeater extends GF_Field {
 			'error_message_setting',
 			'label_setting'
 		);
+	}
+
+	public function gform_set_defaults() {
+		echo "
+			case \"repeater\" :
+				field.label = \"\";
+			break;
+		";
 	}
 
 	public static function gform_settings($position, $form_id) {
