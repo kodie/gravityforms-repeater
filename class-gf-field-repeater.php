@@ -38,7 +38,7 @@ class GF_Field_Repeater extends GF_Field {
 		);
 	}
 
-	public function gform_set_defaults() {
+	public static function gform_set_defaults() {
 		echo "
 			case \"repeater\" :
 				field.label = \"\";
@@ -204,13 +204,17 @@ class GF_Field_Repeater extends GF_Field {
 			$arrayCount = count($dataArray);
 			$output = "";
 			$count = 0;
+			$repeatCount = 0;
 
 			foreach ($dataArray as $key=>$value) {
+				$repeatCount++;
 				$output .= "<table cellspacing=\"0\" class=\"widefat fixed entry-detail-view\">\n";
 				foreach ($value as $childKey=>$childValue) {
 					if (count($childValue) == 0) { continue; } else { $count++; }
 
-					$output .= "<tr>\n<td colspan=\"2\" class=\"entry-view-field-name\">".$childKey."</td>\n</tr>\n";
+					$entry_title = str_replace('[gfRepeater-count]', $repeatCount, $childKey);
+
+					$output .= "<tr>\n<td colspan=\"2\" class=\"entry-view-field-name\">".$entry_title."</td>\n</tr>\n";
 
 					if (count($childValue) == 1) {
 						$childValueOutput = $childValue[0];
