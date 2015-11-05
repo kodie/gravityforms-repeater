@@ -205,16 +205,18 @@ class GF_Field_Repeater extends GF_Field {
 			$output = "";
 			$count = 0;
 			$repeatCount = 0;
+			$display_empty_fields = rgget('gf_display_empty_fields', $_COOKIE);
 
 			foreach ($dataArray as $key=>$value) {
 				$repeatCount++;
-				$output .= "<table cellspacing=\"0\" class=\"widefat fixed entry-detail-view\">\n";
 				foreach ($value as $childKey=>$childValue) {
-					if (count($childValue) == 0) { continue; } else { $count++; }
+					unset($tableContents);
+					
+					if (empty($display_empty_fields) && count($childValue) == 0) { continue; } else { $count++; }
 
 					$entry_title = str_replace('[gfRepeater-count]', $repeatCount, $childKey);
 
-					$output .= "<tr>\n<td colspan=\"2\" class=\"entry-view-field-name\">".$entry_title."</td>\n</tr>\n";
+					$tableContents = "<tr>\n<td colspan=\"2\" class=\"entry-view-field-name\">".$entry_title."</td>\n</tr>\n";
 
 					if (count($childValue) == 1) {
 						$childValueOutput = $childValue[0];
@@ -228,10 +230,14 @@ class GF_Field_Repeater extends GF_Field {
 						$childValueOutput .= "</ul>\n";
 					}
 
-					$output .= "<tr>\n<td colspan=\"2\" class=\"entry-view-field-value\">".$childValueOutput."</td>\n</tr>\n";
+					$tableContents .= "<tr>\n<td colspan=\"2\" class=\"entry-view-field-value\">".$childValueOutput."</td>\n</tr>\n";
 				}
 
-				$output .= "</table>\n";
+				if (!empty($tableContents)) {
+					$output .= "<table cellspacing=\"0\" class=\"widefat fixed entry-detail-view\">\n";
+					$output .= $tableContents;
+					$output .= "</table>\n";
+				}
 			}
 		}
 
