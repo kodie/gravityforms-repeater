@@ -8,10 +8,14 @@ class GF_Field_Repeater extends GF_Field {
 		if (!is_admin()) {
 			add_action('gform_enqueue_scripts', array('GF_Field_Repeater', 'gform_enqueue_scripts'), 10, 2);
 		} else {
-			add_action('gform_field_standard_settings' , array('GF_Field_Repeater', 'gform_settings'), 10, 2);
-			add_action('gform_editor_js_set_default_values', array('GF_Field_Repeater', 'gform_set_defaults'));
-			add_action('gform_editor_js', array('GF_Field_Repeater', 'gform_editor'));
-			add_filter('gform_tooltips', array('GF_Field_Repeater', 'gform_tooltips'));
+			$admin_page = rgget('page');
+
+			if ($admin_page == 'gf_edit_forms' && !empty($_GET['id'])) {
+				add_action('gform_field_standard_settings' , array('GF_Field_Repeater', 'gform_settings'), 10, 2);
+				add_action('gform_editor_js_set_default_values', array('GF_Field_Repeater', 'gform_set_defaults'));
+				add_action('gform_editor_js', array('GF_Field_Repeater', 'gform_editor'));
+				add_filter('gform_tooltips', array('GF_Field_Repeater', 'gform_tooltips'));
+			}
 		}
 	}
 
