@@ -9,6 +9,9 @@ class GF_Field_Repeater_End extends GF_Field {
 			add_action('gform_field_standard_settings' , array('GF_Field_Repeater_End', 'gform_settings'), 10, 2);
 			add_action('gform_editor_js', array('GF_Field_Repeater_End', 'gform_editor'));
 			add_filter('gform_tooltips', array('GF_Field_Repeater_End', 'gform_tooltips'));
+			if (rgget('page') == 'gf_entries') {
+				add_filter('gform_form_post_get_meta', array('GF_Field_Repeater_End', 'gform_hidethis'));
+			}
 		}
 	}
 
@@ -94,6 +97,13 @@ class GF_Field_Repeater_End extends GF_Field {
 			$field_content .= "</div>";
 		}
 		return $field_content;
+	}
+
+	public static function gform_hidethis($form) {
+		foreach($form['fields'] as $key=>$field) {
+			if ($field->type == 'repeater-end') { unset($form['fields'][$key]); }
+		}
+		return $form;
 	}
 }
 GF_Fields::register(new GF_Field_Repeater_End());
