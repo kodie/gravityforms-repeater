@@ -180,11 +180,17 @@ class GF_Field_Repeater extends GF_Field {
 		for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
 			foreach ($dataArray['inputData'] as $inputLabel=>$inputNames) {
 				$inputData = Array();
-				foreach ($inputNames as $inputName) {
-					$getInputName = $inputName.'-'.$dataArray['repeaterId'].'-'.$i;
-					$getInputData = rgpost(str_replace('.', '_', strval($getInputName)));
-					if (!empty($getInputData)) { $inputData[] = $getInputData; }
+
+				if (is_array($inputNames)) {
+					foreach ($inputNames as $inputName) {
+						$getInputName = $inputName.'-'.$dataArray['repeaterId'].'-'.$i;
+						$getInputData = rgpost(str_replace('.', '_', strval($getInputName)));
+						if (!empty($getInputData)) { $inputData[] = $getInputData; }
+					}
+				} else {
+					if ($inputNames == 'section') { $inputData[] = '[gfRepeater-section]'; }
 				}
+
 				$childValue[$inputLabel] = $inputData;
 			}
 			$value[$i] = $childValue;
@@ -217,6 +223,7 @@ class GF_Field_Repeater extends GF_Field {
 
 			foreach ($dataArray as $key=>$value) {
 				$repeatCount++;
+				$tableContents = '';
 
 				if (!empty($value) && !is_array($value)) {
 					$save_value = $value;
@@ -225,14 +232,19 @@ class GF_Field_Repeater extends GF_Field {
 				}
 
 				foreach ($value as $childKey=>$childValue) {
-					unset($tableContents);
 					$childValueOutput = '';
 					
 					if (empty($display_empty_fields) && count($childValue) == 0) { continue; } else { $count++; }
 
 					$entry_title = str_replace('[gfRepeater-count]', $repeatCount, $childKey);
 
-					$tableContents = "<tr>\n<td colspan=\"2\" class=\"entry-view-field-name\">".$entry_title."</td>\n</tr>\n";
+					if ($childValue[0] == '[gfRepeater-section]') {
+						$tableClass = 'entry-view-section-break';
+					} else {
+						$tableClass = 'entry-view-field-name';
+					}
+
+					$tableContents .= "<tr>\n<td colspan=\"2\" class=\"".$tableClass."\">".$entry_title."</td>\n</tr>\n";
 
 					if (count($childValue) == 1) {
 						$childValueOutput = $childValue[0];
@@ -246,7 +258,9 @@ class GF_Field_Repeater extends GF_Field {
 						$childValueOutput .= "</ul>\n";
 					}
 
-					$tableContents .= "<tr>\n<td colspan=\"2\" class=\"entry-view-field-value\">".$childValueOutput."</td>\n</tr>\n";
+					if ($childValueOutput !== '[gfRepeater-section]') {
+						$tableContents .= "<tr>\n<td colspan=\"2\" class=\"entry-view-field-value\">".$childValueOutput."</td>\n</tr>\n";
+					}
 				}
 
 				if (!empty($tableContents)) {

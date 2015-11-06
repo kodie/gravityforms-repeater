@@ -106,6 +106,14 @@ function gfRepeater_getRepeaters() {
 				});
 
 				repeaterChildren[repeaterChildCount] = {element:childElement,id:childId,inputs:childInputs,inputCount:childInputCount,required:childRequired}
+
+				if (!childLabel) {
+					childLabel = jQuery(this).children('.gsection_title').text();
+					if (childLabel) {
+						childInputNames = 'section';
+					}
+				}
+
 				repeaterChildrenInputData[childLabel] = childInputNames;
 			}
 		}
