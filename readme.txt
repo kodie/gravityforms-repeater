@@ -3,7 +3,7 @@ Contributors: KodieGrantham
 Tags: gravity, forms, repeater
 Requires at least: 3.0.1
 Tested up to: 4.3.1
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 
 A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.
 
@@ -63,6 +63,17 @@ Unfortunately nesting repeaters is not supported at this time.
 4. A view of the front-end. The only visible difference will be the added `+` and `-` buttons.
 
 == Changelog ==
+= 1.0.4 =
+* Fixed bug with number field where a PHP error would show up if a form failed validation.
+* Fixed bug where a javascript error would occur if no repeater children were marked as required.
+* Fixed bug where a PHP error would sometimes occur on the entries page in the admin panel if a repeated field was submitted blank.
+* Added support for Section field type.
+* Default validation functions are now bypassed for repeater children.
+* gfRepeater-count shortcode now shows up for field titles on the entires page in the admin panel.
+* Blank repeated fields now show up if "Show Empty Fields" is enabled.
+* Repeater children and repeater end fields no longer display duplicated results on the entries page in the admin panel.
+* Added a little bit of backwards compatibility for fetching saved repeater child entry data.
+
 = 1.0.3 =
 * Fixed bug where repeated fields would look like they failed validation if any repeated fields before them failed.
 * Fixed bug with validation on fields with multiple inputs.

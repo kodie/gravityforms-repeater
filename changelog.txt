@@ -1,3 +1,17 @@
+v1.0.4 (11/6/2015)
+- Fixed bug with number field where a PHP error would show up if a form failed validation.
+- Fixed bug where a javascript error would occur if no repeater children were marked as required.
+- Fixed bug where a PHP error would sometimes occur on the entries page in the admin panel if a repeated field was submitted blank.
+- Added support for Section field type.
+- Default validation functions are now bypassed for repeater children.
+- gfRepeater-count shortcode now shows up for field titles on the entires page in the admin panel.
+- Blank repeated fields now show up if "Show Empty Fields" is enabled.
+- Repeater children and repeater end fields no longer display duplicated results on the entries page in the admin panel.
+- Added a little bit of backwards compatibility for fetching saved repeater child entry data.
+
+	Release Notes:
+	- The entries page in the admin panel may still display duplicated fields for repeater children and repeater end fields until the form has been updated again. Just go to the edit form page and click "Update Form" to fix this.
+
 v1.0.3 (10/30/2015)
 - Fixed bug where repeated fields would look like they failed validation if any repeated fields before them failed.
 - Fixed bug with validation on fields with multiple inputs.

@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms Repeater Add-On
 Plugin URI: https://wordpress.org/plugins/repeater-add-on-for-gravity-forms/
 Description: A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.
-Version: 1.0.3
+Version: 1.0.4
 Author: Kodie Grantham
 Author URI: http://kodieg.com
 */
@@ -21,7 +21,7 @@ if (class_exists("GFForms")) {
 	GFForms::include_addon_framework();
 
 	class GFRepeater extends GFAddOn {
-		protected $_version = "1.0.3";
+		protected $_version = "1.0.4";
 		protected $_min_gravityforms_version = "1.0.0";
 		protected $_slug = "repeateraddon";
 		protected $_path = "gravityforms-repeater/repeater.php";
