@@ -217,6 +217,13 @@ class GF_Field_Repeater extends GF_Field {
 
 			foreach ($dataArray as $key=>$value) {
 				$repeatCount++;
+
+				if (!empty($value) && !is_array($value)) {
+					$save_value = $value;
+					unset($value);
+					$value[0] = $save_value;
+				}
+
 				foreach ($value as $childKey=>$childValue) {
 					unset($tableContents);
 					
