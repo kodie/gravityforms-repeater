@@ -30,7 +30,7 @@ function gfRepeater_getRepeaters() {
 				dataElement = startElement.find('.gform_hidden');
 
 				repeaterRequiredChildren = dataElement.attr('data-required');
-				repeaterRequiredChildren = repeaterRequiredChildren.split(',');
+				if (repeaterRequiredChildren) { repeaterRequiredChildren = repeaterRequiredChildren.split(','); } else { repeaterRequiredChildren = []; }
 
 				repeaterFound = 1;
 			}
