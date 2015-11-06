@@ -7,6 +7,8 @@ class GF_Field_Repeater extends GF_Field {
 	public static function init() {
 		if (!is_admin()) {
 			add_action('gform_enqueue_scripts', array('GF_Field_Repeater', 'gform_enqueue_scripts'), 10, 2);
+			add_filter('gform_pre_render', array('GF_Field_Repeater', 'gform_unhide_children_validation'));
+			add_filter('gform_pre_validation', array('GF_Field_Repeater', 'gform_bypass_children_validation'));
 		} else {
 			$admin_page = rgget('page');
 
@@ -303,6 +305,36 @@ class GF_Field_Repeater extends GF_Field {
 		if ($grid_modified) { GFFormsModel::update_grid_column_meta($form_id, $grid_meta); }
 
 		$form['fields'] = array_values($form['fields']);
+
+		return $form;
+	}
+
+	public static function gform_bypass_children_validation($form) {
+		$repeaterChildren = Array();
+
+		foreach($form['fields'] as $key=>$field) {
+			if ($field->type == 'repeater') {
+				if (is_array($field->repeaterChildren)) { $repeaterChildren = array_merge($repeaterChildren, $field->repeaterChildren); }
+			}
+
+			if (!empty($repeaterChildren)) {
+				if (in_array($field->id, $repeaterChildren)) {
+					$form['fields'][$key]['adminOnly'] = true;
+					$form['fields'][$key]['repeaterChildValidationHidden'] = true;
+				}
+			}
+		}
+
+		return $form;
+	}
+
+	public static function gform_unhide_children_validation($form) {
+		foreach($form['fields'] as $key=>$field) {
+			if ($field->repeaterChildValidationHidden) {
+				$form['fields'][$key]['adminOnly'] = false;
+				$form['fields'][$key]['repeaterChildValidationHidden'] = false;
+			}
+		}
 
 		return $form;
 	}
