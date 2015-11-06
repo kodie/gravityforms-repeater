@@ -55,66 +55,78 @@ function gfRepeater_editforms_getRepeaterId(elementId) {
 	return false;
 }
 
-function gfRepeater_editforms_updateRequired(leaving) {
+function gfRepeater_editforms_update(leaving) {
 	if (!gfRepeater_editforms_getRepeaters()) { return; }
 	UpdateFormObject();
 
 	jQuery.each(gfRepeater_repeaters, function(key, value){
 		var repeaterId = key;
 		var repeaterField = gfRepeater_getField(this['startId']);
+		var repeaterChildren = [];
 		var requiredChildren = [];
 
 		jQuery.each(this['children'], function(key, value){
+			var fieldRequired = gfRepeater_editforms_updateRequired(value, leaving);
 			var fieldId = gfRepeater_getId(value.id);
-			var getField = gfRepeater_getField(value.id);
-			var gfRequired = getField['isRequired'];
-			var repeaterRequired = getField['repeaterField_isRequired'];
-
-			if (gfRepeater_debug) { console.log(value.id+' - Before Filter - isRequired:'+getField['isRequired']+' - repeaterField_isRequired:'+getField['repeaterField_isRequired']); }
-
-			if (gfRequired && leaving) {
-				getField['isRequired'] = false;
-				getField['repeaterField_isRequired'] = true;
-				requiredChildren.push(fieldId);
-				if (gfRepeater_debug) { console.log(value.id+' - Used Filter 1'); }
-			}
-
-			if (!gfRequired && leaving) {
-				getField['repeaterField_isRequired'] = false;
-				if (gfRepeater_debug) { console.log(value.id+' - Used Filter 2'); }
-			}
-
-			if (repeaterRequired && !leaving) {
-				jQuery(this).find('.gfield_required').html('*');
-				getField['isRequired'] = true;
-				getField['repeaterField_isRequired'] = false;
-				if (gfRepeater_debug) { console.log(value.id+' - Used Filter 3'); }
-			}
-
-			if (!repeaterRequired && !leaving) {
-				jQuery(this).find('.gfield_required').html('');
-				getField['isRequired'] = false;
-				if (gfRepeater_debug) { console.log(value.id+' - Used Filter 4'); }
-			}
-
-			if (gfRepeater_debug) { console.log(value.id+' - After Filter - isRequired:'+getField['isRequired']+' - repeaterField_isRequired:'+getField['repeaterField_isRequired']); }
+			if (fieldRequired) { requiredChildren.push(value.id); }
+			if (leaving) { repeaterChildren.push(fieldId); }
 		});
 
 		repeaterField['repeaterRequiredChildren'] = requiredChildren;
+		if (leaving) { repeaterField['repeaterChildren'] = repeaterChildren; }
 	});
+}
+
+function gfRepeater_editforms_updateRequired(field, leaving) {
+	var fieldId = gfRepeater_getId(field.id);
+	var getField = gfRepeater_getField(field.id);
+	var gfRequired = getField['isRequired'];
+	var repeaterRequired = getField['repeaterField_isRequired'];
+	var returnRequired = false;
+
+	if (gfRepeater_debug) { console.log(field.id+' - Before Filter - isRequired:'+getField['isRequired']+' - repeaterField_isRequired:'+getField['repeaterField_isRequired']); }
+
+	if (gfRequired && leaving) {
+		getField['isRequired'] = false;
+		getField['repeaterField_isRequired'] = true;
+		if (gfRepeater_debug) { console.log(field.id+' - Used Filter 1'); }
+		returnRequired = true;
+	}
+
+	if (!gfRequired && leaving) {
+		getField['repeaterField_isRequired'] = false;
+		if (gfRepeater_debug) { console.log(field.id+' - Used Filter 2'); }
+	}
+
+	if (repeaterRequired && !leaving) {
+		jQuery(this).find('.gfield_required').html('*');
+		getField['isRequired'] = true;
+		getField['repeaterField_isRequired'] = false;
+		if (gfRepeater_debug) { console.log(field.id+' - Used Filter 3'); }
+	}
+
+	if (!repeaterRequired && !leaving) {
+		jQuery(this).find('.gfield_required').html('');
+		getField['isRequired'] = false;
+		if (gfRepeater_debug) { console.log(field.id+' - Used Filter 4'); }
+	}
+
+	if (gfRepeater_debug) { console.log(field.id+' - After Filter - isRequired:'+getField['isRequired']+' - repeaterField_isRequired:'+getField['repeaterField_isRequired']); }
+
+	return returnRequired;
 }
 
 function gfRepeater_editforms_updateUpdateButton() {
 	var updateButton = jQuery('#floatMenu input.update-form');
 	var onClickEvent = updateButton.attr('onclick');
-	var addClickEvent = 'gfRepeater_editforms_updateRequired(true);';
+	var addClickEvent = 'gfRepeater_editforms_update(true);';
 	var newClickEvent = addClickEvent+onClickEvent;
 	updateButton.attr('onclick', newClickEvent);
 }
 
 jQuery(document).ready(function($) {
 	if (gfRepeater_page == 'gf_edit_forms') {
-		gfRepeater_editforms_updateRequired(false);
+		gfRepeater_editforms_update(false);
 		gfRepeater_editforms_updateUpdateButton();
 	}
 });

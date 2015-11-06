@@ -16,6 +16,10 @@ class GF_Field_Repeater extends GF_Field {
 				add_action('gform_editor_js', array('GF_Field_Repeater', 'gform_editor'));
 				add_filter('gform_tooltips', array('GF_Field_Repeater', 'gform_tooltips'));
 			}
+
+			if ($admin_page == 'gf_entries') {
+				add_filter('gform_form_post_get_meta', array('GF_Field_Repeater', 'gform_hide_children'));
+			}
 		}
 	}
 
@@ -246,6 +250,39 @@ class GF_Field_Repeater extends GF_Field {
 		}
 
 		if ($count !== 0) { return $output; } else { return ''; }
+	}
+
+	public static function gform_hide_children($form) {
+		$form_id = $form['id'];
+		$repeaterChildren = Array();
+		$grid_modified = false;
+		$grid_meta = GFFormsModel::get_grid_column_meta($form_id);
+
+		foreach($form['fields'] as $key=>$field) {
+			if ($field->type == 'repeater') { 
+				if (is_array($field->repeaterChildren)) { $repeaterChildren = array_merge($repeaterChildren, $field->repeaterChildren); }
+			} elseif ($field->type == 'repeater-end') { array_push($repeaterChildren, $field->id); }
+
+			if (!empty($repeaterChildren)) {
+				if (in_array($field->id, $repeaterChildren)) {
+					unset($form['fields'][$key]);
+
+					if (is_array($grid_meta)) {
+						$grid_pos = array_search($field->id, $grid_meta);
+						if ($grid_pos) {
+							$grid_modified = true;
+							unset($grid_meta[$grid_pos]);
+						}
+					}
+				}
+			}
+		}
+
+		if ($grid_modified) { GFFormsModel::update_grid_column_meta($form_id, $grid_meta); }
+
+		$form['fields'] = array_values($form['fields']);
+
+		return $form;
 	}
 }
 GF_Fields::register(new GF_Field_Repeater());
