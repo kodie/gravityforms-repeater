@@ -14,6 +14,7 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 * Number
 * Paragraph Text
 * Phone
+* Section
 * Single Line Text
 * Website
 
