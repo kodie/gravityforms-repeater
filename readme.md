@@ -27,8 +27,6 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 ### Issues
 * Not all fields are currently supported.
 * Ajax enabled forms are not supported.
-* Fields inside of a repeater will return a duplicated item with a blank result outside of the repeater when viewing an indiviual entry (These are only visible if "show empty fields" is checked).
-* Fields inside of a repeater sometimes show a blank colum in the "entries" page. (These can be hidden by changing which columns to display by clicking the gear icon in the upper right-hand corner).
 
 ### Shortcodes
 You can place shortcodes inside of input labels, input descriptions, and HTML blocks!
