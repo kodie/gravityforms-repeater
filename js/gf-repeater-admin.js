@@ -69,11 +69,11 @@ function gfRepeater_editforms_update(leaving) {
 			var fieldRequired = gfRepeater_editforms_updateRequired(value, leaving);
 			var fieldId = gfRepeater_getId(value.id);
 			if (fieldRequired) { requiredChildren.push(value.id); }
-			if (leaving) { repeaterChildren.push(fieldId); }
+			repeaterChildren.push(fieldId);
 		});
 
 		repeaterField['repeaterRequiredChildren'] = requiredChildren;
-		if (leaving) { repeaterField['repeaterChildren'] = repeaterChildren; }
+		repeaterField['repeaterChildren'] = repeaterChildren;
 	});
 }
 

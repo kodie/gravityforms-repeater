@@ -266,7 +266,7 @@ class GF_Field_Repeater extends GF_Field {
 		$grid_meta = GFFormsModel::get_grid_column_meta($form_id);
 
 		foreach($form['fields'] as $key=>$field) {
-			if ($field->type == 'repeater') { 
+			if ($field->type == 'repeater') {
 				if (is_array($field->repeaterChildren)) { $repeaterChildren = array_merge($repeaterChildren, $field->repeaterChildren); }
 			} elseif ($field->type == 'repeater-end') { array_push($repeaterChildren, $field->id); }
 
