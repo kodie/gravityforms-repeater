@@ -68,7 +68,7 @@ function gfRepeater_editforms_update(leaving) {
 		jQuery.each(this['children'], function(key, value){
 			var fieldRequired = gfRepeater_editforms_updateRequired(value, leaving);
 			var fieldId = gfRepeater_getId(value.id);
-			if (fieldRequired) { requiredChildren.push(value.id); }
+			if (fieldRequired) { requiredChildren.push(fieldId); }
 			repeaterChildren.push(fieldId);
 		});
 
@@ -99,14 +99,14 @@ function gfRepeater_editforms_updateRequired(field, leaving) {
 	}
 
 	if (repeaterRequired && !leaving) {
-		jQuery(this).find('.gfield_required').html('*');
+		jQuery(field).find('.gfield_required').html('*');
 		getField['isRequired'] = true;
 		getField['repeaterField_isRequired'] = false;
 		if (gfRepeater_debug) { console.log(field.id+' - Used Filter 3'); }
 	}
 
 	if (!repeaterRequired && !leaving) {
-		jQuery(this).find('.gfield_required').html('');
+		jQuery(field).find('.gfield_required').html('');
 		getField['isRequired'] = false;
 		if (gfRepeater_debug) { console.log(field.id+' - Used Filter 4'); }
 	}
