@@ -226,6 +226,7 @@ class GF_Field_Repeater extends GF_Field {
 
 				foreach ($value as $childKey=>$childValue) {
 					unset($tableContents);
+					$childValueOutput = '';
 					
 					if (empty($display_empty_fields) && count($childValue) == 0) { continue; } else { $count++; }
 
