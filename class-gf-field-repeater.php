@@ -52,6 +52,7 @@ class GF_Field_Repeater extends GF_Field {
 		echo "
 			case \"repeater\" :
 				field.label = \"\";
+				field.adminLabel = \"Repeater\";
 			break;
 		";
 	}
