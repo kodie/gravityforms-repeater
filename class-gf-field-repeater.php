@@ -318,7 +318,7 @@ class GF_Field_Repeater extends GF_Field {
 			}
 
 			if (!empty($repeaterChildren)) {
-				if (in_array($field->id, $repeaterChildren)) {
+				if (in_array($field->id, $repeaterChildren) && !$field->adminOnly) {
 					$form['fields'][$key]['adminOnly'] = true;
 					$form['fields'][$key]['repeaterChildValidationHidden'] = true;
 				}
