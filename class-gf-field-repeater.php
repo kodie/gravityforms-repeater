@@ -191,7 +191,7 @@ class GF_Field_Repeater extends GF_Field {
 						if (!empty($getInputData)) { $inputData[] = $getInputData; }
 					}
 				} else {
-					if ($inputNames == 'section') { $inputData[] = '[gfRepeater-section]'; }
+					if ($inputNames == 'section') { $inputData = '[gfRepeater-section]'; }
 				}
 
 				$childValue[$inputLabel] = $inputData;
@@ -241,7 +241,7 @@ class GF_Field_Repeater extends GF_Field {
 
 					$entry_title = str_replace('[gfRepeater-count]', $repeatCount, $childKey);
 
-					if ($childValue[0] == '[gfRepeater-section]') {
+					if ($childValue == '[gfRepeater-section]') {
 						$tableClass = 'entry-view-section-break';
 					} else {
 						$tableClass = 'entry-view-field-name';
@@ -249,19 +249,19 @@ class GF_Field_Repeater extends GF_Field {
 
 					$tableContents .= "<tr>\n<td colspan=\"2\" class=\"".$tableClass."\">".$entry_title."</td>\n</tr>\n";
 
-					if (count($childValue) == 1) {
-						$childValueOutput = $childValue[0];
-					} elseif (count($childValue) > 1) {
-						$childValueOutput = "<ul>\n";
+					if (is_array($childValue)) {
+						if (count($childValue) == 1) {
+							$childValueOutput = $childValue[0];
+						} elseif (count($childValue) > 1) {
+							$childValueOutput = "<ul>\n";
 
-						foreach ($childValue as $childValueData) {
-							$childValueOutput .= "<li>".$childValueData."</li>";
+							foreach ($childValue as $childValueData) {
+								$childValueOutput .= "<li>".$childValueData."</li>";
+							}
+							
+							$childValueOutput .= "</ul>\n";
 						}
-						
-						$childValueOutput .= "</ul>\n";
-					}
 
-					if ($childValueOutput !== '[gfRepeater-section]') {
 						$tableContents .= "<tr>\n<td colspan=\"2\" class=\"entry-view-field-value\">".$childValueOutput."</td>\n</tr>\n";
 					}
 				}
