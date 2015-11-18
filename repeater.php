@@ -54,6 +54,8 @@ if (class_exists("GFForms")) {
 			);
 			return array_merge(parent::scripts(), $scripts);
 		}
+
+		require_once('upgrade.php');
 	}
 	new GFRepeater();
 
