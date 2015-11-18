@@ -9,6 +9,7 @@ Author URI: http://kodieg.com
 */
 
 define('GF_REPEATER_VERSION', '1.0.4');
+define('GF_REPEATER_PATH', basename(__DIR__).'/'.basename(__FILE__));
 
 add_filter('plugin_row_meta', 'gfrepeater_row_meta', 10, 2);
 function gfrepeater_row_meta($links, $file) {
@@ -26,7 +27,7 @@ if (class_exists("GFForms")) {
 		protected $_version = GF_REPEATER_VERSION;
 		protected $_min_gravityforms_version = "1.0.0";
 		protected $_slug = "repeateraddon";
-		protected $_path = "gravityforms-repeater/repeater.php";
+		protected $_path = GF_REPEATER_PATH;
 		protected $_full_path = __FILE__;
 		protected $_title = "Gravity Forms Repeater Add-On";
 		protected $_short_title = "Repeater Add-On";
