@@ -126,6 +126,7 @@ class GF_Field_Repeater extends GF_Field {
 
 			for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
 				foreach ($dataArray['inputData'] as $inputLabel=>$inputNames) {
+					if (!is_array($inputNames)) { continue; }
 					foreach ($inputNames as $inputName) {
 						$getInputName = $inputName.'-'.$dataArray['repeaterId'].'-'.$i;
 						$getFilterdInputName = str_replace('.', '_', strval($getInputName));
