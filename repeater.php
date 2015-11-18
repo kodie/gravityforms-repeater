@@ -14,7 +14,10 @@ define('GF_REPEATER_PATH', basename(__DIR__).'/'.basename(__FILE__));
 add_filter('plugin_row_meta', 'gfrepeater_row_meta', 10, 2);
 function gfrepeater_row_meta($links, $file) {
 	if (strpos($file, basename(__FILE__)) !== false) {
-		$new_links = array('<a href="https://github.com/kodie/gravityforms-repeater" target="_blank">GitHub</a>');
+		$new_links = array(
+			'<a href="http://kodieg.com/projects/gravity-forms-repeater-add-on" target="_blank">Visit plugin site</a>',
+			'<a href="https://github.com/kodie/gravityforms-repeater" target="_blank">GitHub</a>'
+		);
 		$links = array_merge($links, $new_links);
 	}
 	return $links;
