@@ -8,6 +8,8 @@ Author: Kodie Grantham
 Author URI: http://kodieg.com
 */
 
+define('GF_REPEATER_VERSION', '1.0.4');
+
 add_filter('plugin_row_meta', 'gfrepeater_row_meta', 10, 2);
 function gfrepeater_row_meta($links, $file) {
 	if (strpos($file, basename(__FILE__)) !== false) {
@@ -21,7 +23,7 @@ if (class_exists("GFForms")) {
 	GFForms::include_addon_framework();
 
 	class GFRepeater extends GFAddOn {
-		protected $_version = "1.0.4";
+		protected $_version = GF_REPEATER_VERSION;
 		protected $_min_gravityforms_version = "1.0.0";
 		protected $_slug = "repeateraddon";
 		protected $_path = "gravityforms-repeater/repeater.php";
