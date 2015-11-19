@@ -112,6 +112,16 @@ class GF_Field_Repeater extends GF_Field {
 		if (!empty($repeater_required)) {
 			$dataArray = json_decode($value, true);
 
+			foreach ($form['fields'] as $key=>$value) {
+				$fieldKeys[$value['id']] = $key;
+
+				if (is_array($value['inputs'])) {
+					foreach ($value['inputs'] as $inputKey=>$inputValue) {
+						$inputKeys[$value['id']][$inputValue['id']] = $inputKey;
+					}
+				}
+			}
+
 			if ($dataArray['repeatCount'] < $this->min) {
 				$this->failed_validation  = true;
 				$this->validation_message = "A minimum number of ".$this->min." is required.";
@@ -138,12 +148,31 @@ class GF_Field_Repeater extends GF_Field {
 
 						$getInputName = str_replace('.', '_', strval($getInputName));
 						$getInputData = rgpost($getInputName);
-						$getInputIdNum = preg_split( "/(_|-)/", $getInputName);
+						$getInputIdNum = preg_split("/(_|-)/", $getInputName);
 
-						if (in_array($getInputIdNum[1], $repeater_required) && empty($getInputData)) {
-							$this->failed_validation  = true;
-							if ($this->errorMessage) { $this->validation_message = $this->errorMessage; } else { $this->validation_message = "A required field was left blank."; }
-							return;
+						if (in_array($getInputIdNum[1], $repeater_required)) {
+							$fieldKey = $fieldKeys[$getInputIdNum[1]];
+							$fieldType = $form['fields'][$fieldKey]['type'];
+							$failedValidation = false;
+
+							switch($fieldType) {
+								case 'name':
+									$requiredIDs = array(3, 6);
+									if (in_array($getInputIdNum[2], $requiredIDs) && empty($getInputData)) { $failedValidation = true; }
+									break;
+								case 'address':
+									$skipIDs = array(2);
+									if (!in_array($getInputIdNum[2], $skipIDs) && empty($getInputData)) { $failedValidation = true; }
+									break;
+								default:
+									if (empty($getInputData)) { $failedValidation = true; }
+							}
+
+							if ($failedValidation) {
+								$this->failed_validation  = true;
+								if ($this->errorMessage) { $this->validation_message = $this->errorMessage; } else { $this->validation_message = "A required field was left blank."; }
+								return;
+							}
 						}
 					}
 				}

@@ -89,6 +89,15 @@ function gfRepeater_getRepeaters() {
 				var childInputNames = [];
 				var childInputCount = 0;
 				var childRequired = false;
+				var childType;
+				var childContainerClasses = jQuery(this).children('.ginput_container').attr('class').split(/\s+/);
+				var searchFor = 'ginput_container_';
+
+				jQuery.each(childContainerClasses, function(key, value){
+					if (value.slice(0, searchFor.length) == searchFor) {
+						childType = value.slice(searchFor.length, value.length);
+					}
+				});
 
 				if (jQuery.inArray(childIdNum, repeaterRequiredChildren) !== -1) { childRequired = true; }
 
@@ -105,7 +114,7 @@ function gfRepeater_getRepeaters() {
 					if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Child #'+repeaterChildCount+' - Input Found: '+inputId); }
 				});
 
-				repeaterChildren[repeaterChildCount] = {element:childElement,id:childId,inputs:childInputs,inputCount:childInputCount,required:childRequired}
+				repeaterChildren[repeaterChildCount] = {element:childElement,id:childId,inputs:childInputs,inputCount:childInputCount,required:childRequired,type:childType}
 
 				if (!childLabel) {
 					childLabel = jQuery(this).children('.gsection_title').text();
@@ -147,6 +156,7 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 	if (childKey) {
 		var failedValidation = false;
 		var childRequired = gfRepeater_repeaters[repeaterId]['children'][childKey]['required'];
+		var childType = gfRepeater_repeaters[repeaterId]['children'][childKey]['type'];
 
 		var newRootId = childId+'-'+repeaterId+'-'+repeatCount;
 		jQuery(repeaterChildElement).attr('id', newRootId);
@@ -187,6 +197,10 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 				}
 
 				if (childRequired) {
+					var splitName = newInputName.replace('.', '_').split(/(_|-)/);
+					if (childType == 'name' && jQuery.inArray(splitName[4], ['3', '6']) == -1) { return true; }
+					if (childType == 'address' && jQuery.inArray(splitName[4], ['2']) !== -1) { return true; }
+
 					var inputValue = gfRepeater_getInputValue(inputElement);
 					if (!inputValue && repeatCount <= gfRepeater_repeaters[repeaterId]['data']['prevRepeatCount']) {
 						failedValidation = true;
