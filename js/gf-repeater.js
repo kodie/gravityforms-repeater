@@ -90,14 +90,17 @@ function gfRepeater_getRepeaters() {
 				var childInputCount = 0;
 				var childRequired = false;
 				var childType;
-				var childContainerClasses = jQuery(this).children('.ginput_container').attr('class').split(/\s+/);
-				var searchFor = 'ginput_container_';
 
-				jQuery.each(childContainerClasses, function(key, value){
-					if (value.slice(0, searchFor.length) == searchFor) {
-						childType = value.slice(searchFor.length, value.length);
-					}
-				});
+				if (jQuery(this).has('.ginput_container').length) {
+					var childContainerClasses = jQuery(this).find('.ginput_container').attr('class').split(/\s+/);
+					var searchFor = 'ginput_container_';
+
+					jQuery.each(childContainerClasses, function(key, value){
+						if (value.slice(0, searchFor.length) == searchFor) {
+							childType = value.slice(searchFor.length, value.length);
+						}
+					});
+				}
 
 				if (jQuery.inArray(childIdNum, repeaterRequiredChildren) !== -1) { childRequired = true; }
 
