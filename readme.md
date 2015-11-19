@@ -10,12 +10,15 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 * Drop Down
 * Email
 * HTML
+* MultiSelect
 * Name
 * Number
 * Paragraph Text
 * Phone
+* Radio
 * Section
 * Single Line Text
+* Time
 * Website
 
 ### Features
@@ -96,6 +99,7 @@ gfRepeater_repeaters
             ['id'] - The field HTML id.
             ['inputCount'] - The number of inputs the child contains.
             ['required'] - True or False depeneding on if the field is required or not.
+            ['type'] - The field type.
             ['inputs'] - Contains all of the inputs that the child contains.
                 [inputId]
                     ['element'] - The input element.
@@ -133,24 +137,24 @@ Yes!
 Unfortunately nesting repeaters is not supported at this time.
 
 ### Version
-1.0.4
+1.0.5
 
 ### Changelog
-##### 1.0.4
-* Fixed bug with number field where a PHP error would show up if a form failed validation.
-* Fixed bug where a javascript error would occur if no repeater children were marked as required.
-* Fixed bug where a PHP error would sometimes occur on the entries page in the admin panel if a repeated field was submitted blank.
-* Added support for Section field type.
-* Default validation functions are now bypassed for repeater children.
-* gfRepeater-count shortcode now shows up for field titles on the entires page in the admin panel.
-* Blank repeated fields now show up if "Show Empty Fields" is enabled.
-* Repeater children and repeater end fields no longer display duplicated results on the entries page in the admin panel.
-* Added a little bit of backwards compatibility for fetching saved repeater child entry data.
+##### 1.0.5
+* Fixed bug where sometimes not all repeated, required fields would be validated.
+* Fixed bug where repeated fields that are set to 'adminOnly' would have that setting switched off upon form validation.
+* Added support for MultiSelect, Radio, and Time fields.
+* Added upgrade function to clean up entries from older versions.
+* Repeater field admin label now defaults to 'Repeater' instead of blank.
+* All repeated values are now stored as arrays besides special cases such as Section fields.
+* Field types are now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['type'])
+* Added plugin page link to row meta.
+* A few misc things and code clean up.
 
 ### Requirements
 * Wordpress (duh)
 * Gravity Forms (duh)
 
 ### Installation
-1. Upload the `gravityforms-repeater` folder to the `/wp-content/plugins/` directory.
+1. Upload the `repeater-add-on-for-gravity-forms` folder to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.

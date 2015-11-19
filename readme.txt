@@ -1,9 +1,9 @@
 === Gravity Forms Repeater Add-On ===
 Contributors: KodieGrantham
-Tags: gravity, forms, repeater
-Requires at least: 3.0.1
+Tags: gravityforms, gravity, forms, form, repeater, repeat, duplicate, field, fields
+Requires at least: 3.9.0
 Tested up to: 4.3.1
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 
 A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.
 
@@ -17,12 +17,15 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 * Drop Down
 * Email
 * HTML
+* MultiSelect
 * Name
 * Number
 * Paragraph Text
 * Phone
+* Radio
 * Section
 * Single Line Text
+* Time
 * Website
 
 = Features =
@@ -45,7 +48,7 @@ You can place shortcodes inside of input labels, input descriptions, and HTML bl
 <https://github.com/kodie/gravityforms-repeater>
 
 == Installation ==
-1. Upload the `gravityforms-repeater` folder to the `/wp-content/plugins/` directory.
+1. Upload the `repeater-add-on-for-gravity-forms` folder to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 
 == Frequently Asked Questions ==
@@ -62,6 +65,17 @@ Unfortunately nesting repeaters is not supported at this time.
 4. A view of the front-end. The only visible difference will be the added `+` and `-` buttons.
 
 == Changelog ==
+= 1.0.5 =
+* Fixed bug where sometimes not all repeated, required fields would be validated.
+* Fixed bug where repeated fields that are set to 'adminOnly' would have that setting switched off upon form validation.
+* Added support for MultiSelect, Radio, and Time fields.
+* Added upgrade function to clean up entries from older versions.
+* Repeater field admin label now defaults to 'Repeater' instead of blank.
+* All repeated values are now stored as arrays besides special cases such as Section fields.
+* Field types are now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['type'])
+* Added plugin page link to row meta.
+* A few misc things and code clean up.
+
 = 1.0.4 =
 * Fixed bug with number field where a PHP error would show up if a form failed validation.
 * Fixed bug where a javascript error would occur if no repeater children were marked as required.

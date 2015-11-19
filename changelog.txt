@@ -1,10 +1,12 @@
-v1.0.5 (TBA)
+v1.0.5 (11/19/2015)
 - Fixed bug where sometimes not all repeated, required fields would be validated.
 - Fixed bug where repeated fields that are set to 'adminOnly' would have that setting switched off upon form validation.
-- Added support for Multi Select and Radio fields.
+- Added support for MultiSelect, Radio, and Time fields.
 - Added upgrade function to clean up entries from older versions.
 - Repeater field admin label now defaults to 'Repeater' instead of blank.
 - All repeated values are now stored as arrays besides special cases such as Section fields.
+- Field types are now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['type'])
+- Added plugin page link to row meta.
 - A few misc things and code clean up.
 
 v1.0.4 (11/6/2015)
