@@ -126,14 +126,21 @@ class GF_Field_Repeater extends GF_Field {
 
 			for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
 				foreach ($dataArray['inputData'] as $inputLabel=>$inputNames) {
-					if (!is_array($inputNames)) { continue; }
-					foreach ($inputNames as $inputName) {
-						$getInputName = $inputName.'-'.$dataArray['repeaterId'].'-'.$i;
-						$getFilterdInputName = str_replace('.', '_', strval($getInputName));
-						$getInputData = rgpost($getFilterdInputName);
-						$getInputIdNum = explode("_", $getFilterdInputName)[1];
 
-						if (in_array($getInputIdNum, $repeater_required) && empty($getInputData)) {
+					if (!is_array($inputNames)) { continue; }
+
+					foreach ($inputNames as $inputName) {
+						if (substr($inputName, -2) == '[]') {
+							$getInputName = substr($inputName, 0, strlen($inputName) - 2).'-'.$dataArray['repeaterId'].'-'.$i;
+						} else {
+							$getInputName = $inputName.'-'.$dataArray['repeaterId'].'-'.$i;
+						}
+
+						$getInputName = str_replace('.', '_', strval($getInputName));
+						$getInputData = rgpost($getInputName);
+						$getInputIdNum = preg_split( "/(_|-)/", $getInputName);
+
+						if (in_array($getInputIdNum[1], $repeater_required) && empty($getInputData)) {
 							$this->failed_validation  = true;
 							if ($this->errorMessage) { $this->validation_message = $this->errorMessage; } else { $this->validation_message = "A required field was left blank."; }
 							return;
@@ -187,9 +194,23 @@ class GF_Field_Repeater extends GF_Field {
 
 				if (is_array($inputNames)) {
 					foreach ($inputNames as $inputName) {
-						$getInputName = $inputName.'-'.$dataArray['repeaterId'].'-'.$i;
+						if (substr($inputName, -2) == '[]') {
+							$getInputName = substr($inputName, 0, strlen($inputName) - 2).'-'.$dataArray['repeaterId'].'-'.$i;
+						} else {
+							$getInputName = $inputName.'-'.$dataArray['repeaterId'].'-'.$i;
+						}
+
 						$getInputData = rgpost(str_replace('.', '_', strval($getInputName)));
-						if (!empty($getInputData)) { $inputData[] = $getInputData; }
+
+						if (!empty($getInputData)) {
+							if (is_array($getInputData)) {
+								foreach ($getInputData as $theInputData) {
+									$inputData[] = $theInputData;
+								}
+							} else {
+								$inputData[] = $getInputData;
+							}
+						}
 					}
 				} else {
 					if ($inputNames == 'section') { $inputData = '[gfRepeater-section]'; }

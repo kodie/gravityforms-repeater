@@ -166,7 +166,12 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 			}
 
 			if (inputName) {
-				var newInputName = inputName+'-'+repeaterId+'-'+repeatCount;
+				if (inputName.slice(-2) == '[]') {
+					var newInputName = inputName.slice(0, inputName.length - 2)+'-'+repeaterId+'-'+repeatCount+'[]';
+				} else {
+					var newInputName = inputName+'-'+repeaterId+'-'+repeatCount;
+				}
+
 				jQuery(inputElement).attr('name', newInputName);
 			}
 
