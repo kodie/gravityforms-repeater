@@ -135,7 +135,7 @@ class GF_Field_Repeater extends GF_Field {
 			}
 
 			for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
-				foreach ($dataArray['inputData'] as $inputLabel=>$inputNames) {
+				foreach ($dataArray['inputData'] as $inputIdNum=>$inputNames) {
 
 					if (!is_array($inputNames)) { continue; }
 
@@ -218,7 +218,7 @@ class GF_Field_Repeater extends GF_Field {
 		$value = Array();
 
 		for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
-			foreach ($dataArray['inputData'] as $inputLabel=>$inputNames) {
+			foreach ($dataArray['inputData'] as $inputIdNum=>$inputNames) {
 				$inputData = Array();
 
 				if (is_array($inputNames)) {
@@ -245,7 +245,7 @@ class GF_Field_Repeater extends GF_Field {
 					if ($inputNames == 'section') { $inputData = '[gfRepeater-section]'; }
 				}
 
-				$childValue[$inputLabel] = $inputData;
+				$childValue[$inputIdNum] = $inputData;
 			}
 			$value[$i] = $childValue;
 		}
@@ -274,6 +274,8 @@ class GF_Field_Repeater extends GF_Field {
 			$count = 0;
 			$repeatCount = 0;
 			$display_empty_fields = rgget('gf_display_empty_fields', $_COOKIE);
+			$form_id = rgget('id');
+			$form = GFFormsModel::get_form_meta_by_id($form_id)[0];
 
 			foreach ($dataArray as $key=>$value) {
 				$repeatCount++;
@@ -286,11 +288,20 @@ class GF_Field_Repeater extends GF_Field {
 				}
 
 				foreach ($value as $childKey=>$childValue) {
+					$count++;
 					$childValueOutput = '';
 					
-					if (empty($display_empty_fields) && count($childValue) == 0) { continue; } else { $count++; }
+					if (empty($display_empty_fields) && count($childValue) == 0) { continue; }
 
-					$entry_title = str_replace('[gfRepeater-count]', $repeatCount, $childKey);
+					if (is_numeric($childKey)) {
+						$field_index = GF_Field_Repeater::get_field_index_by_id($form, $childKey);
+						if (!$field_index) { continue; }
+						$entry_title = $form['fields'][$field_index]['label'];
+					} else {
+						$entry_title = $childKey;
+					}
+
+					$entry_title = str_replace('[gfRepeater-count]', $repeatCount, $entry_title);
 
 					if ($childValue == '[gfRepeater-section]') {
 						$tableClass = 'entry-view-section-break';
@@ -389,6 +400,13 @@ class GF_Field_Repeater extends GF_Field {
 		}
 
 		return $form;
+	}
+
+	public static function get_field_index_by_id($form, $field_id) {
+		foreach($form['fields'] as $key=>$value) {
+			if ($form['fields'][$key]['id'] == $field_id) { return $key; }
+		}
+		return false;
 	}
 }
 GF_Fields::register(new GF_Field_Repeater());

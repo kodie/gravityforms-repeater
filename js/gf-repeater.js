@@ -117,7 +117,7 @@ function gfRepeater_getRepeaters() {
 					if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Child #'+repeaterChildCount+' - Input Found: '+inputId); }
 				});
 
-				repeaterChildren[repeaterChildCount] = {element:childElement,id:childId,inputs:childInputs,inputCount:childInputCount,required:childRequired,type:childType}
+				repeaterChildren[repeaterChildCount] = {element:childElement,id:childId,idNum:childIdNum,inputs:childInputs,inputCount:childInputCount,required:childRequired,type:childType}
 
 				if (!childLabel) {
 					childLabel = jQuery(this).children('.gsection_title').text();
@@ -126,7 +126,7 @@ function gfRepeater_getRepeaters() {
 					}
 				}
 
-				repeaterChildrenInputData[childLabel] = childInputNames;
+				repeaterChildrenInputData[childIdNum] = childInputNames;
 			}
 		}
 	});
