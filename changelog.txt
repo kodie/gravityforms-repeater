@@ -6,6 +6,7 @@ v1.0.5 (11/19/2015)
 - Repeater field admin label now defaults to 'Repeater' instead of blank.
 - All repeated values are now stored as arrays besides special cases such as Section fields.
 - Field types are now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['type'])
+- Name and Address fields now only require the normally required fields.
 - Added plugin page link to row meta.
 - A few misc things and code clean up.
 
