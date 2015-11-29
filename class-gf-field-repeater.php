@@ -265,7 +265,7 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public function get_value_entry_detail($value, $currency = '', $use_text = false, $format = 'html', $media = 'screen') {
-		if (empty($value)) {
+		if (empty($value) || !is_admin()) {
 			return '';
 		} else {
 			$dataArray = GFFormsModel::unserialize($value);
