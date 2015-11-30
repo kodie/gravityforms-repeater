@@ -430,6 +430,8 @@ class GF_Field_Repeater extends GF_Field {
 		global $wp_filter;
 		$children_parems = GF_Field_Repeater::get_children_parems($form, $children_ids);
 
+		if (empty($children_parems)) { return false; }
+
 		// Check the URL first
 		foreach($_GET as $url_key=>$url_value) {
 			$key = array_search($url_key, $children_parems);
