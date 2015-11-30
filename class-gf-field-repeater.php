@@ -209,8 +209,10 @@ class GF_Field_Repeater extends GF_Field {
 		$repeater_min		= $this->min;
 		$repeater_max		= $this->max;
 		$repeater_required	= $this->repeaterRequiredChildren;
+		$repeater_children	= $this->repeaterChildren;
+		if (!empty($repeater_children)) { $repeater_parems = json_encode(GF_Field_Repeater::get_children_parem_values($form, $repeater_children)); } else { $repeater_parems = ''; }
 		if (!empty($repeater_required)) { $repeater_required = implode(',', $repeater_required); } else { $repeater_required = ''; }
-		return sprintf("<input name='input_%d' id='%s' type='hidden' class='gform_hidden' data-start='%s' data-min='%s' data-max='%s' data-required='%s' value='%s' />", $id, $field_id, $repeater_start, $repeater_min, $repeater_max, $repeater_required, $value);
+		return sprintf("<input name='input_%d' id='%s' type='hidden' class='gform_hidden' data-start='%s' data-min='%s' data-max='%s' data-required='%s' data-prepopulate='%s' value='%s' />", $id, $field_id, $repeater_start, $repeater_min, $repeater_max, $repeater_required, $repeater_parems, $value);
 	}
 
 	public function get_value_save_entry($value, $form, $input_name, $lead_id, $lead) {
@@ -404,9 +406,57 @@ class GF_Field_Repeater extends GF_Field {
 
 	public static function get_field_index_by_id($form, $field_id) {
 		foreach($form['fields'] as $key=>$value) {
-			if ($form['fields'][$key]['id'] == $field_id) { return $key; }
+			if ($value['id'] == $field_id) { return $key; }
 		}
 		return false;
+	}
+
+	public static function get_children_parems($form, $children_ids) {
+		foreach($form['fields'] as $key=>$value) {
+			if (in_array($value['id'], $children_ids)) {
+				if ($value['inputName']) {
+					$parems[$value['id']] = $value['inputName'];
+				} elseif ($value['inputs']) {
+					foreach($value['inputs'] as $key=>$value) {
+						if ($value['name']) { $parems[$value['id']] = $value['name']; }
+					}
+				}
+			}
+		}
+		if (!empty($parems)) { return $parems; } else { return false; }
+	}
+
+	public static function get_children_parem_values($form, $children_ids) {
+		global $wp_filter;
+		$children_parems = GF_Field_Repeater::get_children_parems($form, $children_ids);
+
+		// Check the URL first
+		foreach($_GET as $url_key=>$url_value) {
+			$key = array_search($url_key, $children_parems);
+			if ($key !== false) {
+				$parems[$key][0] = $url_value;
+			} else {
+				$split_key = preg_split('/\D+\K/', $url_key);
+				$key = array_search($split_key[0], $children_parems);
+				if ($key !== false) { $parems[$key][$split_key[1]] = $url_value; }
+			}
+		}
+
+		// Then check the filters
+		foreach($wp_filter as $key=>$value) {
+			$split_key = preg_split('/^gform_field_value_+\K/', $key);
+			if (!empty($split_key[1])) {
+				$key1 = array_search($split_key[1], $children_parems);
+				if ($key1 !== false) {
+					$parems[$key1][0] = apply_filters($key, '');
+				} else {
+					$split_key2 = preg_split('/\D+\K/', $split_key[1]);
+					$key2 = array_search($split_key2[0], $children_parems);
+					if ($key2 !== false) { $parems[$key2][$split_key2[1]] = apply_filters($key, ''); }
+				}
+			}
+		}
+		if (!empty($parems)) { return $parems; } else { return false; }
 	}
 }
 GF_Fields::register(new GF_Field_Repeater());

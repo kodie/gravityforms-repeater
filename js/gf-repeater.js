@@ -13,6 +13,7 @@ function gfRepeater_getRepeaters() {
 	var repeaterChildCount = 0;
 	var repeaterChildren = {};
 	var repeaterChildrenInputData = {};
+	var repeaterChildrenPrePopulate = {};
 	var dataElement;
 	var startElement;
 	var repeaterRequiredChildren;
@@ -31,6 +32,9 @@ function gfRepeater_getRepeaters() {
 
 				repeaterRequiredChildren = dataElement.attr('data-required');
 				if (repeaterRequiredChildren) { repeaterRequiredChildren = repeaterRequiredChildren.split(','); } else { repeaterRequiredChildren = []; }
+
+				var prePopulate = dataElement.attr('data-prepopulate');
+				if (prePopulate) { repeaterChildrenPrePopulate = JSON.parse(prePopulate); }
 
 				repeaterFound = 1;
 			}
@@ -76,6 +80,7 @@ function gfRepeater_getRepeaters() {
 				repeaterChildCount = 0;
 				repeaterChildren = {};
 				repeaterChildrenInputData = {};
+				repeaterChildrenPrePopulate = {};
 				repeaterRequiredChildren = null;
 			} else {
 				// Repeater Child
@@ -109,11 +114,19 @@ function gfRepeater_getRepeaters() {
 				jQuery(this).find(':input').each(function(){
 					childInputCount += 1;
 					var inputElement = jQuery(this);
-					var inputId = jQuery(this).attr('id');1
+					var inputId = jQuery(this).attr('id');
 					var inputName = jQuery(this).attr('name');
+					var inputName2;
 					var inputDefaultValue = gfRepeater_getInputValue(inputElement);
-					if (inputName) { if (jQuery.inArray(inputName, childInputNames) == -1) { childInputNames.push(inputName) } };
-					childInputs[childInputCount] = {element:inputElement,id:inputId,name:inputName,defaultValue:inputDefaultValue};
+					var inputPrePopulate = {};
+
+					if (inputName) {
+						if (jQuery.inArray(inputName, childInputNames) == -1) { childInputNames.push(inputName) }
+						if (inputName.slice(-2) == '[]') { inputName2 = inputName.slice(0, inputName.length - 2); } else { inputName2 = inputName; }
+						if (repeaterChildrenPrePopulate[inputName2.split('_')[1]]) { inputPrePopulate = repeaterChildrenPrePopulate[inputName2.split('_')[1]]; }
+					};
+
+					childInputs[childInputCount] = {element:inputElement,id:inputId,name:inputName,defaultValue:inputDefaultValue,prePopulate:inputPrePopulate};
 					if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - Child #'+repeaterChildCount+' - Input Found: '+inputId); }
 				});
 
@@ -190,6 +203,12 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 
 			var inputMask = jQuery(inputElement).attr('data-mask');
 			if (inputMask) { jQuery(inputElement).mask(inputMask); }
+
+			if (this['prePopulate'][repeatCount]) {
+				gfRepeater_setInputValue(inputElement, this['prePopulate'][repeatCount]);
+			} else if (this['prePopulate'][0]) {
+				gfRepeater_setInputValue(inputElement, this['prePopulate'][0]);
+			}
 
 			if (gfRepeater_submitted) {
 				if (newInputName) {
