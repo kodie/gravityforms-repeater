@@ -1,4 +1,4 @@
-var gfRepeater_debug = false;
+var gfRepeater_debug = true;
 var gfRepeater_repeaters = {};
 var gfRepeater_submitted = false;
 
@@ -173,6 +173,7 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 		var failedValidation = false;
 		var childRequired = gfRepeater_repeaters[repeaterId]['children'][childKey]['required'];
 		var childType = gfRepeater_repeaters[repeaterId]['children'][childKey]['type'];
+		var inputCount = gfRepeater_repeaters[repeaterId]['children'][childKey]['inputCount'];
 
 		var newRootId = childId+'-'+repeaterId+'-'+repeatCount;
 		jQuery(repeaterChildElement).attr('id', newRootId);
@@ -208,6 +209,12 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 				gfRepeater_setInputValue(inputElement, this['prePopulate'][repeatCount]);
 			} else if (this['prePopulate'][0]) {
 				gfRepeater_setInputValue(inputElement, this['prePopulate'][0]);
+			}
+
+			if (childType == 'date' && inputCount == 2 && key == 1) {
+				jQuery(inputElement).removeClass('hasDatepicker');
+				jQuery(inputElement).datepicker('destroy');
+				jQuery(inputElement).siblings('.ui-datepicker-trigger').remove();
 			}
 
 			if (gfRepeater_submitted) {
@@ -310,6 +317,8 @@ function gfRepeater_repeatRepeater(repeaterId) {
 	gfRepeater_repeaters[repeaterId]['data']['repeatCount'] += 1;
 	gfRepeater_updateDataElement(repeaterId);
 	gfRepeater_updateRepeaterControls(repeaterId);
+
+	if (window['gformInitDatepicker']) { gformInitDatepicker(); }
 
 	jQuery(gfRepeater_repeaters[repeaterId]['controllers']['start']).closest('form').trigger('afterRepeat', [repeaterId, gfRepeater_repeaters[repeaterId]['data']['repeatCount']]);
 	if (gfRepeater_debug) { console.log('Repeater #'+repeaterId+' - repeated'); }
@@ -510,6 +519,8 @@ function gfRepeater_start() {
 
 		gfRepeater_updateRepeaterControls(repeaterId);
 	});
+
+	if (window['gformInitDatepicker']) { gformInitDatepicker(); }
 }
 
 // Patch the mask plugin
