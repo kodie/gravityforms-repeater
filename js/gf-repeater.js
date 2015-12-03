@@ -59,12 +59,12 @@ function gfRepeater_getRepeaters() {
 				repeaterControllers = {add:addElement,remove:removeElement,data:dataElement,start:startElement,end:endElement};
 
 				var repeaterSettings = {};
-				var repeaterStart = dataElement.attr('data-start');
-				var repeaterMin = dataElement.attr('data-min');
-				var repeaterMax = dataElement.attr('data-max');
-				if (!repeaterStart || repeaterStart > repeaterMax) { repeaterStart = 1; }
-				if (!repeaterMin || repeaterMin > repeaterMax) { repeaterMin = 1; }
-				if (repeaterMin > repeaterMax) { repeaterMax = null; }
+				var repeaterStart = Number(dataElement.attr('data-start'));
+				var repeaterMin = Number(dataElement.attr('data-min'));
+				var repeaterMax = Number(dataElement.attr('data-max'));
+				if (!repeaterStart || (repeaterMax && repeaterStart > repeaterMax)) { repeaterStart = 1; }
+				if (!repeaterMin || (repeaterMax && repeaterMin > repeaterMax)) { repeaterMin = 1; }
+				if (!repeaterMax || (repeaterMin && repeaterMax && repeaterMin > repeaterMax)) { repeaterMax = null; }
 				repeaterSettings = {start:repeaterStart,min:repeaterMin,max:repeaterMax};
 
 				var repeaterdata = {};
