@@ -1,4 +1,4 @@
-var gfRepeater_debug = false;
+var gfRepeater_debug = true;
 var gfRepeater_repeaters = {};
 var gfRepeater_page = gf_repeater_js_admin_strings.page;
 
@@ -57,7 +57,7 @@ function gfRepeater_editforms_getRepeaterId(elementId) {
 
 function gfRepeater_editforms_update(leaving) {
 	if (!gfRepeater_editforms_getRepeaters()) { return; }
-	UpdateFormObject();
+	if (leaving) { UpdateFormObject(); }
 
 	jQuery.each(gfRepeater_repeaters, function(key, value){
 		var repeaterId = key;
@@ -136,5 +136,12 @@ if (gfRepeater_debug) {
 	jQuery(window).keydown(function(event){
 		// Up Arrow - Prints the contents of gfRepeater_repeaters into the console.
 		if (event.which == 38) { console.log(gfRepeater_repeaters); }
+
+		// Down Arrow - Loop through all of the fields (even non-repeated fields) and output their settings to the console.
+		if (event.which == 40) {
+			jQuery('.gfield').each(function(){
+				console.log(gfRepeater_getField(this.id));
+			});
+		}
 	});
 }
