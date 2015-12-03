@@ -44,7 +44,8 @@ class GF_Field_Repeater extends GF_Field {
 			'admin_label_setting',
 			'description_setting',
 			'error_message_setting',
-			'label_setting'
+			'label_setting',
+			'prepopulate_field_setting'
 		);
 	}
 
@@ -205,11 +206,16 @@ class GF_Field_Repeater extends GF_Field {
 		$is_form_editor		= $this->is_form_editor();
 		$id					= (int) $this->id;
 		$field_id			= $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
+		$repeater_parem		= $this->inputName;
 		$repeater_start		= $this->start;
 		$repeater_min		= $this->min;
 		$repeater_max		= $this->max;
 		$repeater_required	= $this->repeaterRequiredChildren;
 		$repeater_children	= $this->repeaterChildren;
+		if (!empty($repeater_parem)) {
+			$repeater_parem_value = GFFormsModel::get_parameter_value($repeater_parem, $value, $this);
+			if (!empty($repeater_parem_value)) { $repeater_start = $repeater_parem_value; }
+		}
 		if (!empty($repeater_children)) { $repeater_parems = json_encode(GF_Field_Repeater::get_children_parem_values($form, $repeater_children)); } else { $repeater_parems = ''; }
 		if (!empty($repeater_required)) { $repeater_required = implode(',', $repeater_required); } else { $repeater_required = ''; }
 		return sprintf("<input name='input_%d' id='%s' type='hidden' class='gform_hidden' data-start='%s' data-min='%s' data-max='%s' data-required='%s' data-prepopulate='%s' value='%s' />", $id, $field_id, $repeater_start, $repeater_min, $repeater_max, $repeater_required, $repeater_parems, $value);
