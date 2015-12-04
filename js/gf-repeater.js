@@ -211,7 +211,7 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 				gfRepeater_setInputValue(inputElement, this['prePopulate'][0]);
 			}
 
-			if (childType == 'date' && inputCount == 2 && key == 1) {
+			if (window['gformInitDatepicker'] && childType == 'date' && inputCount == 2 && key == 1) {
 				jQuery(inputElement).removeClass('hasDatepicker');
 				jQuery(inputElement).datepicker('destroy');
 				jQuery(inputElement).siblings('.ui-datepicker-trigger').remove();
