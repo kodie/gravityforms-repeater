@@ -273,7 +273,7 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public function get_value_entry_detail($value, $currency = '', $use_text = false, $format = 'html', $media = 'screen') {
-		if (empty($value) || !is_admin()) {
+		if (empty($value)) {
 			return '';
 		} else {
 			$dataArray = GFFormsModel::unserialize($value);
@@ -282,7 +282,7 @@ class GF_Field_Repeater extends GF_Field {
 			$count = 0;
 			$repeatCount = 0;
 			$display_empty_fields = rgget('gf_display_empty_fields', $_COOKIE);
-			$form_id = rgget('id');
+			$form_id = $this->formId;
 			$form = GFFormsModel::get_form_meta_by_id($form_id)[0];
 
 			foreach ($dataArray as $key=>$value) {
@@ -311,35 +311,66 @@ class GF_Field_Repeater extends GF_Field {
 
 					$entry_title = str_replace('[gfRepeater-count]', $repeatCount, $entry_title);
 
-					if ($childValue == '[gfRepeater-section]') {
-						$tableClass = 'entry-view-section-break';
-					} else {
-						$tableClass = 'entry-view-field-name';
-					}
+					if ($format == 'html') {
+						if ($childValue == '[gfRepeater-section]') {
+							if ($media == 'email') {
+								$tableStyling = ' style="font-size:14px;font-weight:bold;background-color:#eee;border-bottom:1px solid #dfdfdf;padding:7px 7px"';
+							} else {
+								$tableStyling = ' class="entry-view-section-break"';
+							}
+						} else {
+							if ($media == 'email') {
+								$tableStyling = ' style="background-color:#EAF2FA;font-family:sans-serif;font-size:12px;font-weight:bold"';
+							} else {
+								$tableStyling = ' class="entry-view-field-name"';
+							}
+						}
 
-					$tableContents .= "<tr>\n<td colspan=\"2\" class=\"".$tableClass."\">".$entry_title."</td>\n</tr>\n";
+						$tableContents .= "<tr>\n<td colspan=\"2\"".$tableStyling.">".$entry_title."</td>\n</tr>\n";
+					} else { $tableContents .= $entry_title."\n"; }
 
 					if (is_array($childValue)) {
 						if (count($childValue) == 1) {
 							$childValueOutput = $childValue[0];
 						} elseif (count($childValue) > 1) {
-							$childValueOutput = "<ul>\n";
+							if ($format == 'html') {
+								if ($media == 'email') {
+									$childValueOutput = "<ul style=\"list-style:none;margin:0;padding:0;\">\n";
+								} else {
+									$childValueOutput = "<ul>\n";
+								}
+							}
 
 							foreach ($childValue as $childValueData) {
-								$childValueOutput .= "<li>".$childValueData."</li>";
+								if ($format == 'html') {
+									$childValueOutput .= "<li>".$childValueData."</li>";
+								} else {
+									$childValueOutput .= $childValueData."\n";
+								}
 							}
 							
-							$childValueOutput .= "</ul>\n";
+							if ($format == 'html') { $childValueOutput .= "</ul>\n"; }
 						}
 
-						$tableContents .= "<tr>\n<td colspan=\"2\" class=\"entry-view-field-value\">".$childValueOutput."</td>\n</tr>\n";
+						if ($media == 'email') { $tableStyling = ''; } else { $tableStyling = ' class=\"entry-view-field-value\"'; }
+
+						if ($format == 'html') {
+							$tableContents .= "<tr>\n<td colspan=\"2\"".$tableStyling.">".$childValueOutput."</td>\n</tr>\n";
+						} else {
+							$tableContents .= $childValueOutput."\n";
+						}
 					}
 				}
 
 				if (!empty($tableContents)) {
-					$output .= "<table cellspacing=\"0\" class=\"widefat fixed entry-detail-view\">\n";
-					$output .= $tableContents;
-					$output .= "</table>\n";
+					if ($format == 'html') {
+						if ($media == 'email') { $tableStyling = ' width="100%" border="0" cellpadding="5" bgcolor="#FFFFFF"'; } else { $tableStyling = ' class="widefat fixed entry-detail-view"'; }
+						$output .= "<table cellspacing=\"0\"".$tableStyling.">\n";
+						$output .= $tableContents;
+						$output .= "</table>\n";
+					} else {
+						$output .= $tableContents."\n";
+					}
 				}
 			}
 		}
