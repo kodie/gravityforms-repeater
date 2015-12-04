@@ -41,10 +41,10 @@ class GF_Field_Repeater_End extends GF_Field {
 				</li>";
 
 			echo "<li class=\"repeater_end_settings field_setting\">
-					<input type=\"checkbox\" id=\"field_repeater_end_donotuse\" onchange=\"SetFieldProperty('donotuse', this.checked);\"> 
-					<label for=\"field_repeater_end_donotuse\" class=\"inline\">Do not use add and remove buttons ";
+					<input type=\"checkbox\" id=\"field_repeater_end_doNotUse\" onchange=\"SetFieldProperty('doNotUse', this.checked);\"> 
+					<label for=\"field_repeater_end_doNotUse\" class=\"inline\">Do not use add and remove buttons ";
 
-			gform_tooltip('form_field_repeater_end_donotuse');
+			gform_tooltip('form_field_repeater_end_doNotUse');
 
 			echo "	</label>
 				</li>";
@@ -57,7 +57,7 @@ class GF_Field_Repeater_End extends GF_Field {
 				jQuery(document).bind('gform_load_field_settings', function(event, field, form){
 					jQuery('#field_repeater_end_add').val(field['add']);
 					jQuery('#field_repeater_end_remove').val(field['remove']);
-					jQuery('#field_repeater_end_donotuse').prop('checked', field['donotuse']);
+					jQuery('#field_repeater_end_doNotUse').prop('checked', field['doNotUse']);
 				});
 			</script>";
 	}
@@ -82,7 +82,7 @@ class GF_Field_Repeater_End extends GF_Field {
 		} else {
 			$add_html		= $this->add;
 			$remove_html	= $this->remove;
-			$donotuse		= $this->donotuse;
+			$doNotUse		= $this->doNotUse;
 			$tabindex		= GFCommon::get_tabindex();
 
 			if (empty($add_html)) { $add_html = "<img class=\"gf_repeater_add_default\" alt=\"+\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\">"; }
@@ -90,7 +90,7 @@ class GF_Field_Repeater_End extends GF_Field {
 
 			$field_content = "<div class=\"ginput_container ginput_container_repeater-end\">\n";
 
-			if (!$donotuse) {
+			if (!$doNotUse) {
 				$field_content .= "<span class=\"gf_repeater_add\" {$tabindex}>{$add_html}</span>";
 				$field_content .= "<span class=\"gf_repeater_remove\" {$tabindex}>{$remove_html}</span>";
 			}
