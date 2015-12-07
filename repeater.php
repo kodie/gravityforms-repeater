@@ -28,7 +28,7 @@ if (class_exists("GFForms")) {
 
 	class GFRepeater extends GFAddOn {
 		protected $_version = GF_REPEATER_VERSION;
-		protected $_min_gravityforms_version = "1.0.0";
+		protected $_min_gravityforms_version = "1.9";
 		protected $_slug = "repeateraddon";
 		protected $_path = GF_REPEATER_PATH;
 		protected $_full_path = __FILE__;
