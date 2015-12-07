@@ -100,6 +100,7 @@ gfRepeater_repeaters
         [childId]
             ['element'] - The field element.
             ['id'] - The field HTML id.
+            ['idNum'] - The field ID number.
             ['inputCount'] - The number of inputs the child contains.
             ['required'] - True or False depeneding on if the field is required or not.
             ['type'] - The field type.
