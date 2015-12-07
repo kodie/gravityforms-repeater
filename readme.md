@@ -9,6 +9,7 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 * Date
 * Drop Down
 * Email
+* Hidden
 * HTML
 * MultiSelect
 * Name
@@ -27,10 +28,12 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 * Use shortcodes to display data to the user
 * Use Javascript to manipulate the repeater
 * Customize the add and remove button's HTML
+* Use Gravity Forms pre-populate hooks and filters like normal
 
 ### Issues
 * Not all fields are currently supported.
-* Ajax enabled forms are not supported.
+* Ajax enabled forms are not yet supported.
+* Conditional Logic enabled fields are not yet supported.
 
 ### Shortcodes
 You can place shortcodes inside of input labels, input descriptions, and HTML blocks!
@@ -106,6 +109,7 @@ gfRepeater_repeaters
                     ['id'] - The input HTML id.
                     ['name'] - The input name.
                     ['defaultValue'] - The default value for the input.
+                    ['prePopulate'] - Array containing prepopulate values.
 ```
 
 ##### Usage Examples
@@ -129,6 +133,26 @@ jQuery('#gform_9').on('afterRepeat afterUnRepeat', function(event, repeaterId, r
 ```
 
 
+### Prepopulate Fields
+You can set Parameter Names to prepopulate repeated fields like usual with the added ability to specify which repeated set will be prepopulated. For example, let's say we have set the parameter name for one of our repeated fields to "parem":
+
+`?parem=hello+world` will result in that field being set to "hello world" regardless of how many times it has been repeated.
+
+`?parem3=hello+world` will result in that field being set to "hello world" only when repeated a third time.
+
+You can use filters as well!
+
+```
+add_filter( 'gform_field_value_parem', 'your_function_name' );
+```
+
+```
+add_filter( 'gform_field_value_parem3', 'your_function_name' );
+```
+
+Also, setting the prepopulate parameter on the repeater start field will override the `start` setting.
+
+
 ### Frequently Asked Questions
 ##### Can I use multiple repeaters in one form?
 Yes!
@@ -136,25 +160,29 @@ Yes!
 ##### Can I nest repeaters?
 Unfortunately nesting repeaters is not supported at this time.
 
+##### Can I change the `+` and `-` buttons to text links?
+Yes! Just go to the form editor and change the `Add HTML` and `Remove HTML` settings to `<a>Your Link Text</a>` and they should appear as regular links on your form!
+
 ### Version
-1.0.5
+1.0.6
 
 ### Changelog
-##### 1.0.5
-* Fixed bug where sometimes not all repeated, required fields would be validated.
-* Fixed bug where repeated fields that are set to 'adminOnly' would have that setting switched off upon form validation.
-* Added support for MultiSelect, Radio, and Time fields.
-* Added upgrade function to clean up entries from older versions.
-* Repeater field admin label now defaults to 'Repeater' instead of blank.
-* All repeated values are now stored as arrays besides special cases such as Section fields.
-* Field types are now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['type'])
-* Name and Address fields now only require the normally required fields.
-* Added plugin page link to row meta.
-* A few misc things and code clean up.
+##### 1.0.6
+* Fixed repeater 'start' setting. (Apparently it's been broken for awhile?)
+* Fixed datepicker ui for repeated date fields.
+* Fixed bug where repeater plugin wouldn't allow page settings to display in the form editor.
+* Fixed entry detail formatting for emails and non-html views.
+* Repeated field labels are no longer saved in the database with the entries and are now looked up by field ID.
+* Added support for Hidden field type.
+* Added the ability to change the repeater 'start' setting by using the built in Gravity Froms pre-populate filters and hooks.
+* Added the ability to pre-populate repeated fields using the built in Gravity Forms filters and hooks. (See readme for more info)
+* Field ID number is now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['idNum'])
+* Field input pre-populate value is now stored in GfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['inputs'][inputId]['prePopulate']) (See readme for more info)
+* Plugin now requires Gravity Forms 1.9 or later.
 
 ### Requirements
-* Wordpress (duh)
-* Gravity Forms (duh)
+* Wordpress 3.9 or later
+* Gravity Forms 1.9 or later
 
 ### Installation
 1. Upload the `repeater-add-on-for-gravity-forms` folder to the `/wp-content/plugins/` directory.

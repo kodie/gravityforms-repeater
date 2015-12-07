@@ -1,9 +1,9 @@
 === Gravity Forms Repeater Add-On ===
 Contributors: KodieGrantham
-Tags: gravityforms, gravity, forms, form, repeater, repeat, duplicate, field, fields
+Tags: gravityforms, gravity, forms, form, gravityforms, repeater, repeat, duplicate, duplication, field, fields
 Requires at least: 3.9.0
 Tested up to: 4.3.1
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 
 A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.
 
@@ -16,6 +16,7 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 * Date
 * Drop Down
 * Email
+* Hidden
 * HTML
 * MultiSelect
 * Name
@@ -34,10 +35,12 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 * Use shortcodes to display data to the user
 * Use Javascript to manipulate the repeater (See GitHub Page)
 * Customize the add and remove button's HTML
+* Use Gravity Forms pre-populate hooks and filters like normal
 
 = Issues =
 * Not all fields are currently supported.
-* Ajax enabled forms are not supported.
+* Ajax enabled forms are not yet supported.
+* Conditional Logic enabled fields are not yet supported.
 
 = Shortcodes =
 You can place shortcodes inside of input labels, input descriptions, and HTML blocks!
@@ -58,6 +61,9 @@ Yes!
 = Can I nest repeaters? =
 Unfortunately nesting repeaters is not supported at this time.
 
+= Can I change the `+` and `-` buttons to text links? =
+Yes! Just go to the form editor and change the `Add HTML` and `Remove HTML` settings to `<a>Your Link Text</a>` and they should appear as regular links on your form!
+
 == Screenshots ==
 1. Any supported fields placed between the `Repeater` and `Repeater End` will be repeated.
 2. A minimum and maximum number may be set to limit how many times a Repeater can be repeated.
@@ -65,6 +71,19 @@ Unfortunately nesting repeaters is not supported at this time.
 4. A view of the front-end. The only visible difference will be the added `+` and `-` buttons.
 
 == Changelog ==
+= 1.0.6 =
+* Fixed repeater 'start' setting. (Apparently it's been broken for awhile?)
+* Fixed datepicker ui for repeated date fields.
+* Fixed bug where repeater plugin wouldn't allow page settings to display in the form editor.
+* Fixed entry detail formatting for emails and non-html views.
+* Repeated field labels are no longer saved in the database with the entries and are now looked up by field ID.
+* Added support for Hidden field type.
+* Added the ability to change the repeater 'start' setting by using the built in Gravity Froms pre-populate filters and hooks.
+* Added the ability to pre-populate repeated fields using the built in Gravity Forms filters and hooks. (See readme for more info)
+* Field ID number is now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['idNum'])
+* Field input pre-populate value is now stored in GfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['inputs'][inputId]['prePopulate']) (See readme for more info)
+* Plugin now requires Gravity Forms 1.9 or later.
+
 = 1.0.5 =
 * Fixed bug where sometimes not all repeated, required fields would be validated.
 * Fixed bug where repeated fields that are set to 'adminOnly' would have that setting switched off upon form validation.
