@@ -453,12 +453,8 @@ function gfRepeater_resetInputs(repeaterId, repeaterChildKey, repeaterChildEleme
 		inputName (Optional)	A element name to search for.
 */
 function gfRepeater_findElementByIdOrName(searchElement, elementId, elementName) {
-	if (elementId) {
-		var foundElement = jQuery(searchElement).find("[id^='"+elementId+"']");
-	} else if (elementName) {
-		var foundElement = jQuery(searchElement).find("[name^='"+elementName+"']");
-	} else { return false; }
-
+	if (elementName) { var foundElement = jQuery(searchElement).find("[name^='"+elementName+"']"); }
+	if (!foundElement && elementId) { var foundElement = jQuery(searchElement).find("[id^='"+elementId+"']"); }
 	if (foundElement) { return foundElement; } else { return false; }
 }
 
