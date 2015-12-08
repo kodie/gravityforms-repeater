@@ -68,8 +68,9 @@ function gfRepeater_getRepeaters() {
 				repeaterSettings = {start:repeaterStart,min:repeaterMin,max:repeaterMax};
 
 				var repeaterdata = {};
+				var repeaterTabIndex = Number(dataElement.attr('tabindex'));
 				if (gfRepeater_submitted) { var prevRepeatCount = JSON.parse(jQuery.captures(dataElement.attr('name')))['repeatCount']; } else { var prevRepeatCount = null; }
-				repeaterdata = {repeatCount:1,prevRepeatCount:prevRepeatCount,childrenCount:repeaterChildCount,inputData:repeaterChildrenInputData};
+				repeaterdata = {repeatCount:1,tabIndex:repeaterTabIndex,prevRepeatCount:prevRepeatCount,childrenCount:repeaterChildCount,inputData:repeaterChildrenInputData};
 
 				gfRepeater_repeaters[repeaterId] = {data:repeaterdata,settings:repeaterSettings,controllers:repeaterControllers,children:repeaterChildren};
 
@@ -174,6 +175,7 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 		var childRequired = gfRepeater_repeaters[repeaterId]['children'][childKey]['required'];
 		var childType = gfRepeater_repeaters[repeaterId]['children'][childKey]['type'];
 		var inputCount = gfRepeater_repeaters[repeaterId]['children'][childKey]['inputCount'];
+		var tabindex = gfRepeater_repeaters[repeaterId]['data']['tabIndex'];
 
 		var newRootId = childId+'-'+repeaterId+'-'+repeatCount;
 		jQuery(repeaterChildElement).attr('id', newRootId);
@@ -200,6 +202,7 @@ function gfRepeater_setRepeaterChildAttrs(repeaterChildElement, repeaterId, repe
 				}
 
 				jQuery(inputElement).attr('name', newInputName);
+				jQuery(inputElement).attr('tabindex', tabindex);
 			}
 
 			var inputMask = jQuery(inputElement).attr('data-mask');

@@ -206,6 +206,7 @@ class GF_Field_Repeater extends GF_Field {
 		$is_form_editor		= $this->is_form_editor();
 		$id					= (int) $this->id;
 		$field_id			= $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
+		$tabindex  			= $this->get_tabindex();
 		$repeater_parem		= $this->inputName;
 		$repeater_start		= $this->start;
 		$repeater_min		= $this->min;
@@ -218,7 +219,7 @@ class GF_Field_Repeater extends GF_Field {
 		}
 		if (!empty($repeater_children)) { $repeater_parems = json_encode(GF_Field_Repeater::get_children_parem_values($form, $repeater_children)); } else { $repeater_parems = ''; }
 		if (!empty($repeater_required)) { $repeater_required = implode(',', $repeater_required); } else { $repeater_required = ''; }
-		return sprintf("<input name='input_%d' id='%s' type='hidden' class='gform_hidden' data-start='%s' data-min='%s' data-max='%s' data-required='%s' data-prepopulate='%s' value='%s' />", $id, $field_id, $repeater_start, $repeater_min, $repeater_max, $repeater_required, $repeater_parems, $value);
+		return sprintf("<input name='input_%d' id='%s' type='hidden' class='gform_hidden' data-start='%s' data-min='%s' data-max='%s' data-required='%s' data-prepopulate='%s' %s value='%s' />", $id, $field_id, $repeater_start, $repeater_min, $repeater_max, $repeater_required, $repeater_parems, $tabindex, $value);
 	}
 
 	public function get_value_save_entry($value, $form, $input_name, $lead_id, $lead) {
