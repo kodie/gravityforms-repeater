@@ -106,6 +106,8 @@ function gfRepeater_getRepeaters() {
 							childType = value.slice(searchFor.length, value.length);
 						}
 					});
+				} else if (jQuery(this).hasClass('gform_hidden')) {
+					childType = 'hidden';
 				}
 
 				if (jQuery.inArray(childIdNum, repeaterRequiredChildren) !== -1) { childRequired = true; }
