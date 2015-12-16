@@ -18,6 +18,7 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public static function init_frontend() {
+		add_action('gform_form_args', array('GF_Field_Repeater', 'gform_disable_ajax'));
 		add_action('gform_enqueue_scripts', array('GF_Field_Repeater', 'gform_enqueue_scripts'), 10, 2);
 		add_filter('gform_pre_render', array('GF_Field_Repeater', 'gform_unhide_children_validation'));
 		add_filter('gform_pre_validation', array('GF_Field_Repeater', 'gform_bypass_children_validation'));
@@ -408,6 +409,16 @@ class GF_Field_Repeater extends GF_Field {
 		$form['fields'] = array_values($form['fields']);
 
 		return $form;
+	}
+
+	public function gform_disable_ajax($args) {
+		$form = GFFormsModel::get_form_meta_by_id($args['form_id'])[0];
+
+		if (GF_Field_Repeater::form_has_field($form)) {
+			$args['ajax'] = false;
+		}
+
+		return $args;
 	}
 
 	public static function gform_bypass_children_validation($form) {
