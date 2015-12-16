@@ -1,28 +1,26 @@
 <?php
-add_action('init',  array('GF_Field_Repeater', 'init'), 20);
-
 class GF_Field_Repeater extends GF_Field {
 	public $type = 'repeater';
 
-	public static function init() {
-		if (!is_admin()) {
+	public static function init_admin() {
+		$admin_page = rgget('page');
+
+		if ($admin_page == 'gf_edit_forms' && !empty($_GET['id'])) {
+			add_action('gform_field_standard_settings' , array('GF_Field_Repeater', 'gform_settings'), 10, 2);
+			add_action('gform_editor_js_set_default_values', array('GF_Field_Repeater', 'gform_set_defaults'));
+			add_action('gform_editor_js', array('GF_Field_Repeater', 'gform_editor'));
+			add_filter('gform_tooltips', array('GF_Field_Repeater', 'gform_tooltips'));
+		}
+
+		if ($admin_page == 'gf_entries') {
+			add_filter('gform_form_post_get_meta', array('GF_Field_Repeater', 'gform_hide_children'));
+		}
+	}
+
+	public static function init_frontend() {
 			add_action('gform_enqueue_scripts', array('GF_Field_Repeater', 'gform_enqueue_scripts'), 10, 2);
 			add_filter('gform_pre_render', array('GF_Field_Repeater', 'gform_unhide_children_validation'));
 			add_filter('gform_pre_validation', array('GF_Field_Repeater', 'gform_bypass_children_validation'));
-		} else {
-			$admin_page = rgget('page');
-
-			if ($admin_page == 'gf_edit_forms' && !empty($_GET['id'])) {
-				add_action('gform_field_standard_settings' , array('GF_Field_Repeater', 'gform_settings'), 10, 2);
-				add_action('gform_editor_js_set_default_values', array('GF_Field_Repeater', 'gform_set_defaults'));
-				add_action('gform_editor_js', array('GF_Field_Repeater', 'gform_editor'));
-				add_filter('gform_tooltips', array('GF_Field_Repeater', 'gform_tooltips'));
-			}
-
-			if ($admin_page == 'gf_entries') {
-				add_filter('gform_form_post_get_meta', array('GF_Field_Repeater', 'gform_hide_children'));
-			}
-		}
 	}
 
 	public static function gform_enqueue_scripts($form, $is_ajax) {

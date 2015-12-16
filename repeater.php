@@ -55,6 +55,17 @@ if (class_exists("GFForms")) {
 			return array_merge(parent::scripts(), $scripts);
 		}
 
+		public function init_admin() {
+			parent::init_admin();
+			GF_Field_Repeater::init_admin();
+			GF_Field_Repeater_End::init_admin();
+		}
+
+		public function init_frontend() {
+			parent::init_frontend();
+			GF_Field_Repeater::init_frontend();
+		}
+
 		public function upgrade($previous_version) {
 			if (version_compare($previous_version, '1.0.5') == -1) {
 				$forms = GFAPI::get_forms(true);

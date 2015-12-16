@@ -1,18 +1,14 @@
 <?php
-add_action('init',  array('GF_Field_Repeater_End', 'init'), 20);
-
 class GF_Field_Repeater_End extends GF_Field {
 	public $type = 'repeater-end';
 
-	public static function init() {
-		if (is_admin()) {
-			$admin_page = rgget('page');
+	public static function init_admin() {
+		$admin_page = rgget('page');
 
-			if ($admin_page == 'gf_edit_forms' && !empty($_GET['id'])) {
-				add_action('gform_field_standard_settings' , array('GF_Field_Repeater_End', 'gform_settings'), 10, 2);
-				add_action('gform_editor_js', array('GF_Field_Repeater_End', 'gform_editor'));
-				add_filter('gform_tooltips', array('GF_Field_Repeater_End', 'gform_tooltips'));
-			}
+		if ($admin_page == 'gf_edit_forms' && !empty($_GET['id'])) {
+			add_action('gform_field_standard_settings' , array('GF_Field_Repeater_End', 'gform_settings'), 10, 2);
+			add_action('gform_editor_js', array('GF_Field_Repeater_End', 'gform_editor'));
+			add_filter('gform_tooltips', array('GF_Field_Repeater_End', 'gform_tooltips'));
 		}
 	}
 
