@@ -18,14 +18,14 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public static function init_frontend() {
-			add_action('gform_enqueue_scripts', array('GF_Field_Repeater', 'gform_enqueue_scripts'), 10, 2);
-			add_filter('gform_pre_render', array('GF_Field_Repeater', 'gform_unhide_children_validation'));
-			add_filter('gform_pre_validation', array('GF_Field_Repeater', 'gform_bypass_children_validation'));
+		add_action('gform_enqueue_scripts', array('GF_Field_Repeater', 'gform_enqueue_scripts'), 10, 2);
+		add_filter('gform_pre_render', array('GF_Field_Repeater', 'gform_unhide_children_validation'));
+		add_filter('gform_pre_validation', array('GF_Field_Repeater', 'gform_bypass_children_validation'));
 	}
 
 	public static function gform_enqueue_scripts($form, $is_ajax) {
 		if (!empty($form)) {
-			if (in_array('GF_Field_Repeater', $form)) {
+			if (GF_Field_Repeater::form_has_field($form)) {
 				wp_enqueue_script('_gf_postcapture', plugins_url('js/jquery.postcapture.min.js', __FILE__), array('jquery'), '0.0.1');
     			wp_enqueue_script('_gf_repeater', plugins_url('js/gf-repeater.min.js', __FILE__), array('jquery'), GF_REPEATER_VERSION);
     			wp_enqueue_style('_gf_repeater', plugins_url('gf-repeater.css', __FILE__), array(), GF_REPEATER_VERSION);
@@ -411,6 +411,8 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public static function gform_bypass_children_validation($form) {
+		if (!GF_Field_Repeater::form_has_field($form)) { return $form; }
+
 		$repeaterChildren = Array();
 
 		foreach($form['fields'] as $key=>$field) {
@@ -430,6 +432,8 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public static function gform_unhide_children_validation($form) {
+		if (!GF_Field_Repeater::form_has_field($form)) { return $form; }
+		
 		foreach($form['fields'] as $key=>$field) {
 			if ($field->repeaterChildValidationHidden) {
 				$form['fields'][$key]['adminOnly'] = false;
@@ -438,6 +442,13 @@ class GF_Field_Repeater extends GF_Field {
 		}
 
 		return $form;
+	}
+
+	public static function form_has_field($form, $key = 'type', $value = 'repeater') {
+		foreach ($form['fields'] as $field_key=>$field_value) {
+			if ($field_value[$key] == $value) { return $field_key; }
+		}
+		return false;
 	}
 
 	public static function get_field_index_by_id($form, $field_id) {
