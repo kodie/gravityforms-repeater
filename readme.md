@@ -32,7 +32,7 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 
 ### Issues
 * Not all fields are currently supported.
-* Ajax enabled forms are not yet supported.
+* Ajax enabled forms are not yet supported. (Ajax will be automatically disabled on forms with repeaters)
 * Conditional Logic enabled fields are not yet supported.
 
 ### Shortcodes
