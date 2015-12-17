@@ -1,3 +1,15 @@
+v1.0.7 (TBA)
+- Fixed bug where field order was not saved when a form was submitted.
+- Fixed syntax error for older versions of PHP.
+- Repeated fields now have their tabindex set to the one that was assigned to the repeater start field.
+- Repeater start field tabindex now stored in gfRepeaters data. (gfRepeaters[repeaterId]['data']['tabIndex'])
+- Repeater is now repeated if a paremeter is set for a specific field that is higher than the start repeat count.
+- Highest set paremeter number is now stored in gfRepeaters data. (gfRepeaters[repeaterId]['data']['paremCount'])
+- Repeater dependencies, actions, and filters are now only loaded on forms that have a repeater field.
+- Field type is now set for hidden and section fields in gfRepeaters data.
+- Ajax is now automatically disabled on forms that have a repeater field. (Until I come up with a fix for ajax enabled forms)
+- Added support for Andy Fragen's GitHub Updater. (See readme for more info)
+
 v1.0.6 (12/7/2015)
 - Fixed repeater 'start' setting. (Apparently it's been broken for awhile?)
 - Fixed datepicker ui for repeated date fields.
@@ -8,7 +20,7 @@ v1.0.6 (12/7/2015)
 - Added the ability to change the repeater 'start' setting by using the built in Gravity Froms pre-populate filters and hooks.
 - Added the ability to pre-populate repeated fields using the built in Gravity Forms filters and hooks. (See readme for more info)
 - Field ID number is now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['idNum'])
-- Field input pre-populate value is now stored in GfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['inputs'][inputId]['prePopulate']) (See readme for more info)
+- Field input pre-populate value is now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['inputs'][inputId]['prePopulate']) (See readme for more info)
 - Plugin now requires Gravity Forms 1.9 or later.
 
 v1.0.5 (11/19/2015)

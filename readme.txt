@@ -1,9 +1,9 @@
 === Gravity Forms Repeater Add-On ===
 Contributors: KodieGrantham
 Tags: gravityforms, gravity, forms, form, gravityforms, repeater, repeat, duplicate, duplication, field, fields
-Requires at least: 3.9.0
-Tested up to: 4.3.1
-Stable tag: 1.0.6
+Requires at least: 3.9
+Tested up to: 4.4
+Stable tag: 1.0.7
 
 A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.
 
@@ -39,7 +39,7 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 
 = Issues =
 * Not all fields are currently supported.
-* Ajax enabled forms are not yet supported.
+* Ajax enabled forms are not yet supported. (Ajax will be automatically disabled on forms with repeaters)
 * Conditional Logic enabled fields are not yet supported.
 
 = Shortcodes =
@@ -71,6 +71,18 @@ Yes! Just go to the form editor and change the `Add HTML` and `Remove HTML` sett
 4. A view of the front-end. The only visible difference will be the added `+` and `-` buttons.
 
 == Changelog ==
+= 1.0.7 =
+* Fixed bug where field order was not saved when a form was submitted.
+* Fixed syntax error for older versions of PHP.
+* Repeated fields now have their tabindex set to the one that was assigned to the repeater start field.
+* Repeater start field tabindex now stored in gfRepeaters data. (gfRepeaters[repeaterId]['data']['tabIndex'])
+* Repeater is now repeated if a paremeter is set for a specific field that is higher than the start repeat count.
+* Highest set paremeter number is now stored in gfRepeaters data. (gfRepeaters[repeaterId]['data']['paremCount'])
+* Repeater dependencies, actions, and filters are now only loaded on forms that have a repeater field.
+* Field type is now set for hidden and section fields in gfRepeaters data.
+* Ajax is now automatically disabled on forms that have a repeater field. (Until I come up with a fix for ajax enabled forms)
+* Added support for Andy Fragen's GitHub Updater. (See readme for more info)
+
 = 1.0.6 =
 * Fixed repeater 'start' setting. (Apparently it's been broken for awhile?)
 * Fixed datepicker ui for repeated date fields.

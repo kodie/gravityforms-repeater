@@ -85,6 +85,8 @@ gfRepeater_repeaters
         ['repeatCount'] - The number of times the repeater has been repeated.
         ['prevRepeatCount'] - If the form has already been submitted and failed validation, this will contain the repeatCount from before the from was submitted, otherwise it will be null.
         ['childrenCount'] - The number of children fields that get cloned everytime the repeater is repeated.
+        ['paremCount'] - The highest field ID that has had their prepopulate paremeter set.
+        ['tabIndex'] - The tabindex that was assigned to the repeater start field and will be assigned to all children.
         ['inputData'] - Contains an array with all of the input names in the repeater.
     ['settings'] - Contains the different settings that are set in the form editor.
         ['start'] - The number of times the repeater should be repeated when the form is loaded.
@@ -164,22 +166,35 @@ Unfortunately nesting repeaters is not supported at this time.
 ##### Can I change the `+` and `-` buttons to text links?
 Yes! Just go to the form editor and change the `Add HTML` and `Remove HTML` settings to `<a>Your Link Text</a>` and they should appear as regular links on your form!
 
+### Development
+It is possible to use the development version of this plugin in your Wordpress install and keep it updated with [Andy Fragen](https://github.com/afragen)'s [GitHub Updater](https://github.com/afragen/github-updater)!
+
+1. Download & Install [GitHub Updater](https://github.com/afragen/github-updater).
+1. Go to Settings -> GitHub Updater
+1. Enable Branch Switching
+1. Go to Plugins
+1. Select "try another branch" under Gravity Forms Repeater Add-On.
+1. Select "development".
+
+and that's it! You will recieve the latest development versions of this plugin!
+
+**Warning: There is a slight possibility that development versions are unstable. Use at your own risk.**
+
 ### Version
-1.0.6
+1.0.7
 
 ### Changelog
-##### 1.0.6
-* Fixed repeater 'start' setting. (Apparently it's been broken for awhile?)
-* Fixed datepicker ui for repeated date fields.
-* Fixed bug where repeater plugin wouldn't allow page settings to display in the form editor.
-* Fixed entry detail formatting for emails and non-html views.
-* Repeated field labels are no longer saved in the database with the entries and are now looked up by field ID.
-* Added support for Hidden field type.
-* Added the ability to change the repeater 'start' setting by using the built in Gravity Froms pre-populate filters and hooks.
-* Added the ability to pre-populate repeated fields using the built in Gravity Forms filters and hooks. (See readme for more info)
-* Field ID number is now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['idNum'])
-* Field input pre-populate value is now stored in GfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['inputs'][inputId]['prePopulate']) (See readme for more info)
-* Plugin now requires Gravity Forms 1.9 or later.
+##### 1.0.7
+* Fixed bug where field order was not saved when a form was submitted.
+* Fixed syntax error for older versions of PHP.
+* Repeated fields now have their tabindex set to the one that was assigned to the repeater start field.
+* Repeater start field tabindex now stored in gfRepeaters data. (gfRepeaters[repeaterId]['data']['tabIndex'])
+* Repeater is now repeated if a paremeter is set for a specific field that is higher than the start repeat count.
+* Highest set paremeter number is now stored in gfRepeaters data. (gfRepeaters[repeaterId]['data']['paremCount'])
+* Repeater dependencies, actions, and filters are now only loaded on forms that have a repeater field.
+* Field type is now set for hidden and section fields in gfRepeaters data.
+* Ajax is now automatically disabled on forms that have a repeater field. (Until I come up with a fix for ajax enabled forms)
+* Added support for Andy Fragen's GitHub Updater. (See readme for more info)
 
 ### Requirements
 * Wordpress 3.9 or later
