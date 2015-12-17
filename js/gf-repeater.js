@@ -11,6 +11,7 @@ function gfRepeater_getRepeaters() {
 
 	var repeaterFound = 0;
 	var repeaterChildCount = 0;
+	var repeaterParemCount = 0;
 	var repeaterChildren = {};
 	var repeaterChildrenInputData = [];
 	var repeaterChildrenPrePopulate = {};
@@ -70,7 +71,7 @@ function gfRepeater_getRepeaters() {
 				var repeaterdata = {};
 				var repeaterTabIndex = Number(dataElement.attr('tabindex'));
 				if (gfRepeater_submitted) { var prevRepeatCount = JSON.parse(jQuery.captures(dataElement.attr('name')))['repeatCount']; } else { var prevRepeatCount = null; }
-				repeaterdata = {repeatCount:1,tabIndex:repeaterTabIndex,prevRepeatCount:prevRepeatCount,childrenCount:repeaterChildCount,inputData:repeaterChildrenInputData};
+				repeaterdata = {repeatCount:1,prevRepeatCount:prevRepeatCount,childrenCount:repeaterChildCount,paremCount:repeaterParemCount,tabIndex:repeaterTabIndex,inputData:repeaterChildrenInputData};
 
 				gfRepeater_repeaters[repeaterId] = {data:repeaterdata,settings:repeaterSettings,controllers:repeaterControllers,children:repeaterChildren};
 
@@ -79,6 +80,7 @@ function gfRepeater_getRepeaters() {
 				// Set back to defaults for the next repeater
 				repeaterFound = 0;
 				repeaterChildCount = 0;
+				repeaterParemCount = 0;
 				repeaterChildren = {};
 				repeaterChildrenInputData = {};
 				repeaterChildrenPrePopulate = {};
@@ -128,7 +130,13 @@ function gfRepeater_getRepeaters() {
 					if (inputName) {
 						if (jQuery.inArray(inputName, childInputNames) == -1) { childInputNames.push(inputName); }
 						if (inputName.slice(-2) == '[]') { inputName2 = inputName.slice(0, inputName.length - 2); } else { inputName2 = inputName; }
-						if (repeaterChildrenPrePopulate[inputName2.split('_')[1]]) { inputPrePopulate = repeaterChildrenPrePopulate[inputName2.split('_')[1]]; }
+						if (repeaterChildrenPrePopulate[inputName2.split('_')[1]]) {
+							inputPrePopulate = repeaterChildrenPrePopulate[inputName2.split('_')[1]];
+
+							jQuery.each(inputPrePopulate, function(key, value){
+								if (key > repeaterParemCount) { repeaterParemCount = Number(key); }
+							});
+						}
 					};
 
 					childInputs[childInputCount] = {element:inputElement,id:inputId,name:inputName,defaultValue:inputDefaultValue,prePopulate:inputPrePopulate};
@@ -506,12 +514,17 @@ function gfRepeater_start() {
 	jQuery.each(gfRepeater_repeaters, function(key, value){
 		var repeaterId = key;
 		var repeatCount = this['settings']['start'];
+		var paremCount = this['data']['paremCount'];
 
 		if (this['controllers']['data'].attr('data-required')) { this['controllers']['start'].addClass('gfield_contains_required'); }
 
 		jQuery.each(gfRepeater_repeaters[repeaterId]['children'], function(key, value){ gfRepeater_setRepeaterChildAttrs(jQuery(gfRepeater_repeaters[repeaterId]['children'][key]['element']), repeaterId, 1); });
 
-		if (gfRepeater_submitted) { repeatCount = this['data']['prevRepeatCount']; }
+		if (gfRepeater_submitted) {
+			repeatCount = this['data']['prevRepeatCount'];
+		} else if (paremCount > repeatCount) {
+			repeatCount = paremCount;
+		}
 
 		gfRepeater_setRepeater(repeaterId, repeatCount);
 
