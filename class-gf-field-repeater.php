@@ -283,7 +283,8 @@ class GF_Field_Repeater extends GF_Field {
 			$repeatCount = 0;
 			$display_empty_fields = rgget('gf_display_empty_fields', $_COOKIE);
 			$form_id = $this->formId;
-			$form = GFFormsModel::get_form_meta_by_id($form_id)[0];
+			$get_form = GFFormsModel::get_form_meta_by_id($form_id);
+			$form = $get_form[0];
 
 			foreach ($dataArray as $key=>$value) {
 				$repeatCount++;
@@ -412,7 +413,8 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public function gform_disable_ajax($args) {
-		$form = GFFormsModel::get_form_meta_by_id($args['form_id'])[0];
+		$get_form = GFFormsModel::get_form_meta_by_id($args['form_id']);
+		$form = $get_form[0];
 
 		if (GF_Field_Repeater::form_has_field($form)) {
 			$args['ajax'] = false;
