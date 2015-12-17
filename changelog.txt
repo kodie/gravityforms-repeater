@@ -1,4 +1,4 @@
-v1.0.7 (TBA)
+v1.0.7 (12/17/2015)
 - Fixed bug where field order was not saved when a form was submitted.
 - Fixed syntax error for older versions of PHP.
 - Repeated fields now have their tabindex set to the one that was assigned to the repeater start field.
