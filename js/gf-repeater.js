@@ -22,6 +22,9 @@ function gfRepeater_getRepeaters() {
 		var startElement;
 		var repeaterRequiredChildren;
 
+		// Remove ajax action from form because ajax enabled forms are not yet supported.
+		jQuery(this).children('form').first().removeAttr('action');
+
 		jQuery(this).find('.gfield').each(function(){
 			if (repeaterFound == 0) {
 				if (jQuery(this).has('.ginput_container_repeater').length) {
