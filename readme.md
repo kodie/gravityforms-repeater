@@ -130,7 +130,7 @@ Change the value of a field if the repeater is repeated or un-repeated:
 ```
 jQuery('#gform_9').on('afterRepeat afterUnRepeat', function(event, repeaterId, repeaterChildId){
     if (repeaterId == 1) {
-        var repeatCount = gfRepeater_repeaters[repeaterId]['data']['repeatCount'];
+        var repeatCount = gfRepeater_repeaters[9][1]['data']['repeatCount'];
         var totalPrice = 27.47 * repeatCount;
         jQuery('#gform_9 #input_9_4').val('$'+totalPrice);
     }
