@@ -108,6 +108,8 @@ function gfRepeater_getRepeaters() {
 					});
 				} else if (jQuery(this).hasClass('gform_hidden')) {
 					childType = 'hidden';
+				} else if (jQuery(this).hasClass('gsection')) {
+					childType = 'section';
 				}
 
 				if (jQuery.inArray(childIdNum, repeaterRequiredChildren) !== -1) { childRequired = true; }
@@ -135,12 +137,7 @@ function gfRepeater_getRepeaters() {
 
 				repeaterChildren[repeaterChildCount] = {element:childElement,id:childId,idNum:childIdNum,inputs:childInputs,inputCount:childInputCount,required:childRequired,type:childType}
 
-				if (!childLabel) {
-					childLabel = jQuery(this).children('.gsection_title').text();
-					if (childLabel) {
-						childInputNames = 'section';
-					}
-				}
+				if (childType == 'section') { childInputNames = 'section'; }
 
 				repeaterChildrenInputData[childIdNum] = childInputNames;
 			}
