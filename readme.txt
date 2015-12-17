@@ -82,6 +82,7 @@ Yes! Just go to the form editor and change the `Add HTML` and `Remove HTML` sett
 * Field type is now set for hidden and section fields in gfRepeaters data.
 * Ajax is now automatically disabled on forms that have a repeater field. (Until I come up with a fix for ajax enabled forms)
 * Added support for Andy Fragen's GitHub Updater. (See readme for more info)
+* gfRepeaters data now contains the form ID number as a root and the repeater Id as a subroot. (See readme for more info)
 
 = 1.0.6 =
 * Fixed repeater 'start' setting. (Apparently it's been broken for awhile?)
