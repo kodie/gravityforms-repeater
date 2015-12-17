@@ -82,7 +82,7 @@ function gfRepeater_getRepeaters() {
 				repeaterChildCount = 0;
 				repeaterParemCount = 0;
 				repeaterChildren = {};
-				repeaterChildrenInputData = {};
+				repeaterChildrenInputData = [];
 				repeaterChildrenPrePopulate = {};
 				repeaterRequiredChildren = null;
 			} else {
