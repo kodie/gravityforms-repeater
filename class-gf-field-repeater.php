@@ -26,7 +26,7 @@ class GF_Field_Repeater extends GF_Field {
 
 	public static function gform_enqueue_scripts($form, $is_ajax) {
 		if (!empty($form)) {
-			if (GF_Field_Repeater::form_has_field($form)) {
+			if (GF_Field_Repeater::form_has_field($form) !== false) {
 				wp_enqueue_script('_gf_postcapture', plugins_url('js/jquery.postcapture.min.js', __FILE__), array('jquery'), '0.0.1');
     			wp_enqueue_script('_gf_repeater', plugins_url('js/gf-repeater.min.js', __FILE__), array('jquery'), GF_REPEATER_VERSION);
     			wp_enqueue_style('_gf_repeater', plugins_url('gf-repeater.css', __FILE__), array(), GF_REPEATER_VERSION);
@@ -418,7 +418,7 @@ class GF_Field_Repeater extends GF_Field {
 		$get_form = GFFormsModel::get_form_meta_by_id($args['form_id']);
 		$form = $get_form[0];
 
-		if (GF_Field_Repeater::form_has_field($form)) {
+		if (GF_Field_Repeater::form_has_field($form) !== false) {
 			$args['ajax'] = false;
 		}
 
@@ -426,7 +426,7 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public static function gform_bypass_children_validation($form) {
-		if (!GF_Field_Repeater::form_has_field($form)) { return $form; }
+		if (GF_Field_Repeater::form_has_field($form) == false) { return $form; }
 
 		$repeaterChildren = Array();
 
@@ -447,7 +447,7 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public static function gform_unhide_children_validation($form) {
-		if (!GF_Field_Repeater::form_has_field($form)) { return $form; }
+		if (GF_Field_Repeater::form_has_field($form) == false) { return $form; }
 		
 		foreach($form['fields'] as $key=>$field) {
 			if ($field->repeaterChildValidationHidden) {
