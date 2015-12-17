@@ -197,6 +197,7 @@ and that's it! You will recieve the latest development versions of this plugin!
 * Field type is now set for hidden and section fields in gfRepeaters data.
 * Ajax is now automatically disabled on forms that have a repeater field. (Until I come up with a fix for ajax enabled forms)
 * Added support for Andy Fragen's GitHub Updater. (See readme for more info)
+* CSS is now minified.
 * gfRepeaters data now contains the form ID number as a root and the repeater Id as a subroot. (See readme for more info)
 
 ### Requirements
