@@ -12,7 +12,7 @@ function gfRepeater_getRepeaters() {
 	var repeaterFound = 0;
 	var repeaterChildCount = 0;
 	var repeaterChildren = {};
-	var repeaterChildrenInputData = {};
+	var repeaterChildrenInputData = [];
 	var repeaterChildrenPrePopulate = {};
 	var dataElement;
 	var startElement;
@@ -126,7 +126,7 @@ function gfRepeater_getRepeaters() {
 					var inputPrePopulate = {};
 
 					if (inputName) {
-						if (jQuery.inArray(inputName, childInputNames) == -1) { childInputNames.push(inputName) }
+						if (jQuery.inArray(inputName, childInputNames) == -1) { childInputNames.push(inputName); }
 						if (inputName.slice(-2) == '[]') { inputName2 = inputName.slice(0, inputName.length - 2); } else { inputName2 = inputName; }
 						if (repeaterChildrenPrePopulate[inputName2.split('_')[1]]) { inputPrePopulate = repeaterChildrenPrePopulate[inputName2.split('_')[1]]; }
 					};
@@ -139,7 +139,7 @@ function gfRepeater_getRepeaters() {
 
 				if (childType == 'section') { childInputNames = 'section'; }
 
-				repeaterChildrenInputData[childIdNum] = childInputNames;
+				repeaterChildrenInputData.push({id:childIdNum,value:childInputNames});
 			}
 		}
 	});

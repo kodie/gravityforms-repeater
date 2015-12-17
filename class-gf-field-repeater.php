@@ -226,7 +226,9 @@ class GF_Field_Repeater extends GF_Field {
 		$value = Array();
 
 		for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
-			foreach ($dataArray['inputData'] as $inputIdNum=>$inputNames) {
+			foreach ($dataArray['inputData'] as $input) {
+				$inputIdNum = $input['id'];
+				$inputNames = $input['value'];
 				$inputData = Array();
 
 				if (is_array($inputNames)) {
