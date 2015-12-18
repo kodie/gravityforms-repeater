@@ -23,7 +23,8 @@ function gfRepeater_getRepeaters() {
 		var repeaterRequiredChildren;
 
 		// Remove ajax action from form because ajax enabled forms are not yet supported.
-		jQuery(this).children('form').first().removeAttr('action');
+		var form = jQuery(this).children('form').first();
+		if (jQuery(form).attr('action') == '/ajax-test') { jQuery(form).removeAttr('action'); }
 
 		jQuery(this).find('.gfield').each(function(){
 			if (repeaterFound == 0) {
@@ -76,7 +77,13 @@ function gfRepeater_getRepeaters() {
 
 					var repeaterdata = {};
 					var repeaterTabIndex = Number(dataElement.attr('tabindex'));
-					if (gfRepeater_submitted) { var prevRepeatCount = JSON.parse(jQuery.captures(dataElement.attr('name')))['repeatCount']; } else { var prevRepeatCount = null; }
+					var prevRepeatCount = null;
+					if (gfRepeater_submitted) {
+						var capturedData = jQuery.captures(dataElement.attr('name'));
+						if (capturedData) {
+							prevRepeatCount = JSON.parse(prevRepeatCount)['repeatCount'];
+						}
+					}
 					repeaterdata = {repeatCount:1,prevRepeatCount:prevRepeatCount,childrenCount:repeaterChildCount,paremCount:repeaterParemCount,tabIndex:repeaterTabIndex,inputData:repeaterChildrenInputData};
 
 					repeaters[repeaterId] = {data:repeaterdata,settings:repeaterSettings,controllers:repeaterControllers,children:repeaterChildren};
