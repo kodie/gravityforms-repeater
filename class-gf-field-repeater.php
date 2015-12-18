@@ -26,7 +26,7 @@ class GF_Field_Repeater extends GF_Field {
 
 	public static function gform_enqueue_scripts($form, $is_ajax) {
 		if (!empty($form)) {
-			if (GF_Field_Repeater::form_has_field($form) !== false) {
+			if (GF_Field_Repeater::get_field_index($form) !== false) {
 				wp_enqueue_script('gforms_repeater_postcapture_js', plugins_url('js/jquery.postcapture.min.js', __FILE__), array('jquery'), '0.0.1');
     			wp_enqueue_script('gforms_repeater_js', plugins_url('js/gf-repeater.min.js', __FILE__), array('jquery'), GF_REPEATER_VERSION);
     			wp_enqueue_style('gforms_repeater_css', plugins_url('css/gf-repeater.css', __FILE__), array(), GF_REPEATER_VERSION);
@@ -305,7 +305,7 @@ class GF_Field_Repeater extends GF_Field {
 					if (empty($display_empty_fields) && count($childValue) == 0) { continue; }
 
 					if (is_numeric($childKey)) {
-						$field_index = GF_Field_Repeater::get_field_index_by_id($form, $childKey);
+						$field_index = GF_Field_Repeater::get_field_index($form, 'id', $childKey);
 						if (!$field_index) { continue; }
 						$entry_title = $form['fields'][$field_index]['label'];
 					} else {
@@ -418,7 +418,7 @@ class GF_Field_Repeater extends GF_Field {
 		$get_form = GFFormsModel::get_form_meta_by_id($args['form_id']);
 		$form = $get_form[0];
 
-		if (GF_Field_Repeater::form_has_field($form) !== false) {
+		if (GF_Field_Repeater::get_field_index($form) !== false) {
 			$args['ajax'] = false;
 		}
 
@@ -426,7 +426,7 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public static function gform_bypass_children_validation($form) {
-		if (GF_Field_Repeater::form_has_field($form) == false) { return $form; }
+		if (GF_Field_Repeater::get_field_index($form) == false) { return $form; }
 
 		$repeaterChildren = Array();
 
@@ -447,7 +447,7 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public static function gform_unhide_children_validation($form) {
-		if (GF_Field_Repeater::form_has_field($form) == false) { return $form; }
+		if (GF_Field_Repeater::get_field_index($form) == false) { return $form; }
 		
 		foreach($form['fields'] as $key=>$field) {
 			if ($field->repeaterChildValidationHidden) {
@@ -459,16 +459,9 @@ class GF_Field_Repeater extends GF_Field {
 		return $form;
 	}
 
-	public static function form_has_field($form, $key = 'type', $value = 'repeater') {
+	public static function get_field_index($form, $key = 'type', $value = 'repeater') {
 		foreach ($form['fields'] as $field_key=>$field_value) {
 			if ($field_value[$key] == $value) { return $field_key; }
-		}
-		return false;
-	}
-
-	public static function get_field_index_by_id($form, $field_id) {
-		foreach($form['fields'] as $key=>$value) {
-			if ($value['id'] == $field_id) { return $key; }
 		}
 		return false;
 	}
