@@ -81,7 +81,7 @@ function gfRepeater_getRepeaters() {
 					if (gfRepeater_submitted) {
 						var capturedData = jQuery.captures(dataElement.attr('name'));
 						if (capturedData) {
-							prevRepeatCount = JSON.parse(prevRepeatCount)['repeatCount'];
+							prevRepeatCount = JSON.parse(capturedData)['repeatCount'];
 						}
 					}
 					repeaterdata = {repeatCount:1,prevRepeatCount:prevRepeatCount,childrenCount:repeaterChildCount,paremCount:repeaterParemCount,tabIndex:repeaterTabIndex,inputData:repeaterChildrenInputData};
