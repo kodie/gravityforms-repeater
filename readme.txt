@@ -3,7 +3,7 @@ Contributors: KodieGrantham
 Tags: gravityforms, gravity, forms, form, gravityforms, repeater, repeat, duplicate, duplication, field, fields
 Requires at least: 3.9
 Tested up to: 4.4
-Stable tag: 1.0.7
+Stable tag: 1.0.7.1
 
 A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.
 
@@ -71,6 +71,9 @@ Yes! Just go to the form editor and change the `Add HTML` and `Remove HTML` sett
 4. A view of the front-end. The only visible difference will be the added `+` and `-` buttons.
 
 == Changelog ==
+= 1.0.7.1 =
+* Fixed a bug where repeater would break multipage forms. (Sorry about that!)
+
 = 1.0.7 =
 * Fixed bug where field order was not saved when a form was submitted.
 * Fixed syntax error for older versions of PHP.

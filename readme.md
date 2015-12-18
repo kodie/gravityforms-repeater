@@ -169,23 +169,40 @@ Unfortunately nesting repeaters is not supported at this time.
 Yes! Just go to the form editor and change the `Add HTML` and `Remove HTML` settings to `<a>Your Link Text</a>` and they should appear as regular links on your form!
 
 ### Development
+
+##### Method 1 (Automatic Updates)
 It is possible to use the development version of this plugin in your Wordpress install and keep it updated with [Andy Fragen](https://github.com/afragen)'s [GitHub Updater](https://github.com/afragen/github-updater)!
 
 1. Download & Install [GitHub Updater](https://github.com/afragen/github-updater).
-1. Go to Settings -> GitHub Updater
-1. Enable Branch Switching
-1. Go to Plugins
+1. Go to Settings -> GitHub Updater.
+1. Enable Branch Switching.
+1. Go to Plugins.
 1. Select "try another branch" under Gravity Forms Repeater Add-On.
 1. Select "development".
 
 and that's it! You will recieve the latest development versions of this plugin!
 
+##### Method 2 (Manual)
+
+1. Deactivate & Uninstall current version of Gravity Forms Repeater Add-On.
+1. Download the [latest development version](https://github.com/kodie/gravityforms-repeater/archive/development.zip).
+1. Go to Plugins.
+1. Select "Add New".
+1. Select "Upload Plugin".
+1. Select "Choose File" and find the zip file that you downloaded in step 2.
+1. Select "Install Now".
+
+and you're good to go!
+
 **Warning: There is a slight possibility that development versions are unstable. Use at your own risk.**
 
 ### Version
-1.0.7
+1.0.7.1
 
 ### Changelog
+##### 1.0.7.1
+* Fixed a bug where repeater would break multipage forms. (Sorry about that!)
+
 ##### 1.0.7
 * Fixed bug where field order was not saved when a form was submitted.
 * Fixed syntax error for older versions of PHP.

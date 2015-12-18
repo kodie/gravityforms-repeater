@@ -1,3 +1,6 @@
+v1.0.7.1 (12/18/2015)
+- Fixed a bug where repeater would break multipage forms. (Sorry about that!)
+
 v1.0.7 (12/17/2015)
 - Fixed bug where field order was not saved when a form was submitted.
 - Fixed syntax error for older versions of PHP.
