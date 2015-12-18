@@ -197,9 +197,12 @@ and you're good to go!
 **Warning: There is a slight possibility that development versions are unstable. Use at your own risk.**
 
 ### Version
-1.0.7.1
+1.0.7.2
 
 ### Changelog
+##### 1.0.7.2
+* Fixed saved repeater field data during validation. (Accidently broke it in the 1.0.7.1 patch)
+
 ##### 1.0.7.1
 * Fixed a bug where repeater would break multipage forms. (Sorry about that!)
 
