@@ -141,13 +141,19 @@ function gfRepeater_getRepeaters() {
 						if (inputName) {
 							if (jQuery.inArray(inputName, childInputNames) == -1) { childInputNames.push(inputName); }
 							if (inputName.slice(-2) == '[]') { inputName2 = inputName.slice(0, inputName.length - 2); } else { inputName2 = inputName; }
-							if (repeaterChildrenPrePopulate[inputName2.split('_')[1]]) {
-								inputPrePopulate = repeaterChildrenPrePopulate[inputName2.split('_')[1]];
 
+							if ((childType == 'checkbox' || childType == 'radio') && repeaterChildrenPrePopulate[childIdNum]) {
+								inputPrePopulate = repeaterChildrenPrePopulate[childIdNum];
+							} else if (repeaterChildrenPrePopulate[inputName2.split('_')[1]]) {
+								inputPrePopulate = repeaterChildrenPrePopulate[inputName2.split('_')[1]];
+							}
+
+							if (inputPrePopulate) {
 								jQuery.each(inputPrePopulate, function(key, value){
 									if (key > repeaterParemCount) { repeaterParemCount = Number(key); }
 								});
 							}
+
 						};
 
 						childInputs[childInputCount] = {element:inputElement,id:inputId,name:inputName,defaultValue:inputDefaultValue,prePopulate:inputPrePopulate};
@@ -212,7 +218,13 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 		jQuery.each(gfRepeater_repeaters[formId][repeaterId]['children'][childKey]['inputs'], function(key, value){
 			var inputId = this['id'];
 			var inputName = this['name'];
-			var inputElement = gfRepeater_findElementByIdOrName(repeaterChildElement, inputId, inputName);
+			var prePopulate = '';
+
+			if (childType == 'radio') {
+				var inputElement = gfRepeater_findElementByIdOrName(repeaterChildElement, null, inputId);
+			} else {
+				var inputElement = gfRepeater_findElementByIdOrName(repeaterChildElement, inputName, inputId);
+			}
 
 			if (inputId) {
 				var newInputId = inputId+'-'+repeaterId+'-'+repeatCount;
@@ -235,9 +247,22 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 			if (inputMask) { jQuery(inputElement).mask(inputMask); }
 
 			if (this['prePopulate'][repeatCount]) {
-				gfRepeater_setInputValue(inputElement, this['prePopulate'][repeatCount]);
+				prePopulate = this['prePopulate'][repeatCount];
 			} else if (this['prePopulate'][0]) {
-				gfRepeater_setInputValue(inputElement, this['prePopulate'][0]);
+				prePopulate = this['prePopulate'][0];
+			}
+
+			if (prePopulate) {
+				if (childType == 'checkbox' || childType == 'radio') {
+					prePopulateValues = prePopulate.split(',');
+					if (jQuery.inArray(key, prePopulateValues) !== -1) {
+						prePopulate = true;
+					} else {
+						prePopulate = false;
+					}
+				}
+
+				gfRepeater_setInputValue(inputElement, prePopulate);
 			}
 
 			if (window['gformInitDatepicker'] && childType == 'date' && inputCount == 2 && key == 1) {
@@ -469,7 +494,7 @@ function gfRepeater_resetInputs(formId, repeaterId, repeaterChildKey, repeaterCh
 		var inputId = this['id'];
 		var inputName = this['name'];
 		var inputDefaultValue = this['defaultValue'];
-		var inputElement = gfRepeater_findElementByIdOrName(repeaterChildElement, inputId, inputName);
+		var inputElement = gfRepeater_findElementByIdOrName(repeaterChildElement, inputName, inputId);
 
 		if (inputElement) {
 			gfRepeater_setInputValue(inputElement, inputDefaultValue);
@@ -478,14 +503,14 @@ function gfRepeater_resetInputs(formId, repeaterId, repeaterChildKey, repeaterCh
 }
 
 /*
-	gfRepeater_findElementByIdOrName(searchElement, inputId, inputName)
-		Searches for an an element inside of another element by ID or Name. If both an ID and a Name are supplied it will first try the ID and then the Name.
+	gfRepeater_findElementByIdOrName(searchElement, elementName, elementId)
+		Searches for an an element inside of another element by ID or Name. If both an ID and a Name are supplied it will first try the Name and then the ID.
 
 		searchElement			Element to search inside.
-		inputId (Optional)		A element ID to search for.
 		inputName (Optional)	A element name to search for.
+		inputId (Optional)		A element ID to search for.
 */
-function gfRepeater_findElementByIdOrName(searchElement, elementId, elementName) {
+function gfRepeater_findElementByIdOrName(searchElement, elementName, elementId) {
 	if (elementName) { var foundElement = jQuery(searchElement).find("[name^='"+elementName+"']"); }
 	if (!foundElement && elementId) { var foundElement = jQuery(searchElement).find("[id^='"+elementId+"']"); }
 	if (foundElement) { return foundElement; } else { return false; }
