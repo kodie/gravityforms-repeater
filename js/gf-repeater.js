@@ -15,12 +15,11 @@ function gfRepeater_getRepeaters() {
 		var repeaterFound = 0;
 		var repeaterChildCount = 0;
 		var repeaterParemCount = 0;
+		var repeaterInfo = {};
 		var repeaterChildren = {};
-		var repeaterChildrenInputData = [];
-		var repeaterChildrenPrePopulate = {};
+		var repeaterChildrenInputData = {};
 		var dataElement;
 		var startElement;
-		var repeaterRequiredChildren;
 
 		// Remove ajax action from form because ajax enabled forms are not yet supported.
 		var form = jQuery(this).children('form').first();
@@ -36,13 +35,10 @@ function gfRepeater_getRepeaters() {
 					if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - Start: '+jQuery(this).attr('id')); }
 
 					startElement = jQuery(this);
-					dataElement = startElement.find('.gform_hidden');
+					dataElement = startElement.find('.gform_repeater');
 
-					repeaterRequiredChildren = dataElement.attr('data-required');
-					if (repeaterRequiredChildren) { repeaterRequiredChildren = repeaterRequiredChildren.split(','); } else { repeaterRequiredChildren = []; }
-
-					var prePopulate = dataElement.attr('data-prepopulate');
-					if (prePopulate) { repeaterChildrenPrePopulate = JSON.parse(prePopulate); }
+					repeaterInfo = jQuery(dataElement).val();
+					if (repeaterInfo) { repeaterInfo = JSON.parse(repeaterInfo); }
 
 					repeaterFound = 1;
 				}
@@ -67,9 +63,9 @@ function gfRepeater_getRepeaters() {
 					repeaterControllers = {add:addElement,remove:removeElement,data:dataElement,start:startElement,end:endElement};
 
 					var repeaterSettings = {};
-					var repeaterStart = Number(dataElement.attr('data-start'));
-					var repeaterMin = Number(dataElement.attr('data-min'));
-					var repeaterMax = Number(dataElement.attr('data-max'));
+					var repeaterStart = Number(repeaterInfo['start']);
+					var repeaterMin = Number(repeaterInfo['min']);
+					var repeaterMax = Number(repeaterInfo['max']);
 					if (!repeaterStart || (repeaterMax && repeaterStart > repeaterMax)) { repeaterStart = 1; }
 					if (!repeaterMin || (repeaterMax && repeaterMin > repeaterMax)) { repeaterMin = 1; }
 					if (!repeaterMax || (repeaterMin && repeaterMax && repeaterMin > repeaterMax)) { repeaterMax = null; }
@@ -93,7 +89,7 @@ function gfRepeater_getRepeaters() {
 					repeaterChildCount = 0;
 					repeaterParemCount = 0;
 					repeaterChildren = {};
-					repeaterChildrenInputData = [];
+					repeaterChildrenInputData = {};
 					repeaterChildrenPrePopulate = {};
 					repeaterRequiredChildren = null;
 				} else {
@@ -109,6 +105,7 @@ function gfRepeater_getRepeaters() {
 					var childInputCount = 0;
 					var childRequired = false;
 					var childType;
+					var inputMask;
 
 					if (jQuery(this).has('.ginput_container').length) {
 						var childContainerClasses = jQuery(this).find('.ginput_container').attr('class').split(/\s+/);
@@ -125,7 +122,9 @@ function gfRepeater_getRepeaters() {
 						childType = 'section';
 					}
 
-					if (jQuery.inArray(childIdNum, repeaterRequiredChildren) !== -1) { childRequired = true; }
+					if (repeaterInfo['children'][childIdNum]['required']) { childRequired = true; }
+
+					if (repeaterInfo['children'][childIdNum]['inputMask']) { inputMask = repeaterInfo['children'][childIdNum]['inputMask']; }
 
 					if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - Child #'+repeaterChildCount+' - Found: '+childId); }
 
@@ -142,29 +141,28 @@ function gfRepeater_getRepeaters() {
 							if (jQuery.inArray(inputName, childInputNames) == -1) { childInputNames.push(inputName); }
 							if (inputName.slice(-2) == '[]') { inputName2 = inputName.slice(0, inputName.length - 2); } else { inputName2 = inputName; }
 
-							if ((childType == 'checkbox' || childType == 'radio') && repeaterChildrenPrePopulate[childIdNum]) {
-								inputPrePopulate = repeaterChildrenPrePopulate[childIdNum];
-							} else if (repeaterChildrenPrePopulate[inputName2.split('_')[1]]) {
-								inputPrePopulate = repeaterChildrenPrePopulate[inputName2.split('_')[1]];
-							}
+							if (repeaterInfo['children'][childIdNum]['prePopulate']) {
+								if (childType == 'checkbox' || childType == 'radio') {
+									inputPrePopulate = repeaterInfo['children'][childIdNum]['prePopulate'];
+								} else if (repeaterInfo['children'][childIdNum]['prePopulate'][inputName2.split('_')[1]]) {
+									inputPrePopulate = repeaterInfo['children'][childIdNum]['prePopulate'][inputName2.split('_')[1]];
+								}
 
-							if (inputPrePopulate) {
-								jQuery.each(inputPrePopulate, function(key, value){
-									if (key > repeaterParemCount) { repeaterParemCount = Number(key); }
-								});
+								if (inputPrePopulate) {
+									jQuery.each(inputPrePopulate, function(key, value){
+										if (key > repeaterParemCount) { repeaterParemCount = Number(key); }
+									});
+								}
 							}
-
 						};
 
 						childInputs[childInputCount] = {element:inputElement,id:inputId,name:inputName,defaultValue:inputDefaultValue,prePopulate:inputPrePopulate};
 						if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - Child #'+repeaterChildCount+' - Input Found: '+inputId); }
 					});
 
-					repeaterChildren[repeaterChildCount] = {element:childElement,id:childId,idNum:childIdNum,inputs:childInputs,inputCount:childInputCount,required:childRequired,type:childType}
+					repeaterChildren[repeaterChildCount] = {element:childElement,id:childId,idNum:childIdNum,inputs:childInputs,inputCount:childInputCount,required:childRequired,type:childType,inputMask:inputMask}
 
-					if (childType == 'section') { childInputNames = 'section'; }
-
-					repeaterChildrenInputData.push({id:childIdNum,value:childInputNames});
+					repeaterChildrenInputData[childIdNum] = childInputNames;
 				}
 			}
 		});
@@ -207,6 +205,7 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 		var childRequired = gfRepeater_repeaters[formId][repeaterId]['children'][childKey]['required'];
 		var childType = gfRepeater_repeaters[formId][repeaterId]['children'][childKey]['type'];
 		var inputCount = gfRepeater_repeaters[formId][repeaterId]['children'][childKey]['inputCount'];
+		var inputMask = gfRepeater_repeaters[formId][repeaterId]['children'][childKey]['inputMask'];
 		var tabindex = gfRepeater_repeaters[formId][repeaterId]['data']['tabIndex'];
 
 		var newRootId = childId+'-'+repeaterId+'-'+repeatCount;
@@ -243,7 +242,6 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 				jQuery(inputElement).attr('tabindex', tabindex);
 			}
 
-			var inputMask = jQuery(inputElement).attr('data-mask');
 			if (inputMask) { jQuery(inputElement).mask(inputMask); }
 
 			if (this['prePopulate'][repeatCount]) {
@@ -554,7 +552,22 @@ function gfRepeater_setInputValue(inputElement, inputValue) {
 */
 function gfRepeater_updateDataElement(formId, repeaterId) {
 	var dataElement = jQuery(gfRepeater_repeaters[formId][repeaterId]['controllers']['data']);
-	var dataArray = JSON.stringify({repeaterId:repeaterId,repeatCount:gfRepeater_repeaters[formId][repeaterId]['data']['repeatCount'],inputData:gfRepeater_repeaters[formId][repeaterId]['data']['inputData']});
+
+	var dataArray = jQuery(dataElement).val();
+	if (dataArray) { dataArray = JSON.parse(dataArray); }
+
+	dataArray['repeaterId'] = repeaterId;
+	dataArray['repeatCount'] = gfRepeater_repeaters[formId][repeaterId]['data']['repeatCount'];
+
+	jQuery.each(dataArray['children'], function(key, value){
+		if (Array.isArray(this)) { dataArray['children'][key] = {}; }
+		var inputData = gfRepeater_repeaters[formId][repeaterId]['data']['inputData'][key];
+		if (inputData.length) {
+			dataArray['children'][key]['inputs'] = inputData;
+		}
+	});
+
+	dataArray = JSON.stringify(dataArray);
 	jQuery(dataElement).val(dataArray);
 }
 
@@ -586,19 +599,12 @@ function gfRepeater_start() {
 			gfRepeater_setRepeater(formId, repeaterId, repeatCount);
 
 			gfRepeater_updateRepeaterControls(formId, repeaterId);
+
+			gfRepeater_updateDataElement(formId, repeaterId)
 		});
 	});
 
 	if (window['gformInitDatepicker']) { gformInitDatepicker(); }
-}
-
-// Patch the mask plugin
-function gfRepeater_patchMask() {
-    var plugin = jQuery.fn.mask;
-    jQuery.fn.mask = function(mask) {
-        jQuery(this.get(0)).attr('data-mask', mask);
-    	return plugin.apply(this, arguments);
-    };
 }
 
 // Initiation after window has loaded
@@ -612,7 +618,6 @@ jQuery(window).load(function() {
 
 // Initiation right away
 jQuery(document).ready(function($) {
-	gfRepeater_patchMask();
 	jQuery('.gform_wrapper form').capture();
 	if (jQuery.captures()) { gfRepeater_submitted = true; }
 });

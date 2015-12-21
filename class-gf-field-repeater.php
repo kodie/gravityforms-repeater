@@ -28,9 +28,9 @@ class GF_Field_Repeater extends GF_Field {
 		if (!empty($form)) {
 			if (GF_Field_Repeater::get_field_index($form) !== false) {
 				wp_enqueue_script('gforms_repeater_postcapture_js', plugins_url('js/jquery.postcapture.min.js', __FILE__), array('jquery'), '0.0.1');
-    			wp_enqueue_script('gforms_repeater_js', plugins_url('js/gf-repeater.min.js', __FILE__), array('jquery'), GF_REPEATER_VERSION);
-    			wp_enqueue_style('gforms_repeater_css', plugins_url('css/gf-repeater.css', __FILE__), array(), GF_REPEATER_VERSION);
-    		}
+				wp_enqueue_script('gforms_repeater_js', plugins_url('js/gf-repeater.min.js', __FILE__), array('jquery'), GF_REPEATER_VERSION);
+				wp_enqueue_style('gforms_repeater_css', plugins_url('css/gf-repeater.css', __FILE__), array(), GF_REPEATER_VERSION);
+			}
 		}
 	}
 
@@ -135,7 +135,8 @@ class GF_Field_Repeater extends GF_Field {
 			}
 
 			for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
-				foreach ($dataArray['inputData'] as $inputIdNum=>$inputNames) {
+				foreach ($dataArray['children'] as $field_id=>$field) {
+					$inputNames = $field['inputs'];
 
 					if (!is_array($inputNames)) { continue; }
 
@@ -200,25 +201,72 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public function get_field_input($form, $value = '', $entry = null) {
-		$form_id			= $form['id'];
-		$is_entry_detail	= $this->is_entry_detail();
-		$is_form_editor		= $this->is_form_editor();
-		$id					= (int) $this->id;
-		$field_id			= $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
-		$tabindex  			= $this->get_tabindex();
-		$repeater_parem		= $this->inputName;
-		$repeater_start		= $this->start;
-		$repeater_min		= $this->min;
-		$repeater_max		= $this->max;
-		$repeater_required	= $this->repeaterRequiredChildren;
-		$repeater_children	= $this->repeaterChildren;
-		if (!empty($repeater_parem)) {
-			$repeater_parem_value = GFFormsModel::get_parameter_value($repeater_parem, $value, $this);
-			if (!empty($repeater_parem_value)) { $repeater_start = $repeater_parem_value; }
+		if (is_admin()) {
+			return '';
+		} else {
+			$form_id			= $form['id'];
+			$is_entry_detail	= $this->is_entry_detail();
+			$is_form_editor		= $this->is_form_editor();
+			$id					= (int) $this->id;
+			$field_id			= $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
+			$tabindex  			= $this->get_tabindex();
+			$repeater_parem		= $this->inputName;
+			$repeater_start		= $this->start;
+			$repeater_min		= $this->min;
+			$repeater_max		= $this->max;
+			$repeater_required	= $this->repeaterRequiredChildren;
+			$repeater_children	= $this->repeaterChildren;
+
+			if (!empty($repeater_parem)) {
+				$repeater_parem_value = GFFormsModel::get_parameter_value($repeater_parem, $value, $this);
+				if (!empty($repeater_parem_value)) { $repeater_start = $repeater_parem_value; }
+			}
+
+			if (!empty($repeater_children)) {
+				$repeater_children_info = array();
+				$repeater_parems = GF_Field_Repeater::get_children_parem_values($form, $repeater_children);
+
+				foreach($repeater_children as $repeater_child) {
+					$repeater_children_info[$repeater_child] = array();
+					$repeater_child_field_index = GF_Field_Repeater::get_field_index($form, 'id', $repeater_child);
+
+					if (!empty($repeater_required)) {
+						if (in_array($repeater_child, $repeater_required)) {
+							$repeater_children_info[$repeater_child]['required'] = true;
+						}
+					}
+
+					if (!empty($repeater_parems)) {
+						if (array_key_exists($repeater_child, $repeater_parems)) {
+							$repeater_children_info[$repeater_child]['prePopulate'] = $repeater_parems[$repeater_child];
+						}
+					}
+
+					if ($repeater_child_field_index !== false) {
+						if ($form['fields'][$repeater_child_field_index]['inputMask']) {
+							$repeater_children_info[$repeater_child]['inputMask'] = $form['fields'][$repeater_child_field_index]['inputMaskValue'];
+						} elseif ($form['fields'][$repeater_child_field_index]['type'] == 'phone' && $form['fields'][$repeater_child_field_index]['phoneFormat'] = 'standard') {
+							$repeater_children_info[$repeater_child]['inputMask'] = "(999) 999-9999";
+						}
+					}
+				}
+
+				$repeater_children = $repeater_children_info;
+			}
+
+			if (empty($value)) {
+				$value['formId'] = $form_id;
+				if (!empty($repeater_start)) { $value['start'] = $repeater_start; }
+				if (!empty($repeater_min)) { $value['min'] = $repeater_min; }
+				if (!empty($repeater_max)) { $value['max'] = $repeater_max; }
+				if (!empty($repeater_children)) { $value['children'] = $repeater_children; }
+
+				$value = json_encode($value);
+				print_r($value);
+			}
+
+			return sprintf("<input name='input_%d' id='%s' type='hidden' class='gform_repeater' value='%s' %s />", $id, $field_id, $value, $tabindex);
 		}
-		if (!empty($repeater_children)) { $repeater_parems = json_encode(GF_Field_Repeater::get_children_parem_values($form, $repeater_children)); } else { $repeater_parems = ''; }
-		if (!empty($repeater_required)) { $repeater_required = implode(',', $repeater_required); } else { $repeater_required = ''; }
-		return sprintf("<input name='input_%d' id='%s' type='hidden' class='gform_hidden' data-start='%s' data-min='%s' data-max='%s' data-required='%s' data-prepopulate='%s' %s value='%s' />", $id, $field_id, $repeater_start, $repeater_min, $repeater_max, $repeater_required, $repeater_parems, $tabindex, $value);
 	}
 
 	public function get_value_save_entry($value, $form, $input_name, $lead_id, $lead) {
@@ -226,36 +274,37 @@ class GF_Field_Repeater extends GF_Field {
 		$value = Array();
 
 		for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
-			foreach ($dataArray['inputData'] as $input) {
-				$inputIdNum = $input['id'];
-				$inputNames = $input['value'];
+			foreach ($dataArray['children'] as $field_id=>$field) {
 				$inputData = Array();
 
-				if (is_array($inputNames)) {
-					foreach ($inputNames as $inputName) {
-						if (substr($inputName, -2) == '[]') {
-							$getInputName = substr($inputName, 0, strlen($inputName) - 2).'-'.$dataArray['repeaterId'].'-'.$i;
-						} else {
-							$getInputName = $inputName.'-'.$dataArray['repeaterId'].'-'.$i;
-						}
-
-						$getInputData = rgpost(str_replace('.', '_', strval($getInputName)));
-
-						if (!empty($getInputData)) {
-							if (is_array($getInputData)) {
-								foreach ($getInputData as $theInputData) {
-									$inputData[] = $theInputData;
-								}
+				if (array_key_exists('inputs', $field)) {
+					$inputNames = $field['inputs'];
+					if (is_array($inputNames)) {
+						foreach ($inputNames as $inputName) {
+							if (substr($inputName, -2) == '[]') {
+								$getInputName = substr($inputName, 0, strlen($inputName) - 2).'-'.$dataArray['repeaterId'].'-'.$i;
 							} else {
-								$inputData[] = $getInputData;
+								$getInputName = $inputName.'-'.$dataArray['repeaterId'].'-'.$i;
+							}
+
+							$getInputData = rgpost(str_replace('.', '_', strval($getInputName)));
+
+							if (!empty($getInputData)) {
+								if (is_array($getInputData)) {
+									foreach ($getInputData as $theInputData) {
+										$inputData[] = $theInputData;
+									}
+								} else {
+									$inputData[] = $getInputData;
+								}
 							}
 						}
 					}
 				} else {
-					if ($inputNames == 'section') { $inputData = '[gfRepeater-section]'; }
+					if (GF_Field_Repeater::get_field_type($form, $field_id) == 'section') { $inputData = '[gfRepeater-section]'; }
 				}
 
-				$childValue[$inputIdNum] = $inputData;
+				$childValue[$field_id] = $inputData;
 			}
 			$value[$i] = $childValue;
 		}
@@ -306,7 +355,7 @@ class GF_Field_Repeater extends GF_Field {
 
 					if (is_numeric($childKey)) {
 						$field_index = GF_Field_Repeater::get_field_index($form, 'id', $childKey);
-						if (!$field_index) { continue; }
+						if ($field_index === false) { continue; }
 						$entry_title = $form['fields'][$field_index]['label'];
 					} else {
 						$entry_title = $childKey;
@@ -425,7 +474,7 @@ class GF_Field_Repeater extends GF_Field {
 		return $form;
 	}
 
-	public function gform_disable_ajax($args) {
+	public static function gform_disable_ajax($args) {
 		$get_form = GFFormsModel::get_form_meta_by_id($args['form_id']);
 		$form = $get_form[0];
 
@@ -437,7 +486,7 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public static function gform_bypass_children_validation($form) {
-		if (GF_Field_Repeater::get_field_index($form) == false) { return $form; }
+		if (GF_Field_Repeater::get_field_index($form) === false) { return $form; }
 
 		$repeaterChildren = Array();
 
@@ -458,7 +507,7 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public static function gform_unhide_children_validation($form) {
-		if (GF_Field_Repeater::get_field_index($form) == false) { return $form; }
+		if (GF_Field_Repeater::get_field_index($form) === false) { return $form; }
 		
 		foreach($form['fields'] as $key=>$field) {
 			if ($field->repeaterChildValidationHidden) {
@@ -474,6 +523,12 @@ class GF_Field_Repeater extends GF_Field {
 		foreach ($form['fields'] as $field_key=>$field_value) {
 			if ($field_value[$key] == $value) { return $field_key; }
 		}
+		return false;
+	}
+
+	public static function get_field_type($form, $id) {
+		$field_index = GF_Field_Repeater::get_field_index($form, 'id', $id);
+		if ($field_index !== false) { return $form['fields'][$field_index]['type']; }
 		return false;
 	}
 
