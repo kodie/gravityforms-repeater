@@ -280,7 +280,7 @@ class GF_Field_Repeater extends GF_Field {
 		} else {
 			$dataArray = GFFormsModel::unserialize($value);
 			$arrayCount = count($dataArray);
-			$output = "";
+			$output = "\n";
 			$count = 0;
 			$repeatCount = 0;
 			$display_empty_fields = rgget('gf_display_empty_fields', $_COOKIE);
@@ -330,7 +330,9 @@ class GF_Field_Repeater extends GF_Field {
 						}
 
 						$tableContents .= "<tr>\n<td colspan=\"2\"".$tableStyling.">".$entry_title."</td>\n</tr>\n";
-					} else { $tableContents .= $entry_title."\n"; }
+					} else {
+						$tableContents .= $entry_title.": ";
+					}
 
 					if (is_array($childValue)) {
 						if (count($childValue) == 1) {
@@ -378,7 +380,16 @@ class GF_Field_Repeater extends GF_Field {
 			}
 		}
 
-		if ($count !== 0) { return $output; } else { return ''; }
+		if ($count !== 0) {
+			if ($format == 'text') { $output = rtrim($output); }
+			return $output;
+		} else { return ''; }
+	}
+
+	public function get_value_merge_tag($value, $input_id, $entry, $form, $modifier, $raw_value, $url_encode, $esc_html, $format, $nl2br) {
+		$output = GF_Field_Repeater::get_value_entry_detail($raw_value, '', false, $format, 'email');
+		$output = preg_replace("/[\r\n]+/", "\n", $output);
+		return trim($output);
 	}
 
 	public static function gform_hide_children($form) {
