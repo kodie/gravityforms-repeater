@@ -310,7 +310,9 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 			if (gfRepeater_submitted) {
 				if (failedValidation) {
 					repeaterChildElement.addClass('gfield_error');
-					repeaterChildElement.append("<div class=\"gfield_description validation_message\">This field is required.</div>");
+					if (!repeaterChildElement.has('.validation_message').length) {
+						repeaterChildElement.append("<div class=\"gfield_description validation_message\">This field is required.</div>");
+					}
 				} else {
 					repeaterChildElement.removeClass('gfield_error');
 					repeaterChildElement.find('.validation_message').remove();
