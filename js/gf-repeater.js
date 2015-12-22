@@ -41,17 +41,19 @@ function gfRepeater_getRepeaters() {
 					repeaterInfo = jQuery(dataElement).val();
 					if (repeaterInfo) { repeaterInfo = JSON.parse(repeaterInfo); }
 
-					if (jQuery.captures()) {
-						capturedData = jQuery.captures(dataElement.attr('name'));
-						if (capturedData) {
-							capturedData = JSON.parse(capturedData);
-							if (capturedData['formId'] == formId) {
-								gfRepeater_submitted = true;
+					if (repeaterId == 1) {
+						if (jQuery.captures()) {
+							capturedData = jQuery.captures(dataElement.attr('name'));
+							if (capturedData) {
+								capturedData = JSON.parse(capturedData);
+								if (capturedData['formId'] == formId) {
+									gfRepeater_submitted = true;
+								}
 							}
 						}
+						
+						jQuery(form).capture();
 					}
-
-					jQuery(form).capture();
 
 					repeaterFound = 1;
 				}
