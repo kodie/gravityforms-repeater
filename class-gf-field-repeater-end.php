@@ -6,7 +6,7 @@ class GF_Field_Repeater_End extends GF_Field {
 		$admin_page = rgget('page');
 
 		if ($admin_page == 'gf_edit_forms' && !empty($_GET['id'])) {
-			add_action('gform_field_standard_settings' , array('GF_Field_Repeater_End', 'gform_settings'), 10, 2);
+			add_action('gform_field_standard_settings' , array('GF_Field_Repeater_End', 'gform_standard_settings'), 10, 2);
 			add_action('gform_editor_js', array('GF_Field_Repeater_End', 'gform_editor'));
 			add_filter('gform_tooltips', array('GF_Field_Repeater_End', 'gform_tooltips'));
 		}
@@ -16,8 +16,8 @@ class GF_Field_Repeater_End extends GF_Field {
 		return 'Repeater End';
 	}
 
-	public static function gform_settings($position, $form_id) {
-		if ($position == 25) {
+	public static function gform_standard_settings($position, $form_id) {
+		if ($position == 1600) {
 			echo "<li class=\"repeater_end_settings field_setting\">
 					<label for=\"field_repeater_end_add\">Add HTML ";
 
@@ -37,10 +37,10 @@ class GF_Field_Repeater_End extends GF_Field {
 				</li>";
 
 			echo "<li class=\"repeater_end_settings field_setting\">
-					<input type=\"checkbox\" id=\"field_repeater_end_doNotUse\" onchange=\"SetFieldProperty('doNotUse', this.checked);\"> 
-					<label for=\"field_repeater_end_doNotUse\" class=\"inline\">Do not use add and remove buttons ";
+					<input type=\"checkbox\" id=\"field_repeater_end_hideButtons\" onchange=\"SetFieldProperty('hideButtons', this.checked);\"> 
+					<label for=\"field_repeater_end_hideButtons\" class=\"inline\">Hide Add & Remove buttons ";
 
-			gform_tooltip('form_field_repeater_end_doNotUse');
+			gform_tooltip('form_field_repeater_end_hideButtons');
 
 			echo "	</label>
 				</li>";
@@ -53,7 +53,7 @@ class GF_Field_Repeater_End extends GF_Field {
 				jQuery(document).bind('gform_load_field_settings', function(event, field, form){
 					jQuery('#field_repeater_end_add').val(field['add']);
 					jQuery('#field_repeater_end_remove').val(field['remove']);
-					jQuery('#field_repeater_end_doNotUse').prop('checked', field['doNotUse']);
+					jQuery('#field_repeater_end_hideButtons').prop('checked', field['hideButtons']);
 				});
 			</script>";
 	}
@@ -61,7 +61,7 @@ class GF_Field_Repeater_End extends GF_Field {
 	public static function gform_tooltips($tooltips) {
 		$tooltips['form_field_repeater_end_add'] = "The HTML to replace the default add button. This HTML will be placed inside of a span tag with the class 'gf_repeater_add'.";
 		$tooltips['form_field_repeater_end_remove'] = "The HTML to replace the default remove button. This HTML will be placed inside of a span tag with the class 'gf_repeater_remove'.";
-		$tooltips['form_field_repeater_end_donotuse'] = "If enabled, no add and remove buttons will be displayed. This is useful if you plan on using custom javascript to trigger the repeater.";
+		$tooltips['form_field_repeater_end_hideButtons'] = "If enabled, no add and remove buttons will be displayed. This is useful if you plan on using custom javascript to trigger the repeater.";
 		return $tooltips;
 	}
 

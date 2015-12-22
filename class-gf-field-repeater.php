@@ -6,7 +6,8 @@ class GF_Field_Repeater extends GF_Field {
 		$admin_page = rgget('page');
 
 		if ($admin_page == 'gf_edit_forms' && !empty($_GET['id'])) {
-			add_action('gform_field_standard_settings' , array('GF_Field_Repeater', 'gform_settings'), 10, 2);
+			add_action('gform_field_standard_settings' , array('GF_Field_Repeater', 'gform_standard_settings'), 10, 2);
+			add_action('gform_field_appearance_settings' , array('GF_Field_Repeater', 'gform_appearance_settings'), 10, 2);
 			add_action('gform_editor_js_set_default_values', array('GF_Field_Repeater', 'gform_set_defaults'));
 			add_action('gform_editor_js', array('GF_Field_Repeater', 'gform_editor'));
 			add_filter('gform_tooltips', array('GF_Field_Repeater', 'gform_tooltips'));
@@ -51,14 +52,13 @@ class GF_Field_Repeater extends GF_Field {
 	public static function gform_set_defaults() {
 		echo "
 			case \"repeater\" :
-				field.label = \"\";
-				field.adminLabel = \"Repeater\";
+				field.label = \"Repeater\";
 			break;
 		";
 	}
 
-	public static function gform_settings($position, $form_id) {
-		if ($position == 25) {
+	public static function gform_standard_settings($position, $form_id) {
+		if ($position == 1600) {
 			echo "<li class=\"repeater_settings field_setting\">
 					<label for=\"field_repeater_start\">Start ";
 
@@ -88,6 +88,19 @@ class GF_Field_Repeater extends GF_Field {
 		}
 	}
 
+	public static function gform_appearance_settings($position, $form_id) {
+		if ($position == 400) {
+			echo "<li class=\"repeater_settings field_setting\">
+					<input type=\"checkbox\" id=\"field_repeater_hideLabel\" onchange=\"SetFieldProperty('hideLabel', this.checked);\"> 
+					<label for=\"field_repeater_hideLabel\" class=\"inline\">Hide Label & Description ";
+
+			gform_tooltip('form_field_repeater_hideLabel');
+
+			echo "	</label>
+				</li>";
+		}
+	}
+
 	public static function gform_editor() {
 		echo "<script type=\"text/javascript\">
 				fieldSettings['repeater'] += ', .repeater_settings';
@@ -95,6 +108,7 @@ class GF_Field_Repeater extends GF_Field {
 					jQuery('#field_repeater_start').val(field['start']);
 					jQuery('#field_repeater_min').val(field['min']);
 					jQuery('#field_repeater_max').val(field['max']);
+					jQuery('#field_repeater_hideLabel').prop('checked', field['hideLabel']);
 				});
 			</script>";
 	}
@@ -103,6 +117,7 @@ class GF_Field_Repeater extends GF_Field {
 		$tooltips['form_field_repeater_start'] = "The number of times the repeater will be repeated when the form is rendered. Leaving this field blank or setting it to a number higher than the maximum number is the same as setting it to 1.";
 		$tooltips['form_field_repeater_min'] = "The minimum number of times the repeater is allowed to be repeated. Leaving this field blank or setting it to a number higher than the maximum field is the same as setting it to 1.";
 		$tooltips['form_field_repeater_max'] = "The maximum number of times the repeater is allowed to be repeated. Leaving this field blank or setting it to a number lower than the minimum field is the same as setting it to unlimited.";
+		$tooltips['form_field_repeater_hideLabel'] = "If this is checked, the repeater label and description will not be shown to users on the form.";
 		return $tooltips;
 	}
 
@@ -193,8 +208,10 @@ class GF_Field_Repeater extends GF_Field {
 		} else {
 			$field_label		= $this->get_field_label($force_frontend_label, $value);
 			$description		= $this->get_description($this->description, 'gsection_description gf_repeater_description');
+			$hide_label			= $this->hideLabel;
 			$validation_message = ( $this->failed_validation && ! empty( $this->validation_message ) ) ? sprintf( "<div class='gfield_description validation_message'>%s</div>", $this->validation_message ) : '';
 			if (!empty($field_label)) { $field_label = "<h2 class='gf_repeater_title'>{$field_label}</h2>"; } else { $field_label = ''; }
+			if ($hide_label) { $field_label = ''; $description = ''; }
 			$field_content = "<div class=\"ginput_container ginput_container_repeater\">{$field_label}{FIELD}</div>{$description}{$validation_message}";
 		}
 		return $field_content;
