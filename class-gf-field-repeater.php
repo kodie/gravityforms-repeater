@@ -262,7 +262,6 @@ class GF_Field_Repeater extends GF_Field {
 				if (!empty($repeater_children)) { $value['children'] = $repeater_children; }
 
 				$value = json_encode($value);
-				print_r($value);
 			}
 
 			return sprintf("<input name='input_%d' id='%s' type='hidden' class='gform_repeater' value='%s' %s />", $id, $field_id, $value, $tabindex);

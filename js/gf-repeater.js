@@ -10,6 +10,7 @@ function gfRepeater_getRepeaters() {
 	var repeaterData = jQuery('.gform_wrapper').each(function(){
 		var repeaters = {};
 		var formId = this.id.split('_')[2];
+		var form = jQuery(this).children('form').first();
 		var repeaterId = 0;
 
 		var repeaterFound = 0;
@@ -18,11 +19,11 @@ function gfRepeater_getRepeaters() {
 		var repeaterInfo = {};
 		var repeaterChildren = {};
 		var repeaterChildrenInputData = {};
+		var capturedData = {};
 		var dataElement;
 		var startElement;
 
 		// Remove ajax action from form because ajax enabled forms are not yet supported.
-		var form = jQuery(this).children('form').first();
 		if (jQuery(form).attr('action') == '/ajax-test') { jQuery(form).removeAttr('action'); }
 
 		jQuery(this).find('.gfield').each(function(){
@@ -39,6 +40,18 @@ function gfRepeater_getRepeaters() {
 
 					repeaterInfo = jQuery(dataElement).val();
 					if (repeaterInfo) { repeaterInfo = JSON.parse(repeaterInfo); }
+
+					if (jQuery.captures()) {
+						capturedData = jQuery.captures(dataElement.attr('name'));
+						if (capturedData) {
+							capturedData = JSON.parse(capturedData);
+							if (capturedData['formId'] == formId) {
+								gfRepeater_submitted = true;
+							}
+						}
+					}
+
+					jQuery(form).capture();
 
 					repeaterFound = 1;
 				}
@@ -74,12 +87,7 @@ function gfRepeater_getRepeaters() {
 					var repeaterdata = {};
 					var repeaterTabIndex = Number(dataElement.attr('tabindex'));
 					var prevRepeatCount = null;
-					if (gfRepeater_submitted) {
-						var capturedData = jQuery.captures(dataElement.attr('name'));
-						if (capturedData) {
-							prevRepeatCount = JSON.parse(capturedData)['repeatCount'];
-						}
-					}
+					if (gfRepeater_submitted && capturedData) { prevRepeatCount = capturedData['repeatCount']; }
 					repeaterdata = {repeatCount:1,prevRepeatCount:prevRepeatCount,childrenCount:repeaterChildCount,paremCount:repeaterParemCount,tabIndex:repeaterTabIndex,inputData:repeaterChildrenInputData};
 
 					repeaters[repeaterId] = {data:repeaterdata,settings:repeaterSettings,controllers:repeaterControllers,children:repeaterChildren};
@@ -597,9 +605,7 @@ function gfRepeater_start() {
 			}
 
 			gfRepeater_setRepeater(formId, repeaterId, repeatCount);
-
 			gfRepeater_updateRepeaterControls(formId, repeaterId);
-
 			gfRepeater_updateDataElement(formId, repeaterId)
 		});
 	});
@@ -607,19 +613,13 @@ function gfRepeater_start() {
 	if (window['gformInitDatepicker']) { gformInitDatepicker(); }
 }
 
-// Initiation after window has loaded
-jQuery(window).load(function() {
+// Initiation after gravity forms has rendered.
+jQuery(document).bind('gform_post_render', function(){
 	if (gfRepeater_getRepeaters()) {
 		gfRepeater_start();
 	} else {
 		console.log('There was an error with one of your repeaters. This is usually caused by forgetting to include a repeater-end field or by trying to nest repeaters.');
 	}
-});
-
-// Initiation right away
-jQuery(document).ready(function($) {
-	jQuery('.gform_wrapper form').capture();
-	if (jQuery.captures()) { gfRepeater_submitted = true; }
 });
 
 // Debug shortcuts
