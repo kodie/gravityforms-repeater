@@ -152,8 +152,13 @@ class GF_Field_Repeater extends GF_Field {
 			for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
 				foreach ($dataArray['children'] as $field_id=>$field) {
 					$inputNames = $field['inputs'];
+					$repeatSkips = $field['conditionalLogic']['skip'];
 
 					if (!is_array($inputNames)) { continue; }
+
+					if (is_array($repeatSkips)) {
+						if (in_array($i, $repeatSkips)) { continue; }
+					}
 
 					foreach ($inputNames as $inputName) {
 						if (substr($inputName, -2) == '[]') {
@@ -265,6 +270,10 @@ class GF_Field_Repeater extends GF_Field {
 						} elseif ($form['fields'][$repeater_child_field_index]['type'] == 'phone' && $form['fields'][$repeater_child_field_index]['phoneFormat'] = 'standard') {
 							$repeater_children_info[$repeater_child]['inputMask'] = "(999) 999-9999";
 						}
+
+						if ($form['fields'][$repeater_child_field_index]['conditionalLogic']) {
+							$repeater_children_info[$repeater_child]['conditionalLogic'] = $form['fields'][$repeater_child_field_index]['conditionalLogic'];
+						}
 					}
 				}
 
@@ -295,6 +304,12 @@ class GF_Field_Repeater extends GF_Field {
 
 				if (array_key_exists('inputs', $field)) {
 					$inputNames = $field['inputs'];
+					$repeatSkips = $field['conditionalLogic']['skip'];
+
+					if (is_array($repeatSkips)) {
+						if (in_array($i, $repeatSkips)) { continue; }
+					}
+					
 					if (is_array($inputNames)) {
 						foreach ($inputNames as $inputName) {
 							if (substr($inputName, -2) == '[]') {
