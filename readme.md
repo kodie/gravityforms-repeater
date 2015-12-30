@@ -29,11 +29,11 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 * Use Javascript to manipulate the repeater
 * Customize the add and remove button's HTML
 * Use Gravity Forms pre-populate hooks and filters like normal
+* Supports Conditional Logic!
 
 ### Issues
 * Not all fields are currently supported.
 * Ajax enabled forms are not yet supported. (Ajax will be automatically disabled on forms with repeaters)
-* Conditional Logic enabled fields are not yet supported.
 
 ### Shortcodes
 You can place shortcodes inside of input labels, input descriptions, and HTML blocks!
@@ -106,6 +106,7 @@ gfRepeater_repeaters
                 ['id'] - The field HTML id.
                 ['idNum'] - The field ID number.
                 ['inputCount'] - The number of inputs the child contains.
+                ['inputMask'] - The field's input mask.
                 ['required'] - True or False depeneding on if the field is required or not.
                 ['type'] - The field type.
                 ['inputs'] - Contains all of the inputs that the child contains.
@@ -197,28 +198,24 @@ and you're good to go!
 **Warning: There is a slight possibility that development versions are unstable. Use at your own risk.**
 
 ### Version
-1.0.7.2
+1.0.8
 
 ### Changelog
-##### 1.0.7.2
-* Fixed saved repeater field data during validation. (Accidently broke it in the 1.0.7.1 patch)
-
-##### 1.0.7.1
-* Fixed a bug where repeater would break multipage forms. (Sorry about that!)
-
-##### 1.0.7
-* Fixed bug where field order was not saved when a form was submitted.
-* Fixed syntax error for older versions of PHP.
-* Repeated fields now have their tabindex set to the one that was assigned to the repeater start field.
-* Repeater start field tabindex now stored in gfRepeaters data. (gfRepeaters[repeaterId]['data']['tabIndex'])
-* Repeater is now repeated if a paremeter is set for a specific field that is higher than the start repeat count.
-* Highest set paremeter number is now stored in gfRepeaters data. (gfRepeaters[repeaterId]['data']['paremCount'])
-* Repeater dependencies, actions, and filters are now only loaded on forms that have a repeater field.
-* Field type is now set for hidden and section fields in gfRepeaters data.
-* Ajax is now automatically disabled on forms that have a repeater field. (Until I come up with a fix for ajax enabled forms)
-* Added support for Andy Fragen's GitHub Updater. (See readme for more info)
-* CSS is now minified.
-* gfRepeaters data now contains the form ID number as a root and the repeater Id as a subroot. (See readme for more info)
+##### 1.0.8
+* Fixed bug where sometimes for some reason an input name would be sent as an array and cause a PHP error to display.
+* Fixed bug where sometimes validation message would be displayed multiple times for same field.
+* Fixed bug where filters would not be loaded if Repeater was the first field on the form.
+* Fixed bug where sometimes captured repeater input data would be applied to other forms in cases where there are multiple forms on one page.
+* Fixed prepopulation for checkbox and radio fields.
+* Changed the way settings and field data is sent to Javascript so now monkey patching the input mask script is no longer necessary.
+* Field input masks are now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['inputMask'])
+* Added support for conditional logic enabled fields!
+* Added support for Repeater merge tags.
+* Cleaned up formatting for text-only email notifications.
+* Changed Repeater End Setting from 'doNotUse' to 'hideButtons'.
+* Added Repeater Start Setting 'Hide Label & Description' to appearance tab.
+* Repeater label now defaults to 'Repeater' instead of blank and adminLabel now defaults to blank instead of 'Repeater'.
+* Repeater Javascript now initiates after 'gform_post_render' has been triggered instead of on window load.
 
 ### Requirements
 * Wordpress 3.9 or later

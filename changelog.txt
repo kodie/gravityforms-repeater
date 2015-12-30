@@ -1,3 +1,19 @@
+v1.0.8 (12/30/2015)
+- Fixed bug where sometimes for some reason an input name would be sent as an array and cause a PHP error to display.
+- Fixed bug where sometimes validation message would be displayed multiple times for same field.
+- Fixed bug where filters would not be loaded if Repeater was the first field on the form.
+- Fixed bug where sometimes captured repeater input data would be applied to other forms in cases where there are multiple forms on one page.
+- Fixed prepopulation for checkbox and radio fields.
+- Changed the way settings and field data is sent to Javascript so now monkey patching the input mask script is no longer necessary.
+- Field input masks are now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['inputMask'])
+- Added support for conditional logic enabled fields!
+- Added support for Repeater merge tags.
+- Cleaned up formatting for text-only email notifications.
+- Changed Repeater End Setting from 'doNotUse' to 'hideButtons'.
+- Added Repeater Start Setting 'Hide Label & Description' to appearance tab.
+- Repeater label now defaults to 'Repeater' instead of blank and adminLabel now defaults to blank instead of 'Repeater'.
+- Repeater Javascript now initiates after 'gform_post_render' has been triggered instead of on window load.
+
 v1.0.7.2 (12/18/2015)
 - Fixed saved repeater field data during validation. (Accidently broke it in the 1.0.7.1 patch)
 

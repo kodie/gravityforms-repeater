@@ -3,7 +3,7 @@ Contributors: KodieGrantham
 Tags: gravityforms, gravity, forms, form, gravityforms, repeater, repeat, duplicate, duplication, field, fields
 Requires at least: 3.9
 Tested up to: 4.4
-Stable tag: 1.0.7.2
+Stable tag: 1.0.8
 
 A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.
 
@@ -36,11 +36,11 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 * Use Javascript to manipulate the repeater (See GitHub Page)
 * Customize the add and remove button's HTML
 * Use Gravity Forms pre-populate hooks and filters like normal
+* Supports Conditional Logic!
 
 = Issues =
 * Not all fields are currently supported.
 * Ajax enabled forms are not yet supported. (Ajax will be automatically disabled on forms with repeaters)
-* Conditional Logic enabled fields are not yet supported.
 
 = Shortcodes =
 You can place shortcodes inside of input labels, input descriptions, and HTML blocks!
@@ -71,6 +71,22 @@ Yes! Just go to the form editor and change the `Add HTML` and `Remove HTML` sett
 4. A view of the front-end. The only visible difference will be the added `+` and `-` buttons.
 
 == Changelog ==
+= 1.0.8 =
+* Fixed bug where sometimes for some reason an input name would be sent as an array and cause a PHP error to display.
+* Fixed bug where sometimes validation message would be displayed multiple times for same field.
+* Fixed bug where filters would not be loaded if Repeater was the first field on the form.
+* Fixed bug where sometimes captured repeater input data would be applied to other forms in cases where there are multiple forms on one page.
+* Fixed prepopulation for checkbox and radio fields.
+* Changed the way settings and field data is sent to Javascript so now monkey patching the input mask script is no longer necessary.
+* Field input masks are now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['inputMask'])
+* Added support for conditional logic enabled fields!
+* Added support for Repeater merge tags.
+* Cleaned up formatting for text-only email notifications.
+* Changed Repeater End Setting from 'doNotUse' to 'hideButtons'.
+* Added Repeater Start Setting 'Hide Label & Description' to appearance tab.
+* Repeater label now defaults to 'Repeater' instead of blank and adminLabel now defaults to blank instead of 'Repeater'.
+* Repeater Javascript now initiates after 'gform_post_render' has been triggered instead of on window load.
+
 = 1.0.7.2 =
 * Fixed saved repeater field data during validation. (Accidently broke it in the 1.0.7.1 patch)
 
