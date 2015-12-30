@@ -346,7 +346,7 @@ function gfRepeater_conditionalLogic_set(formId, repeaterId, repeaterChildId, re
 			var inputName = input['name']+selectorExt;
 			var inputElement = gfRepeater_findElementByIdOrName(childElement, inputName, inputId);
 
-			jQuery(inputElement).on('change', function(){
+			jQuery(inputElement).bind('propertychange change click keyup input paste', function(){
 				gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, repeatCount);
 			});
 		});
@@ -387,30 +387,7 @@ function gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, rep
 			var inputValue = gfRepeater_getInputValue(inputElement);
 		}
 
-		switch(value['operator']) {
-			case 'is':
-				if (inputValue == value['value']) { condition = true; }
-				break;
-			case 'is_not':
-				if (inputValue !== value['value']) { condition = true; }
-				break;
-			case 'greater_than':
-				if (inputValue > value['value']) { condition = true; }
-				break;
-			case 'less_than':
-				if (inputValue < value['value']) { condition = true; }
-				break;
-			case 'contains':
-				if (inputValue.indexOf(value['value']) > -1) { condition = true; }
-				break;
-			case 'starts_with':
-				if (inputValue.substring(0, value['value'].length) == value['value']) { condition = true; }
-				break;
-			case 'ends_with':
-				if (inputValue.substring((inputValue.length - value['value'].length), inputValue.length) == value['value']) { condition = true; }
-				break;
-		}
-
+		condition = gf_matches_operation(inputValue, value['value'], value['operator']);
 		conditions.push(condition);
 	});
 
