@@ -161,6 +161,8 @@ class GF_Field_Repeater extends GF_Field {
 					}
 
 					foreach ($inputNames as $inputName) {
+						if (is_array($inputName)) { $inputName = reset($inputName); }
+
 						if (substr($inputName, -2) == '[]') {
 							$getInputName = substr($inputName, 0, strlen($inputName) - 2).'-'.$dataArray['repeaterId'].'-'.$i;
 						} else {
