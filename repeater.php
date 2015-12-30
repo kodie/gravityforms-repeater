@@ -7,7 +7,7 @@ Version: 1.0.8
 Author: Kodie Grantham
 Author URI: http://kodieg.com
 GitHub Plugin URI: https://github.com/kodie/gravityforms-repeater
-GitHub Branch: development
+GitHub Branch: master
 */
 
 define('GF_REPEATER_VERSION', '1.0.8');
