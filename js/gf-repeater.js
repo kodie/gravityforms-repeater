@@ -287,9 +287,11 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 				}
 
 				if (childRequired) {
-					var splitName = newInputName.replace('.', '_').split(/(_|-)/);
-					if (childType == 'name' && jQuery.inArray(splitName[4], ['3', '6']) == -1) { return true; }
-					if (childType == 'address' && jQuery.inArray(splitName[4], ['2']) !== -1) { return true; }
+					if (newInputName) {
+						var splitName = newInputName.replace('.', '_').split(/(_|-)/);
+						if (childType == 'name' && jQuery.inArray(splitName[4], ['3', '6']) == -1) { return true; }
+						if (childType == 'address' && jQuery.inArray(splitName[4], ['2']) !== -1) { return true; }
+					}
 
 					var inputValue = gfRepeater_getInputValue(inputElement);
 					if (!inputValue && repeatCount <= repeater['data']['prevRepeatCount']) {
