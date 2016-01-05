@@ -509,7 +509,7 @@ class GF_Field_Repeater extends GF_Field {
 
 	public static function gform_disable_ajax($args) {
 		$get_form = GFFormsModel::get_form_meta_by_id($args['form_id']);
-		$form = $get_form[0];
+		$form = reset($get_form);
 
 		if (GF_Field_Repeater::get_field_index($form) !== false) {
 			$args['ajax'] = false;
