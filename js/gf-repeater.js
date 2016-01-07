@@ -114,6 +114,7 @@ function gfRepeater_getRepeaters() {
 					var childInputNames = [];
 					var childInputCount = 0;
 					var childRequired = false;
+					var childInfo = repeaterInfo['children'][childIdNum];
 					var childType;
 					var inputMask;
 					var conditionalLogic;
@@ -133,10 +134,10 @@ function gfRepeater_getRepeaters() {
 						childType = 'section';
 					}
 
-					if (repeaterInfo['children'][childIdNum]['required']) { childRequired = true; }
-					if (repeaterInfo['children'][childIdNum]['inputMask']) { inputMask = repeaterInfo['children'][childIdNum]['inputMask']; }
-					if (repeaterInfo['children'][childIdNum]['conditionalLogic']) {
-						conditionalLogic = repeaterInfo['children'][childIdNum]['conditionalLogic'];
+					if (childInfo['required']) { childRequired = true; }
+					if (childInfo['inputMask']) { inputMask = childInfo['inputMask']; }
+					if (childInfo['conditionalLogic']) {
+						conditionalLogic = childInfo['conditionalLogic'];
 						conditionalLogic['skip'] = [];
 					}
 
@@ -155,11 +156,11 @@ function gfRepeater_getRepeaters() {
 							if (jQuery.inArray(inputName, childInputNames) == -1) { childInputNames.push(inputName); }
 							if (inputName.slice(-2) == '[]') { inputName2 = inputName.slice(0, inputName.length - 2); } else { inputName2 = inputName; }
 
-							if (repeaterInfo['children'][childIdNum]['prePopulate']) {
+							if (childInfo['prePopulate']) {
 								if (childType == 'checkbox' || childType == 'radio') {
-									inputPrePopulate = repeaterInfo['children'][childIdNum]['prePopulate'];
-								} else if (repeaterInfo['children'][childIdNum]['prePopulate'][inputName2.split('_')[1]]) {
-									inputPrePopulate = repeaterInfo['children'][childIdNum]['prePopulate'][inputName2.split('_')[1]];
+									inputPrePopulate = childInfo['prePopulate'];
+								} else if (childInfo['prePopulate'][inputName2.split('_')[1]]) {
+									inputPrePopulate = childInfo['prePopulate'][inputName2.split('_')[1]];
 								}
 
 								if (inputPrePopulate) {
@@ -247,9 +248,9 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 			var prePopulate = '';
 
 			if (childType == 'radio') {
-				var inputElement = gfRepeater_findElementByIdOrName(repeaterChildElement, null, inputId);
+				var inputElement = gfRepeater_findElementByNameOrId(repeaterChildElement, null, inputId);
 			} else {
-				var inputElement = gfRepeater_findElementByIdOrName(repeaterChildElement, inputName, inputId);
+				var inputElement = gfRepeater_findElementByNameOrId(repeaterChildElement, inputName, inputId);
 			}
 
 			if (inputId) {
@@ -378,15 +379,14 @@ function gfRepeater_conditionalLogic_set(formId, repeaterId, repeaterChildId, re
 
 	jQuery.each(conditionalLogic['rules'], function(key, value){
 		var fieldId = value['fieldId'];
-		var fieldKey = gfRepeater_getIndex(repeater['children'], 'idNum', fieldId);
-		var child = repeater['children'][fieldKey];
-		var childIdName = child['id']+selectorExt;
-		var childElement = jQuery('#'+childIdName);
+		var childId = gfRepeater_getIndex(repeater['children'], 'idNum', fieldId);
+		var child = repeater['children'][childId];
+		var childElement = gfRepeater_selectRepeaterChild(formId, repeaterId, repeatId, childId);
 
 		jQuery.each(child['inputs'], function(key, input){
 			var inputId = input['id']+selectorExt;
 			var inputName = input['name']+selectorExt;
-			var inputElement = gfRepeater_findElementByIdOrName(childElement, inputName, inputId);
+			var inputElement = gfRepeater_findElementByNameOrId(childElement, inputName, inputId);
 
 			jQuery(inputElement).bind('propertychange change click keyup input paste', function(){
 				gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, repeatId);
@@ -404,8 +404,7 @@ function gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, rep
 	var repeater = gfRepeater_repeaters[formId][repeaterId];
 	var repeaterChild = repeater['children'][repeaterChildId]
 	var conditionalLogic = repeaterChild['conditionalLogic'];
-	var repeaterChildIdName = repeaterChild['id']+selectorExt;
-	var repeaterChildElement = jQuery('#'+repeaterChildIdName);
+	var repeaterChildElement = gfRepeater_selectRepeaterChild(formId, repeaterId, repeatId, repeaterChildId);
 	var conditions = [];
 	var conditionsPassed = false;
 	var hideField = false;
@@ -413,10 +412,9 @@ function gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, rep
 	jQuery.each(conditionalLogic['rules'], function(key, value){
 		var condition = false;
 		var fieldId = value['fieldId'];
-		var fieldKey = gfRepeater_getIndex(repeater['children'], 'idNum', fieldId);
-		var child = repeater['children'][fieldKey];
-		var childIdName = child['id']+selectorExt;
-		var childElement = jQuery('#'+childIdName);
+		var childId = gfRepeater_getIndex(repeater['children'], 'idNum', fieldId);
+		var child = repeater['children'][childId];
+		var childElement = gfRepeater_selectRepeaterChild(formId, repeaterId, repeatId, childId);
 
 		if (child['type'] == 'checkbox' || child['type'] == 'radio') {
 			var inputValue = gfRepeater_getChoiceValue(childElement);
@@ -425,7 +423,7 @@ function gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, rep
 			var input = child['inputs'][1];
 			var inputId = input['id']+selectorExt;
 			var inputName = input['name']+selectorExt;
-			var inputElement = gfRepeater_findElementByIdOrName(childElement, inputName, inputId);
+			var inputElement = gfRepeater_findElementByNameOrId(childElement, inputName, inputId);
 			var inputValue = gfRepeater_getInputValue(inputElement);
 		}
 
@@ -552,8 +550,7 @@ function gfRepeater_unrepeatRepeater(formId, repeaterId, repeatId) {
 		.trigger('beforeUnRepeat', [repeaterId, repeatId]);
 
 	jQuery.each(repeater['children'], function(childId, value){
-		var childElement = gfRepeater_selectRepeaterChild(formId, repeaterId, repeatId, childId);
-		jQuery(childElement).remove();
+		gfRepeater_selectRepeaterChild(formId, repeaterId, repeatId, childId).remove();
 	});
 
 	repeater['data']['repeatCount'] -= 1;
@@ -664,7 +661,7 @@ function gfRepeater_resetInputs(formId, repeaterId, repeaterChildKey, repeaterCh
 		var inputId = this['id'];
 		var inputName = this['name'];
 		var inputDefaultValue = this['defaultValue'];
-		var inputElement = gfRepeater_findElementByIdOrName(repeaterChildElement, inputName, inputId);
+		var inputElement = gfRepeater_findElementByNameOrId(repeaterChildElement, inputName, inputId);
 
 		if (inputElement) {
 			gfRepeater_setInputValue(inputElement, inputDefaultValue);
@@ -684,14 +681,14 @@ function gfRepeater_selectRepeaterChild(formId, repeaterId, repeatId, childId) {
 }
 
 /*
-	gfRepeater_findElementByIdOrName(searchElement, elementName, elementId)
+	gfRepeater_findElementByNameOrId(searchElement, elementName, elementId)
 		Searches for an an element inside of another element by ID or Name. If both an ID and a Name are supplied it will first try the Name and then the ID.
 
 		searchElement			Element to search inside.
 		inputName (Optional)	A element name to search for.
 		inputId (Optional)		A element ID to search for.
 */
-function gfRepeater_findElementByIdOrName(searchElement, elementName, elementId) {
+function gfRepeater_findElementByNameOrId(searchElement, elementName, elementId) {
 	if (elementName) { var foundElement = jQuery(searchElement).find("[name^='"+elementName+"']"); }
 	if (!foundElement && elementId) { var foundElement = jQuery(searchElement).find("[id^='"+elementId+"']"); }
 	if (foundElement) { return foundElement; } else { return false; }
