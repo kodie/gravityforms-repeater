@@ -7,6 +7,7 @@ class GF_Field_Repeater_End extends GF_Field {
 
 		if ($admin_page == 'gf_edit_forms' && !empty($_GET['id'])) {
 			add_action('gform_field_standard_settings' , array('GF_Field_Repeater_End', 'gform_standard_settings'), 10, 2);
+			add_action('gform_field_appearance_settings' , array('GF_Field_Repeater_End', 'gform_appearance_settings'), 10, 2);
 			add_action('gform_editor_js', array('GF_Field_Repeater_End', 'gform_editor'));
 			add_filter('gform_tooltips', array('GF_Field_Repeater_End', 'gform_tooltips'));
 		}
@@ -14,6 +15,12 @@ class GF_Field_Repeater_End extends GF_Field {
 
 	public function get_form_editor_field_title() {
 		return 'Repeater End';
+	}
+
+	public function get_form_editor_field_settings() {
+		return array(
+			'css_class_setting'
+		);
 	}
 
 	public static function gform_standard_settings($position, $form_id) {
@@ -35,7 +42,11 @@ class GF_Field_Repeater_End extends GF_Field {
 			echo "	</label>
 					<input type=\"text\" id=\"field_repeater_end_remove\" class=\"fieldwidth-3\" size=\"35\" onchange=\"SetFieldProperty('remove', this.value);\">
 				</li>";
+		}
+	}
 
+	public static function gform_appearance_settings($position, $form_id) {
+		if ($position == 400) {
 			echo "<li class=\"repeater_end_settings field_setting\">
 					<input type=\"checkbox\" id=\"field_repeater_end_hideButtons\" onchange=\"SetFieldProperty('hideButtons', this.checked);\"> 
 					<label for=\"field_repeater_end_hideButtons\" class=\"inline\">Hide Add & Remove buttons ";
@@ -78,7 +89,7 @@ class GF_Field_Repeater_End extends GF_Field {
 		} else {
 			$add_html		= $this->add;
 			$remove_html	= $this->remove;
-			$doNotUse		= $this->doNotUse;
+			$hideButtons	= $this->hideButtons;
 			$tabindex		= GFCommon::get_tabindex();
 
 			if (empty($add_html)) { $add_html = "<img class=\"gf_repeater_add_default\" alt=\"+\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\">"; }
@@ -86,7 +97,7 @@ class GF_Field_Repeater_End extends GF_Field {
 
 			$field_content = "<div class=\"ginput_container ginput_container_repeater-end\">\n";
 
-			if (!$doNotUse) {
+			if (!$hideButtons) {
 				$field_content .= "<span class=\"gf_repeater_add\" {$tabindex}>{$add_html}</span>";
 				$field_content .= "<span class=\"gf_repeater_remove\" {$tabindex}>{$remove_html}</span>";
 			}
