@@ -194,17 +194,17 @@ function gfRepeater_getRepeaters() {
 }
 
 /*
-	gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildElement, repeatCount)
+	gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildElement, repeatId)
 		Adds the repeater ID number and Count number to the end of repeater child ID and name.
 
 		formId					The form Id.
 		repeaterId				The repeater ID.
 		repeaterChildElement	The child element to run the function for.
-		repeatCount (Optional)	The repeat count number to assign the child to. If a number is not specified, one will be automatically assigned. A 1 is required the first time this function is used during the setup process.
+		repeatId (Optional)		The repeatId to assign the child to. If a number is not specified, one will be automatically assigned. A 1 is required the first time this function is used during the setup process.
 */
-function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildElement, repeatCount) {
-	if (!repeatCount) { var repeatCount = gfRepeater_repeaters[formId][repeaterId]['data']['repeatCount'] + 1; }
+function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildElement, repeatId) {
 	var repeater = gfRepeater_repeaters[formId][repeaterId];
+	if (!repeatId) { var repeatId = repeater['data']['repeatCount'] + 1; }
 	var childId = jQuery(repeaterChildElement).attr('id').split('-')[0];
 	var childKey = gfRepeater_getIndex(repeater['children'], 'id', childId);
 
@@ -217,11 +217,29 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 		var inputMask = child['inputMask'];
 		var tabindex = repeater['data']['tabIndex'];
 
-		var newRootId = childId+'-'+repeaterId+'-'+repeatCount;
-		jQuery(repeaterChildElement).attr('id', newRootId);
+		var newRootId = childId+'-'+repeaterId+'-'+repeatId;
+		jQuery(repeaterChildElement)
+			.attr('id', newRootId)
+			.attr('data-repeater-parentId', repeaterId)
+			.attr('data-repeater-repeatId', repeatId)
+			.attr('data-repeater-childId', childKey)
+			.addClass('gf_repeater_child_field');
 
 		gfRepeater_replaceShortcodes(repeaterChildElement);
-		gfRepeater_doShortcode(repeaterChildElement, 'count', repeatCount);
+		gfRepeater_doShortcode(repeaterChildElement, 'count', repeatId);
+		gfRepeater_doShortcode(repeaterChildElement, 'buttons', repeater['controllers']['add'].parent().clone());
+		gfRepeater_doShortcode(repeaterChildElement, 'add', repeater['controllers']['add'].clone());
+		gfRepeater_doShortcode(repeaterChildElement, 'remove', repeater['controllers']['remove'].clone());
+
+		var removeFunction = 'gfRepeater_unrepeatRepeater('+formId+','+repeaterId+','+repeatId+');';
+		jQuery(repeaterChildElement)
+			.find('.gf_repeater_remove')
+			.attr({onclick:removeFunction,onkeypress:removeFunction})
+			.show();
+
+		jQuery(repeaterChildElement)
+			.find('.gf_repeater_add')
+			.show();
 
 		jQuery.each(repeater['children'][childKey]['inputs'], function(key, value){
 			var inputId = this['id'];
@@ -235,26 +253,27 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 			}
 
 			if (inputId) {
-				var newInputId = inputId+'-'+repeaterId+'-'+repeatCount;
+				var newInputId = inputId+'-'+repeaterId+'-'+repeatId;
 				jQuery(inputElement).attr('id', newInputId);
 				jQuery(repeaterChildElement).find("label[for^='"+inputId+"']").attr('for', newInputId);
 			}
 
 			if (inputName) {
 				if (inputName.slice(-2) == '[]') {
-					var newInputName = inputName.slice(0, inputName.length - 2)+'-'+repeaterId+'-'+repeatCount+'[]';
+					var newInputName = inputName.slice(0, inputName.length - 2)+'-'+repeaterId+'-'+repeatId+'[]';
 				} else {
-					var newInputName = inputName+'-'+repeaterId+'-'+repeatCount;
+					var newInputName = inputName+'-'+repeaterId+'-'+repeatId;
 				}
 
-				jQuery(inputElement).attr('name', newInputName);
-				jQuery(inputElement).attr('tabindex', tabindex);
+				jQuery(inputElement)
+					.attr('name', newInputName)
+					.attr('tabindex', tabindex);
 			}
 
 			if (inputMask) { jQuery(inputElement).mask(inputMask); }
 
-			if (this['prePopulate'][repeatCount]) {
-				prePopulate = this['prePopulate'][repeatCount];
+			if (this['prePopulate'][repeatId]) {
+				prePopulate = this['prePopulate'][repeatId];
 			} else if (this['prePopulate'][0]) {
 				prePopulate = this['prePopulate'][0];
 			}
@@ -273,9 +292,10 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 			}
 
 			if (window['gformInitDatepicker'] && childType == 'date' && inputCount == 2 && key == 1) {
-				jQuery(inputElement).removeClass('hasDatepicker');
-				jQuery(inputElement).datepicker('destroy');
-				jQuery(inputElement).siblings('.ui-datepicker-trigger').remove();
+				jQuery(inputElement)
+					.removeClass('hasDatepicker')
+					.datepicker('destroy')
+					.siblings('.ui-datepicker-trigger').remove();
 			}
 
 			if (gfRepeater_submitted) {
@@ -294,7 +314,7 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 					}
 
 					var inputValue = gfRepeater_getInputValue(inputElement);
-					if (!inputValue && repeatCount <= repeater['data']['prevRepeatCount']) {
+					if (!inputValue && repeatId <= repeater['data']['prevRepeatCount']) {
 						failedValidation = true;
 					}
 				}
@@ -317,8 +337,9 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 						repeaterChildElement.append("<div class=\"gfield_description validation_message\">This field is required.</div>");
 					}
 				} else {
-					repeaterChildElement.removeClass('gfield_error');
-					repeaterChildElement.find('.validation_message').remove();
+					repeaterChildElement
+						.removeClass('gfield_error')
+						.find('.validation_message').remove();
 				}
 			}
 		}
@@ -326,12 +347,31 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 }
 
 /*
-	gfRepeater_conditionalLogic_set(formId, repeaterId, repeaterChildId, repeatCount)
+	gfRepeater_resetRepeaterChildrenAttrs(formId, repeaterId)
+		Resets all repeatId's so that they are chronological.
+*/
+function gfRepeater_resetRepeaterChildrenAttrs(formId, repeaterId) {
+	var repeaterChildren = gfRepeater_selectRepeaterChild(formId, repeaterId);
+	var x = 0;
+
+	jQuery(repeaterChildren).each(function(){
+		if (jQuery(this).attr('data-repeater-childid') == 1) {
+			x += 1;
+		}
+
+		if (jQuery(this).attr('data-repeater-repeatid') !== x) {
+			gfRepeater_setRepeaterChildAttrs(formId, repeaterId, jQuery(this), x);
+		}
+	});
+}
+
+/*
+	gfRepeater_conditionalLogic_set(formId, repeaterId, repeaterChildId, repeatId)
 		Runs 'gfRepeater_conditionalLogic_do' and assigns change event for all fields involed with the repeaterChildElement's conditional logic.
 */
-function gfRepeater_conditionalLogic_set(formId, repeaterId, repeaterChildId, repeatCount) {
-	gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, repeatCount);
-	var selectorExt = '-'+repeaterId+'-'+repeatCount;
+function gfRepeater_conditionalLogic_set(formId, repeaterId, repeaterChildId, repeatId) {
+	gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, repeatId);
+	var selectorExt = '-'+repeaterId+'-'+repeatId;
 	var repeater = gfRepeater_repeaters[formId][repeaterId];
 	var repeaterChild = repeater['children'][repeaterChildId]
 	var conditionalLogic = repeaterChild['conditionalLogic'];
@@ -349,18 +389,18 @@ function gfRepeater_conditionalLogic_set(formId, repeaterId, repeaterChildId, re
 			var inputElement = gfRepeater_findElementByIdOrName(childElement, inputName, inputId);
 
 			jQuery(inputElement).bind('propertychange change click keyup input paste', function(){
-				gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, repeatCount);
+				gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, repeatId);
 			});
 		});
 	});
 }
 
 /*
-	gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, repeatCount)
+	gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, repeatId)
 		Hides or Shows repeaterChildElement depending on conditional logic.
 */
-function gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, repeatCount) {
-	var selectorExt = '-'+repeaterId+'-'+repeatCount;
+function gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, repeatId) {
+	var selectorExt = '-'+repeaterId+'-'+repeatId;
 	var repeater = gfRepeater_repeaters[formId][repeaterId];
 	var repeaterChild = repeater['children'][repeaterChildId]
 	var conditionalLogic = repeaterChild['conditionalLogic'];
@@ -405,13 +445,13 @@ function gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, rep
 
 	if (hideField) {
 		repeaterChildElement.hide();
-		if (jQuery.inArray(repeatCount, conditionalLogic['skip']) == -1) {
-			conditionalLogic['skip'].push(repeatCount);
+		if (jQuery.inArray(repeatId, conditionalLogic['skip']) == -1) {
+			conditionalLogic['skip'].push(repeatId);
 		}
 	} else {
 		repeaterChildElement.show();
-		if (jQuery.inArray(repeatCount, conditionalLogic['skip']) !== -1) {
-			var skipIndex = conditionalLogic['skip'].indexOf(repeatCount);
+		if (jQuery.inArray(repeatId, conditionalLogic['skip']) !== -1) {
+			var skipIndex = conditionalLogic['skip'].indexOf(repeatId);
 			conditionalLogic['skip'].splice(skipIndex, 1);
 		}
 	}
@@ -440,10 +480,10 @@ function gfRepeater_doShortcode(element, shortcode, value) {
 		element			The element to search and replace.
 */
 function gfRepeater_replaceShortcodes(element) {
-	var shortcodes = ['count'];
-	var html = element.html();
+	var shortcodes = ['count', 'buttons', 'add', 'remove'];
 
 	jQuery.each(shortcodes, function(key, shortcode){
+		var html = element.html();
 		element.html(html.replace('[gfRepeater-'+shortcode+']', '<span class=\"gfRepeater-shortcode-'+shortcode+'\"></span>'));
 	});
 }
@@ -457,13 +497,14 @@ function gfRepeater_replaceShortcodes(element) {
 */
 function gfRepeater_repeatRepeater(formId, repeaterId) {
 	var repeater = gfRepeater_repeaters[formId][repeaterId];
+	var repeatId = repeater['data']['repeatCount'] + 1;
 	if (repeater['settings']['max'] && repeater['data']['repeatCount'] >= repeater['settings']['max']) { return; }
-	jQuery(repeater['controllers']['start']).closest('form').trigger('beforeRepeat', [repeaterId, repeater['data']['repeatCount'] + 1]);
 
-	var lastElementKey = repeater['data']['childrenCount'];
-	var lastElement = repeater['children'][lastElementKey]['element'];
-	lastElement = lastElement.attr('id');
-	lastElement = jQuery('#'+lastElement.slice(0, -1)+gfRepeater_repeaters[formId][repeaterId]['data']['repeatCount']);
+	jQuery(repeater['controllers']['start'])
+		.parents('form')
+		.trigger('beforeRepeat', [repeaterId, repeatId]);
+
+	var lastElement = gfRepeater_selectRepeaterChild(formId, repeaterId).last();
 
 	jQuery.each(repeater['children'], function(key, value){
 		var clonedElement = jQuery(this.element).clone();
@@ -474,7 +515,7 @@ function gfRepeater_repeatRepeater(formId, repeaterId) {
 		clonedElement.insertAfter(lastElement);
 
 		if (this.conditionalLogic) {
-			gfRepeater_conditionalLogic_set(formId, repeaterId, key, repeater['data']['repeatCount'] + 1);
+			gfRepeater_conditionalLogic_set(formId, repeaterId, key, repeatId);
 		}
 
 		lastElement = clonedElement;
@@ -486,26 +527,32 @@ function gfRepeater_repeatRepeater(formId, repeaterId) {
 
 	if (window['gformInitDatepicker']) { gformInitDatepicker(); }
 
-	jQuery(repeater['controllers']['start']).closest('form').trigger('afterRepeat', [repeaterId, repeater['data']['repeatCount']]);
+	jQuery(repeater['controllers']['start'])
+		.parents('form')
+		.trigger('afterRepeat', [repeaterId, repeatId]);
+
 	if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - repeated'); }
 }
 
 /*
-	gfRepeater_unrepeatRepeater(formId, repeaterId, repeaterChildId)
+	gfRepeater_unrepeatRepeater(formId, repeaterId, repeatId)
 		Un-repeats the repeater once.
 
 		formId						The form Id.
 		repeaterId					The repeater ID number to unrepeat.
-		repeaterChildId (Optional)	The repeater child ID number to unrepeat. If an ID number is not specified, the last one will be chosen.
+		repeatId (Optional)			The repeat ID number to unrepeat. If an ID number is not specified, the last one will be chosen.
 */
-function gfRepeater_unrepeatRepeater(formId, repeaterId, repeaterChildId) {
+function gfRepeater_unrepeatRepeater(formId, repeaterId, repeatId) {
 	var repeater = gfRepeater_repeaters[formId][repeaterId];
 	if (repeater['data']['repeatCount'] <= repeater['settings']['min']) { return; }
-	if (!repeaterChildId) { var repeaterChildId = repeater['data']['repeatCount']; }
-	jQuery(repeater['controllers']['start']).closest('form').trigger('beforeUnRepeat', [repeaterId, repeaterChildId]);
+	if (!repeatId) { var repeatId = repeater['data']['repeatCount']; }
 
-	jQuery.each(repeater['children'], function(key, value){
-		var childElement = jQuery('#'+this['id']+'-'+repeaterId+'-'+repeaterChildId);
+	jQuery(repeater['controllers']['start'])
+		.parents('form')
+		.trigger('beforeUnRepeat', [repeaterId, repeatId]);
+
+	jQuery.each(repeater['children'], function(childId, value){
+		var childElement = gfRepeater_selectRepeaterChild(formId, repeaterId, repeatId, childId);
 		jQuery(childElement).remove();
 	});
 
@@ -513,8 +560,15 @@ function gfRepeater_unrepeatRepeater(formId, repeaterId, repeaterChildId) {
 	gfRepeater_updateDataElement(formId, repeaterId);
 	gfRepeater_updateRepeaterControls(formId, repeaterId);
 
-	jQuery(repeater['controllers']['start']).closest('form').trigger('afterUnRepeat', [repeaterId, repeaterChildId]);
-	if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - Child #'+repeaterChildId+' - unrepeated'); }
+	if (repeatId !== repeater['data']['repeatCount'] + 1) {
+		gfRepeater_resetRepeaterChildrenAttrs(formId, repeaterId);
+	}
+
+	jQuery(repeater['controllers']['start'])
+		.parents('form')
+		.trigger('afterUnRepeat', [repeaterId, repeatId]);
+
+	if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - Repeat #'+repeatId+' - unrepeated'); }
 }
 
 /*
@@ -616,6 +670,17 @@ function gfRepeater_resetInputs(formId, repeaterId, repeaterChildKey, repeaterCh
 			gfRepeater_setInputValue(inputElement, inputDefaultValue);
 		}
 	});
+}
+
+/*
+	gfRepeater_selectRepeaterChild(formId, repeaterId, repeatId, childId)
+		Returns the repeater child element. repeatId and childId are optional.
+*/
+function gfRepeater_selectRepeaterChild(formId, repeaterId, repeatId, childId) {
+	var selector = 'form#gform_'+formId+'>.gform_body>.gform_fields>.gfield.gf_repeater_child_field[data-repeater-parentid='+repeaterId+']';
+	if (repeatId) { selector += '[data-repeater-repeatid='+repeatId+']'; }
+	if (childId) { selector += '[data-repeater-childid='+childId+']'; }
+	return jQuery(selector);
 }
 
 /*
