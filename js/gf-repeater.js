@@ -676,7 +676,8 @@ function gfRepeater_resetInputs(formId, repeaterId, childId, repeaterChildElemen
 */
 function gfRepeater_select(formId, repeaterId, repeatId, childId, inputId) {
 	var selector = 'div#gform_wrapper_'+formId+'>form#gform_'+formId;
-	if (repeaterId) { selector += '>.gform_body>.gform_fields>.gfield.gf_repeater_child_field[data-repeater-parentid='+repeaterId+']'; }
+	if (repeaterId || repeatId || childId || inputId) { selector += '>.gform_body>.gform_fields>.gfield.gf_repeater_child_field'; }
+	if (repeaterId) { selector += '[data-repeater-parentid='+repeaterId+']'; }
 	if (repeatId) { selector += '[data-repeater-repeatid='+repeatId+']'; }
 	if (childId) { selector += '[data-repeater-childid='+childId+']'; }
 	if (inputId) { selector += ' [data-repeater-inputid='+inputId+']'; }
@@ -831,14 +832,13 @@ function gfRepeater_start() {
 	});
 
 	if (window['gformInitDatepicker']) { gformInitDatepicker(); }
-
-	jQuery(window).trigger('gform_repeater_init_done');
 }
 
 // Initiation after gravity forms has rendered.
 jQuery(document).bind('gform_post_render', function(){
 	if (gfRepeater_getRepeaters()) {
 		gfRepeater_start();
+		jQuery(window).trigger('gform_repeater_init_done');
 	} else {
 		console.log('There was an error with one of your repeaters. This is usually caused by forgetting to include a repeater-end field or by trying to nest repeaters.');
 	}
