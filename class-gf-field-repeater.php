@@ -558,8 +558,8 @@ class GF_Field_Repeater extends GF_Field {
 		} else { return false; }
 
 		foreach ($form['fields'] as $field_key=>$field_value) {
-			if (is_array($field_value)) {
-				if (array_key_exists($key, $field_value)) {
+			if (is_object($field_value)) {
+				if (property_exists($field_value, $key)) {
 					if ($field_value[$key] == $value) { return $field_key; }
 				}
 			}
