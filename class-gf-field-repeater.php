@@ -553,10 +553,18 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public static function get_field_index($form, $key = 'type', $value = 'repeater') {
-		if (!array_key_exists('fields', $form)) { return false; }
+		if (is_array($form)) {
+			if (!array_key_exists('fields', $form)) { return false; }
+		} else { return false; }
+
 		foreach ($form['fields'] as $field_key=>$field_value) {
-			if ($field_value[$key] == $value) { return $field_key; }
+			if (is_array($field_value)) {
+				if (array_key_exists($key, $field_value)) {
+					if ($field_value[$key] == $value) { return $field_key; }
+				}
+			}
 		}
+
 		return false;
 	}
 
