@@ -474,6 +474,14 @@ class GF_Field_Repeater extends GF_Field {
 		return trim($output);
 	}
 
+	public function get_value_export($entry, $input_id = '', $use_text = false, $is_csv = false) {
+		if (empty($input_id)) { $input_id = $this->id; }
+		$output = rgar($entry, $input_id);
+		$output = GF_Field_Repeater::get_value_entry_detail($output, '', false, 'text', 'email');
+		$output = preg_replace("/[\r\n]+/", ", ", trim($output));
+		return $output;
+	}
+
 	public static function gform_hide_children($form) {
 		$form_id = $form['id'];
 		$repeaterChildren = Array();
