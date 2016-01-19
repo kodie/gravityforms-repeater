@@ -1,4 +1,4 @@
-var gfRepeater_debug = true;
+var gfRepeater_debug = false;
 var gfRepeater_repeaters = {};
 var gfRepeater_submitted = false;
 
@@ -439,6 +439,7 @@ function gfRepeater_conditionalLogic_set(formId, repeaterId, repeaterChildId, re
 			var inputs = gfRepeater_select(formId, repeaterId, repeatId, childId, '*');
 		} else {
 			var inputs = jQuery('#field_' + formId + '_' + fieldId + ' :input');
+			repeatId = null;
 		}
 
 		jQuery.each(inputs, function(key, input){
@@ -524,34 +525,35 @@ function gfRepeater_conditionalLogic_do(formId, repeaterId, repeaterChildId, rep
 	}
 
 	if (repeaterChild['type'] == 'section') {
-		var sectionChildren = gfRepeater_getIndex(repeater['children'], 'parentSection', repeaterChildId);
-		if (sectionChildren !== false) {
-			if (sectionChildren.length == 1) { effectedIds.push(sectionChildren); } else { effectedIds.concat(sectionChildren); }
-		}
+		var sectionChildren = gfRepeater_getIndex(repeater['children'], 'parentSection', repeaterChildId, true);
+		if (sectionChildren !== false) { effectedIds = effectedIds.concat(sectionChildren); }
 	}
 
 	jQuery.each(effectedIds, function(key, value){
 		var effectedChild = repeater['children'][value];
 		var effectedLogic = effectedChild['conditionalLogic'];
 		var effectedElement = gfRepeater_select(formId, repeaterId, repeatId, value);
+		var skipId = repeatId;
 
-		if (hideField) {
-			effectedElement.hide();
+		if (skipId == null) { skipId = 'all'; }
 
-			if (effectedLogic) {
-				if (jQuery.inArray(repeatId, effectedLogic['skip']) == -1) {
-					effectedLogic['skip'].push(repeatId);
+		if (effectedElement.length) {
+			if (hideField) {
+				effectedElement.hide();
+
+				if (effectedLogic) {
+					if (jQuery.inArray(skipId, effectedLogic['skip']) == -1) {
+						effectedLogic['skip'].push(skipId);
+					}
 				}
 			} else {
-				effectedLogic = [repeatId];
-			}
-		} else {
-			effectedElement.show();
+				effectedElement.show();
 
-			if (effectedLogic) {
-				if (jQuery.inArray(repeatId, effectedLogic['skip']) !== -1) {
-					var skipIndex = effectedLogic['skip'].indexOf(repeatId);
-					effectedLogic['skip'].splice(skipIndex, 1);
+				if (effectedLogic) {
+					if (jQuery.inArray(skipId, effectedLogic['skip']) !== -1) {
+						var skipIndex = effectedLogic['skip'].indexOf(skipId);
+						effectedLogic['skip'].splice(skipIndex, 1);
+					}
 				}
 			}
 		}
@@ -812,25 +814,30 @@ function gfRepeater_findElementByNameOrId(searchElement, elementName, elementId)
 
 /*
 	gfRepeater_getIndex
-		Searches 'object' where 'key' equals 'value'. Returns an array if multiple items were found and false if nothing was found.
+		Searches 'object' where 'key' equals 'value'.
+		Returns first result if multiple is false.
+		Returns array with all key results if multiple is true.
+		Returns false if nothing was found.
 
-		object	Object or array to search through.
-		key		Key to search for.
-		value	Value to search for.
+		object		Object or array to search through.
+		key			Key to search for.
+		value		Value to search for.
+		multiple	Set to true to return all results in an array.
 */
-function gfRepeater_getIndex(object, key, value) {
+function gfRepeater_getIndex(object, key, value, multiple) {
 	var keys = [];
 
 	jQuery.each(object, function(fieldKey, fieldValue){
 		if (fieldValue[key] == value) {
 			keys.push(fieldKey);
+			if (!multiple) { return false; }
 		}
 	});
 
 	if (keys.length) {
-		if (keys.length == 1) {
-			return keys[0];
-		} else { return keys; }
+		if (multiple) {
+			return keys;
+		} else { return keys[0]; }
 	} else { return false; }
 }
 

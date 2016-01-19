@@ -157,7 +157,7 @@ class GF_Field_Repeater extends GF_Field {
 					if (!is_array($inputNames)) { continue; }
 
 					if (is_array($repeatSkips)) {
-						if (in_array($i, $repeatSkips)) { continue; }
+						if (in_array($i, $repeatSkips) || in_array('all', $repeatSkips)) { continue; }
 					}
 
 					foreach ($inputNames as $inputName) {
@@ -309,7 +309,7 @@ class GF_Field_Repeater extends GF_Field {
 					$repeatSkips = $field['conditionalLogic']['skip'];
 
 					if (is_array($repeatSkips)) {
-						if (in_array($i, $repeatSkips)) { continue; }
+						if (in_array($i, $repeatSkips) || in_array('all', $repeatSkips)) { continue; }
 					}
 					
 					if (is_array($inputNames)) {
