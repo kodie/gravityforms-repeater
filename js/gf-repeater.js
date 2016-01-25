@@ -42,17 +42,17 @@ function gfRepeater_getRepeaters() {
 					repeaterInfo = jQuery(dataElement).val();
 					if (repeaterInfo) { repeaterInfo = JSON.parse(repeaterInfo); }
 
-					if (repeaterId == 1) {
-						if (jQuery.captures()) {
-							capturedData = jQuery.captures(dataElement.attr('name'));
-							if (capturedData) {
-								capturedData = JSON.parse(capturedData);
-								if (capturedData['formId'] == formId) {
-									gfRepeater_submitted = true;
-								}
+					if (jQuery.captures()) {
+						capturedData = jQuery.captures(dataElement.attr('name'));
+						if (capturedData) {
+							capturedData = JSON.parse(capturedData);
+							if (repeaterId == 1 && capturedData['formId'] == formId) {
+								gfRepeater_submitted = true;
 							}
 						}
-						
+					}
+
+					if (repeaterId == 1) {
 						jQuery(form).capture();
 					}
 
@@ -260,6 +260,7 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 	if (!repeatId) { var repeatId = repeater['data']['repeatCount'] + 1; }
 	var childId = jQuery(repeaterChildElement).attr('id').split('-')[0];
 	var childKey = gfRepeater_getIndex(repeater['children'], 'id', childId);
+	var checkValidation = jQuery('#gform_wrapper_' + formId).hasClass('gform_validation_error');
 
 	if (childKey) {
 		var failedValidation = false;
@@ -353,7 +354,7 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 					.siblings('.ui-datepicker-trigger').remove();
 			}
 
-			if (gfRepeater_submitted) {
+			if (gfRepeater_submitted && checkValidation) {
 				if (newInputName) {
 					var savedValue = jQuery.captures(newInputName);
 					if (savedValue) {
@@ -385,7 +386,7 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 				childLabel.append("<span class=\"gfield_required\">*</span>");
 			}
 
-			if (gfRepeater_submitted) {
+			if (gfRepeater_submitted && checkValidation) {
 				if (failedValidation) {
 					repeaterChildElement.addClass('gfield_error');
 					if (!repeaterChildElement.has('.validation_message').length) {
