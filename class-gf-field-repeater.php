@@ -42,6 +42,7 @@ class GF_Field_Repeater extends GF_Field {
 	public function get_form_editor_field_settings() {
 		return array(
 			'admin_label_setting',
+			'css_class_setting',
 			'description_setting',
 			'error_message_setting',
 			'label_setting',
