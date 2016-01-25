@@ -38,6 +38,14 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 ### Shortcodes
 You can place shortcodes inside of input labels, input descriptions, and HTML blocks!
 * [gfRepeater-count] - Will output the current repeat number.
+* [gfRepeater-buttons] - Will output both the '+' and '-' buttons.
+* [gfRepeater-add] - Will output the '+' button.
+* [gfRepeater-remove] - Will output the '-' button.
+
+### CSS Classes
+You can use these CSS classes in the in the "Custom CSS Class" setting to do different things.
+* gf_repeater_hide_add - Will hide the '+' button if placed in the repeater end css setting.
+* gf_repeater_hide_remove - Will hide the '-' button if placed in the repeater end css setting.
 
 ### Javascript
 ##### Functions
@@ -67,14 +75,19 @@ gfRepeater_unrepeatRepeaterTimes(formId, repeaterId, timesX);
 gfRepeater_setRepeater(formId, repeaterId, timesX);
   Repeats or unrepeats the repeater to get it to whatever timesX is.
 ```
+```
+gfRepeater_select(formId, repeaterId, repeatId, childId, inputId);
+  Selects an element depending on the variables passed. All variables are optional besides formId. inputId also accepts '*' to select all inputs.
+```
 
 ##### Triggers
 These triggers are assigned to the form will be fired during different repeater related events with the repeaterId and repeaterChildId attached to them.
 ```
-beforeRepeat - Fires right before a repeater is about to be repeated.
-afterRepeat - Fires right after a repeater has been repeated.
-beforeUnRepeat - Fires right before a repeater is about to be un-repeated.
-afterUnRepeat - Fires right after a repeater has been un-repeated.
+gform_repeater_before_repeat - Fires right before a repeater is about to be repeated.
+gform_repeater_after_repeat - Fires right after a repeater has been repeated.
+gform_repeater_before_unrepeat - Fires right before a repeater is about to be un-repeated.
+gform_repeater_after_unrepeat - Fires right after a repeater has been un-repeated.
+gform_repeater_init_done - Fires after the repeater is done setting up. Also fires on the window when all repeaters are done setting up.
 ```
 
 ##### Information
@@ -198,24 +211,25 @@ and you're good to go!
 **Warning: There is a slight possibility that development versions are unstable. Use at your own risk.**
 
 ### Version
-1.0.8
+1.0.9
 
 ### Changelog
-##### 1.0.8
-* Fixed bug where sometimes for some reason an input name would be sent as an array and cause a PHP error to display.
-* Fixed bug where sometimes validation message would be displayed multiple times for same field.
-* Fixed bug where filters would not be loaded if Repeater was the first field on the form.
-* Fixed bug where sometimes captured repeater input data would be applied to other forms in cases where there are multiple forms on one page.
-* Fixed prepopulation for checkbox and radio fields.
-* Changed the way settings and field data is sent to Javascript so now monkey patching the input mask script is no longer necessary.
-* Field input masks are now stored in gfRepeaters data. (gfRepeaters[repeaterId]['children'][childId]['inputMask'])
-* Added support for conditional logic enabled fields!
-* Added support for Repeater merge tags.
-* Cleaned up formatting for text-only email notifications.
-* Changed Repeater End Setting from 'doNotUse' to 'hideButtons'.
-* Added Repeater Start Setting 'Hide Label & Description' to appearance tab.
-* Repeater label now defaults to 'Repeater' instead of blank and adminLabel now defaults to blank instead of 'Repeater'.
-* Repeater Javascript now initiates after 'gform_post_render' has been triggered instead of on window load.
+##### 1.0.9
+* Fixed bug where in some cases a PHP error would occur when attempting to automatically disable ajax on a form.
+* Fixed bug where sometimes a javascript error would occur on date fields with a calendar icon.
+* Fixed bug where removing a specific repeatId would cause some weird things to happen.
+* Fixed bug where repeaters in a multipage form that are not on the first page would appear to have failed validation even if the form hasn't been submitted.
+* Fixed bug where repeaters in a muttipage form that are not on the first page would forget their saved data and ignore their start setting.
+* Fixed hideButtons setting.
+* Added [gfRepeater-buttons], [gfRepeater-add], and [gfRepeater-remove] shortcodes.
+* Added custom CSS option to repeater start and end fields.
+* Added gf_repeater_hide_add and gf_repeater_hide_remove CSS classes.
+* Added gfRepeater_select javascript function.
+* Added 'gform_repeater_init_done' trigger to window and individual forms.
+* Changed 'beforeRepeat', 'afterRepeat', 'beforeUnRepeat', and 'afterUnRepeat' triggers to 'gform_repeater_before_repeat', 'gform_repeater_after_repeat', 'gform_repeater_before_unrepeat', and 'gform_repeater_after_unrepeat'.
+* Repeated fields now respect conditional logic from outside the repeater.
+* Applying conditional logic on a repeated section field now also applys that logic on repeated fields under that section.
+* When exporting entries, repeater child data is now exported in a comma-separated list.
 
 ### Requirements
 * Wordpress 3.9 or later

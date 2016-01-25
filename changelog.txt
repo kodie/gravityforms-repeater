@@ -1,3 +1,20 @@
+v1.0.9 (1/25/2016)
+- Fixed bug where in some cases a PHP error would occur when attempting to automatically disable ajax on a form.
+- Fixed bug where sometimes a javascript error would occur on date fields with a calendar icon.
+- Fixed bug where removing a specific repeatId would cause some weird things to happen.
+- Fixed bug where repeaters in a multipage form that are not on the first page would appear to have failed validation even if the form hasn't been submitted.
+- Fixed bug where repeaters in a muttipage form that are not on the first page would forget their saved data and ignore their start setting.
+- Fixed hideButtons setting.
+- Added [gfRepeater-buttons], [gfRepeater-add], and [gfRepeater-remove] shortcodes.
+- Added custom CSS option to repeater start and end fields.
+- Added gf_repeater_hide_add and gf_repeater_hide_remove CSS classes.
+- Added gfRepeater_select javascript function.
+- Added 'gform_repeater_init_done' trigger to window and individual forms.
+- Changed 'beforeRepeat', 'afterRepeat', 'beforeUnRepeat', and 'afterUnRepeat' triggers to 'gform_repeater_before_repeat', 'gform_repeater_after_repeat', 'gform_repeater_before_unrepeat', and 'gform_repeater_after_unrepeat'.
+- Repeated fields now respect conditional logic from outside the repeater.
+- Applying conditional logic on a repeated section field now also applys that logic on repeated fields under that section.
+- When exporting entries, repeater child data is now exported in a comma-separated list.
+
 v1.0.8 (12/30/2015)
 - Fixed bug where sometimes for some reason an input name would be sent as an array and cause a PHP error to display.
 - Fixed bug where sometimes validation message would be displayed multiple times for same field.

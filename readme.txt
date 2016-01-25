@@ -3,7 +3,7 @@ Contributors: KodieGrantham
 Tags: gravityforms, gravity, forms, form, gravityforms, repeater, repeat, duplicate, duplication, field, fields
 Requires at least: 3.9
 Tested up to: 4.4
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 
 A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.
 
@@ -46,6 +46,15 @@ A Gravity Forms add-on that allows specified groups of fields to be repeated by 
 You can place shortcodes inside of input labels, input descriptions, and HTML blocks!
 
 * [gfRepeater-count] - Will output the current repeat number.
+* [gfRepeater-buttons] - Will output both the '+' and '-' buttons.
+* [gfRepeater-add] - Will output the '+' button.
+* [gfRepeater-remove] - Will output the '-' button.
+
+= CSS Classes =
+You can use these CSS classes in the in the "Custom CSS Class" setting to do different things.
+
+* gf_repeater_hide_add - Will hide the '+' button if placed in the repeater end css setting.
+* gf_repeater_hide_remove - Will hide the '-' button if placed in the repeater end css setting.
 
 = Check out the source on GitHub! =
 <https://github.com/kodie/gravityforms-repeater>
@@ -71,6 +80,23 @@ Yes! Just go to the form editor and change the `Add HTML` and `Remove HTML` sett
 4. A view of the front-end. The only visible difference will be the added `+` and `-` buttons.
 
 == Changelog ==
+= 1.0.9 =
+* Fixed bug where in some cases a PHP error would occur when attempting to automatically disable ajax on a form.
+* Fixed bug where sometimes a javascript error would occur on date fields with a calendar icon.
+* Fixed bug where removing a specific repeatId would cause some weird things to happen.
+* Fixed bug where repeaters in a multipage form that are not on the first page would appear to have failed validation even if the form hasn't been submitted.
+* Fixed bug where repeaters in a muttipage form that are not on the first page would forget their saved data and ignore their start setting.
+* Fixed hideButtons setting.
+* Added [gfRepeater-buttons], [gfRepeater-add], and [gfRepeater-remove] shortcodes.
+* Added custom CSS option to repeater start and end fields.
+* Added gf_repeater_hide_add and gf_repeater_hide_remove CSS classes.
+* Added gfRepeater_select javascript function.
+* Added 'gform_repeater_init_done' trigger to window and individual forms.
+* Changed 'beforeRepeat', 'afterRepeat', 'beforeUnRepeat', and 'afterUnRepeat' triggers to 'gform_repeater_before_repeat', 'gform_repeater_after_repeat', 'gform_repeater_before_unrepeat', and 'gform_repeater_after_unrepeat'.
+* Repeated fields now respect conditional logic from outside the repeater.
+* Applying conditional logic on a repeated section field now also applys that logic on repeated fields under that section.
+* When exporting entries, repeater child data is now exported in a comma-separated list.
+
 = 1.0.8 =
 * Fixed bug where sometimes for some reason an input name would be sent as an array and cause a PHP error to display.
 * Fixed bug where sometimes validation message would be displayed multiple times for same field.
