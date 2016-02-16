@@ -354,7 +354,7 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 					.siblings('.ui-datepicker-trigger').remove();
 			}
 
-			if (gfRepeater_submitted && checkValidation) {
+			if (gfRepeater_submitted) {
 				if (newInputName) {
 					var savedValue = jQuery.captures(newInputName);
 					if (savedValue) {
