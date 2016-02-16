@@ -844,7 +844,7 @@ function gfRepeater_getIndex(object, key, value, multiple) {
 
 /*
 	gfRepeater_getChoiceValue(fieldElement)
-		Searches 'fieldElement' for checkboxes and radios. Returns an array with the labels of all the values that are 'checked'.
+		Searches 'fieldElement' for checkboxes and radios. Returns an array with the values of all the values that are 'checked'.
 
 		fieldElement	The element to search in.
 */
@@ -852,9 +852,8 @@ function gfRepeater_getChoiceValue(fieldElement) {
 	var value = [];
 	jQuery(fieldElement).find(':checkbox, :radio').each(function(){
 		if (jQuery(this).prop('checked') == true) {
-			var id = this.id;
-			var label = jQuery(this).siblings('label').first().text();
-			value.push(label);
+			var val = jQuery(this).val();
+			value.push(val);
 		}
 	});
 	return value;
