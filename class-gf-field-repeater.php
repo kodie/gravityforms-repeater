@@ -29,7 +29,7 @@ class GF_Field_Repeater extends GF_Field {
 		if (!empty($form)) {
 			if (GF_Field_Repeater::get_field_index($form) !== false) {
 				wp_enqueue_script('gforms_repeater_postcapture_js', plugins_url('js/jquery.postcapture.min.js', __FILE__), array('jquery'), '0.0.1');
-				wp_enqueue_script('gforms_repeater_js', plugins_url('js/gf-repeater.min.js', __FILE__), array('jquery'), GF_REPEATER_VERSION);
+				wp_enqueue_script('gforms_repeater_js', plugins_url('js/gf-repeater.js', __FILE__), array('jquery'), GF_REPEATER_VERSION);
 				wp_enqueue_style('gforms_repeater_css', plugins_url('css/gf-repeater.css', __FILE__), array(), GF_REPEATER_VERSION);
 			}
 		}

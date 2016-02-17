@@ -142,7 +142,7 @@ jQuery('#gform_6 #input_6_7').change(function(){
 
 Change the value of a field if the repeater is repeated or un-repeated:
 ```
-jQuery('#gform_9').on('afterRepeat afterUnRepeat', function(event, repeaterId, repeaterChildId){
+jQuery('#gform_9').on('gform_repeater_after_repeat gform_repeater_after_unrepeat', function(event, repeaterId, repeatId){
     if (repeaterId == 1) {
         var repeatCount = gfRepeater_repeaters[9][1]['data']['repeatCount'];
         var totalPrice = 27.47 * repeatCount;
