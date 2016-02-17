@@ -375,6 +375,9 @@ class GF_Field_Repeater extends GF_Field {
 				$repeatCount++;
 				$tableContents = '';
 
+				// No need to continue if value is null
+				if (null === $value) continue;
+				
 				if (!empty($value) && !is_array($value)) {
 					$save_value = $value;
 					unset($value);
