@@ -50,6 +50,22 @@ class GF_Field_Repeater extends GF_Field {
 		);
 	}
 
+	public function add_button($field_groups) {
+		foreach ($field_groups as &$group) {
+			if ($group['name'] == 'advanced_fields') {
+				$group['fields'][] = array(
+					'class'     => 'button',
+					'data-type' => 'repeater',
+					'value'     => 'Repeater',
+					'onclick'   => "StartAddField('repeater');"
+				);
+				break;
+			}
+		}
+
+		return $field_groups;
+	}
+
 	public static function gform_set_defaults() {
 		echo "
 			case \"repeater\" :

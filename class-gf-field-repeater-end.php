@@ -23,6 +23,10 @@ class GF_Field_Repeater_End extends GF_Field {
 		);
 	}
 
+	public function add_button($field_groups) {
+		return $field_groups;
+	}
+
 	public static function gform_standard_settings($position, $form_id) {
 		if ($position == 1600) {
 			echo "<li class=\"repeater_end_settings field_setting\">

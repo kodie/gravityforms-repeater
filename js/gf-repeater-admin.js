@@ -347,7 +347,6 @@ function gfRepeater_editforms_patch_SortUpdate() {
 jQuery(document).ready(function($) {
 	if (gfRepeater_page == 'gf_edit_forms') {
 		gfRepeater_editforms_update(false);
-		jQuery('#add_fields input[type=button][data-type=repeater-end]').remove();
 	}
 });
 
