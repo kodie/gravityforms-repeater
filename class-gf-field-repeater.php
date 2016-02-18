@@ -169,7 +169,15 @@ class GF_Field_Repeater extends GF_Field {
 			for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
 				foreach ($dataArray['children'] as $field_id=>$field) {
 					$inputNames = $field['inputs'];
-					$repeatSkips = $field['conditionalLogic']['skip'];
+					$repeatSkips = array();
+
+					if (array_key_exists('conditionalLogic', $field)) {
+						if (is_array($field['conditionalLogic'])) {
+							if (array_key_exists('skip', $field['conditionalLogic'])) {
+								$repeatSkips = $field['conditionalLogic']['skip'];
+							}
+						}
+					}
 
 					if (!is_array($inputNames)) { continue; }
 
@@ -323,7 +331,15 @@ class GF_Field_Repeater extends GF_Field {
 
 				if (array_key_exists('inputs', $field)) {
 					$inputNames = $field['inputs'];
-					$repeatSkips = $field['conditionalLogic']['skip'];
+					$repeatSkips = array();
+
+					if (array_key_exists('conditionalLogic', $field)) {
+						if (is_array($field['conditionalLogic'])) {
+							if (array_key_exists('skip', $field['conditionalLogic'])) {
+								$repeatSkips = $field['conditionalLogic']['skip'];
+							}
+						}
+					}
 
 					if (is_array($repeatSkips)) {
 						if (in_array($i, $repeatSkips) || in_array('all', $repeatSkips)) { continue; }
