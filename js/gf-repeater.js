@@ -148,6 +148,7 @@ function gfRepeater_getRepeaters() {
 					var inputMask;
 					var conditionalLogic;
 					var maxLength;
+					var enableEnhancedUI;
 
 					if (jQuery(this).has('.ginput_container').length) {
 						var childContainerClasses = jQuery(this).find('.ginput_container').attr('class').split(/\s+/);
@@ -172,6 +173,7 @@ function gfRepeater_getRepeaters() {
 					if (childInfo['required']) { childRequired = true; }
 					if (childInfo['inputMask']) { inputMask = childInfo['inputMask']; }
 					if (childInfo['maxLength']) { maxLength = childInfo['maxLength']; }
+					if (childInfo['enableEnhancedUI']) { enableEnhancedUI = childInfo['enableEnhancedUI']; }
 					if (childInfo['conditionalLogic']) {
 						conditionalLogic = childInfo['conditionalLogic'];
 						conditionalLogic['skip'] = [];
@@ -229,7 +231,8 @@ function gfRepeater_getRepeaters() {
 						inputMask:inputMask,
 						conditionalLogic:conditionalLogic,
 						parentSection:childParentSection,
-						maxLength:maxLength
+						maxLength:maxLength,
+						enableEnhancedUI:enableEnhancedUI
 					};
 
 					repeaterChildrenInputData[childIdNum] = childInputNames;
@@ -273,6 +276,7 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 		var inputCount = child['inputCount'];
 		var inputMask = child['inputMask'];
 		var maxLength = child['maxLength'];
+		var enableEnhancedUI = child['enableEnhancedUI'];
 		var tabindex = repeater['data']['tabIndex'];
 
 		var newRootId = childId+'-'+repeaterId+'-'+repeatId;
@@ -334,14 +338,6 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 					.attr('tabindex', tabindex);
 			}
 
-			if (maxLength) {
-				jQuery(inputElement).textareaCount({
-					'maxCharacterSize': maxLength,
-					'originalStyle': 'ginput_counter',
-					'displayFormat' : '#input of #max max characters'
-				});
-			}
-
 			if (inputMask) { jQuery(inputElement).mask(inputMask); }
 
 			if (this['prePopulate'][repeatId]) {
@@ -368,6 +364,28 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 					.removeClass('hasDatepicker')
 					.datepicker('destroy')
 					.siblings('.ui-datepicker-trigger').remove();
+			}
+
+			if (maxLength) {
+				jQuery(inputElement).textareaCount({
+					'maxCharacterSize': maxLength,
+					'originalStyle': 'ginput_counter',
+					'displayFormat' : '#input of #max max characters'
+				});
+			}
+
+			if (enableEnhancedUI) {
+				var initialWidth = jQuery(inputElement).width();
+
+				if (initialWidth == 0) {
+					initialWidth = jQuery(inputElement).siblings('.chosen-container').width();
+				}
+
+				jQuery(inputElement)
+					.show()
+					.siblings('.chosen-container').remove();
+
+				jQuery(inputElement).chosen({width: initialWidth+'px'});
 			}
 
 			if (gfRepeater_submitted) {

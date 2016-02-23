@@ -308,6 +308,10 @@ class GF_Field_Repeater extends GF_Field {
 						if ($repeater_child_field['maxLength']) {
 							$repeater_children_info[$repeater_child]['maxLength'] = $repeater_child_field['maxLength'];
 						}
+
+						if ($repeater_child_field['enableEnhancedUI']) {
+							$repeater_children_info[$repeater_child]['enableEnhancedUI'] = $repeater_child_field['enableEnhancedUI'];
+						}
 					}
 				}
 
