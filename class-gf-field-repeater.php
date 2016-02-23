@@ -47,7 +47,8 @@ class GF_Field_Repeater extends GF_Field {
 			'description_setting',
 			'error_message_setting',
 			'label_setting',
-			'prepopulate_field_setting'
+			'prepopulate_field_setting',
+			'conditional_logic_field_setting'
 		);
 	}
 

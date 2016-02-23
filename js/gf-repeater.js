@@ -23,6 +23,7 @@ function gfRepeater_getRepeaters() {
 		var capturedData = {};
 		var dataElement;
 		var startElement;
+		var startIdNum;
 
 		// Remove ajax action from form because ajax enabled forms are not yet supported.
 		if (jQuery(form).attr('action') == '/ajax-test') { jQuery(form).removeAttr('action'); }
@@ -34,7 +35,10 @@ function gfRepeater_getRepeaters() {
 
 					repeaterId += 1;
 
-					if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - Start: '+jQuery(this).attr('id')); }
+					startId = jQuery(this).attr('id');
+					startIdNum = Number(startId.split('_')[2]);
+
+					if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - Start: '+startId); }
 
 					startElement = jQuery(this);
 					dataElement = startElement.find('.gform_repeater');
@@ -63,8 +67,11 @@ function gfRepeater_getRepeaters() {
 				if (jQuery(this).has('.ginput_container_repeater-end').length) {
 					// Repeater End
 
+					endId = jQuery(this).attr('id');
+					endIdNum = Number(endId.split('_')[2]);
+
 					if (gfRepeater_debug) {
-						console.log('Form #'+formId+' - Repeater #'+repeaterId+' - End: '+jQuery(this).attr('id'));
+						console.log('Form #'+formId+' - Repeater #'+repeaterId+' - End: '+endId);
 						console.log('Form #'+formId+' - Repeater #'+repeaterId+' - Children Found: '+(repeaterChildCount));
 					}
 
@@ -111,7 +118,9 @@ function gfRepeater_getRepeaters() {
 						childrenCount:repeaterChildCount,
 						paremCount:repeaterParemCount,
 						tabIndex:repeaterTabIndex,
-						inputData:repeaterChildrenInputData
+						inputData:repeaterChildrenInputData,
+						startIdNum:startIdNum,
+						endIdNum:endIdNum
 					};
 
 					repeaters[repeaterId] = {
@@ -961,6 +970,7 @@ function gfRepeater_start() {
 			var repeater = gfRepeater_repeaters[formId][repeaterId];
 			var repeatCount = repeater['settings']['start'];
 			var paremCount = repeater['data']['paremCount'];
+			var startIdNum = repeater['data']['startIdNum'];
 
 			if (repeater['controllers']['data'].attr('data-required')) { repeater['controllers']['start'].addClass('gfield_contains_required'); }
 
@@ -978,6 +988,20 @@ function gfRepeater_start() {
 			gfRepeater_setRepeater(formId, repeaterId, repeatCount);
 			gfRepeater_updateRepeaterControls(formId, repeaterId);
 			gfRepeater_updateDataElement(formId, repeaterId);
+
+			jQuery(document).bind('gform_post_conditional_logic', function(e, formId, fields, isInit){
+				if (fields) {
+					if (jQuery.inArray(startIdNum, fields) !== -1) {
+						var startElement = repeater['controllers']['start'];
+						var endElement = repeater['controllers']['end'];
+						var fieldDisplay = startElement.css('display');
+						var repeaterChildren = gfRepeater_select(formId, repeaterId);
+
+						repeaterChildren.css('display', fieldDisplay);
+						endElement.css('display', fieldDisplay);
+					}
+				}
+			});
 		});
 
 		jQuery(form).trigger('gform_repeater_init_done');
