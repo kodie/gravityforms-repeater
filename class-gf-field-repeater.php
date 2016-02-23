@@ -360,15 +360,18 @@ class GF_Field_Repeater extends GF_Field {
 								$getInputName = $inputName.'-'.$dataArray['repeaterId'].'-'.$i;
 							}
 
+							$input_field_id_num = explode('.', $inputName);
+							if (count($input_field_id_num) == 2) { $input_field_id_num = $input_field_id_num[1]; } else { $input_field_id_num = 0; }
+
 							$getInputData = rgpost(str_replace('.', '_', strval($getInputName)));
 
 							if (!empty($getInputData)) {
 								if (is_array($getInputData)) {
 									foreach ($getInputData as $theInputData) {
-										$inputData[] = $theInputData;
+										$inputData[$input_field_id_num] = $theInputData;
 									}
 								} else {
-									$inputData[] = $getInputData;
+									$inputData[$input_field_id_num] = $getInputData;
 								}
 							}
 						}
