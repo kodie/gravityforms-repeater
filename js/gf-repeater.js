@@ -371,17 +371,15 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 			}
 
 			if (enableEnhancedUI) {
-				var initialWidth = jQuery(inputElement).width();
-
-				if (initialWidth == 0) {
-					initialWidth = jQuery(inputElement).siblings('.chosen-container').width();
-				}
+				var initialWidth = jQuery(inputElement).css('width');
 
 				jQuery(inputElement)
+					.css('width', initialWidth)
 					.show()
 					.siblings('.chosen-container').remove();
 
-				jQuery(inputElement).chosen({width: initialWidth+'px'});
+				jQuery(inputElement)
+					.chosen({width: initialWidth});
 			}
 
 			if (gfRepeater_submitted) {
