@@ -195,11 +195,7 @@ function gfRepeater_getRepeaters() {
 							if (inputName.slice(-2) == '[]') { inputName2 = inputName.slice(0, inputName.length - 2); } else { inputName2 = inputName; }
 
 							if (childInfo['prePopulate']) {
-								if (childType == 'checkbox' || childType == 'radio') {
-									inputPrePopulate = childInfo['prePopulate'];
-								} else if (childInfo['prePopulate'][inputName2.split('_')[1]]) {
-									inputPrePopulate = childInfo['prePopulate'][inputName2.split('_')[1]];
-								}
+								inputPrePopulate = childInfo['prePopulate'];
 
 								if (inputPrePopulate) {
 									jQuery.each(inputPrePopulate, function(key, value){
