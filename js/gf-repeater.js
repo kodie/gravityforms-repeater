@@ -1,4 +1,4 @@
-var gfRepeater_debug = false;
+var gfRepeater_debug = true;
 var gfRepeater_repeaters = {};
 var gfRepeater_submitted = false;
 
@@ -147,6 +147,7 @@ function gfRepeater_getRepeaters() {
 					var childType;
 					var inputMask;
 					var conditionalLogic;
+					var maxLength;
 
 					if (jQuery(this).has('.ginput_container').length) {
 						var childContainerClasses = jQuery(this).find('.ginput_container').attr('class').split(/\s+/);
@@ -170,6 +171,7 @@ function gfRepeater_getRepeaters() {
 
 					if (childInfo['required']) { childRequired = true; }
 					if (childInfo['inputMask']) { inputMask = childInfo['inputMask']; }
+					if (childInfo['maxLength']) { maxLength = childInfo['maxLength']; }
 					if (childInfo['conditionalLogic']) {
 						conditionalLogic = childInfo['conditionalLogic'];
 						conditionalLogic['skip'] = [];
@@ -226,7 +228,8 @@ function gfRepeater_getRepeaters() {
 						type:childType,
 						inputMask:inputMask,
 						conditionalLogic:conditionalLogic,
-						parentSection:childParentSection
+						parentSection:childParentSection,
+						maxLength:maxLength
 					};
 
 					repeaterChildrenInputData[childIdNum] = childInputNames;
@@ -269,6 +272,7 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 		var childType = child['type'];
 		var inputCount = child['inputCount'];
 		var inputMask = child['inputMask'];
+		var maxLength = child['maxLength'];
 		var tabindex = repeater['data']['tabIndex'];
 
 		var newRootId = childId+'-'+repeaterId+'-'+repeatId;
@@ -294,6 +298,10 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 		jQuery(repeaterChildElement)
 			.find('.gf_repeater_add')
 			.show();
+
+		jQuery(repeaterChildElement)
+			.find('.ginput_counter')
+			.remove();
 
 		jQuery.each(repeater['children'][childKey]['inputs'], function(key, value){
 			var inputId = this['id'];
@@ -324,6 +332,14 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 				jQuery(inputElement)
 					.attr('name', newInputName)
 					.attr('tabindex', tabindex);
+			}
+
+			if (maxLength) {
+				jQuery(inputElement).textareaCount({
+					'maxCharacterSize': maxLength,
+					'originalStyle': 'ginput_counter',
+					'displayFormat' : '#input of #max max characters'
+				});
 			}
 
 			if (inputMask) { jQuery(inputElement).mask(inputMask); }
