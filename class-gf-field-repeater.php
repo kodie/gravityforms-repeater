@@ -318,15 +318,14 @@ class GF_Field_Repeater extends GF_Field {
 				$repeater_children = $repeater_children_info;
 			}
 
-			if (empty($value)) {
-				$value['formId'] = $form_id;
-				if (!empty($repeater_start)) { $value['start'] = $repeater_start; }
-				if (!empty($repeater_min)) { $value['min'] = $repeater_min; }
-				if (!empty($repeater_max)) { $value['max'] = $repeater_max; }
-				if (!empty($repeater_children)) { $value['children'] = $repeater_children; }
+			$value = array();
+			$value['formId'] = $form_id;
+			if (!empty($repeater_start)) { $value['start'] = $repeater_start; }
+			if (!empty($repeater_min)) { $value['min'] = $repeater_min; }
+			if (!empty($repeater_max)) { $value['max'] = $repeater_max; }
+			if (!empty($repeater_children)) { $value['children'] = $repeater_children; }
 
-				$value = json_encode($value);
-			}
+			$value = json_encode($value);
 
 			return sprintf("<input name='input_%d' id='%s' type='hidden' class='gform_repeater' value='%s' %s />", $id, $field_id, $value, $tabindex);
 		}
