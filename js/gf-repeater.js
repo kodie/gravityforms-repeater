@@ -340,7 +340,11 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 
 				jQuery(inputElement)
 					.attr('name', newInputName)
-					.attr('tabindex', tabindex);
+
+				if (tabindex) {
+					jQuery(inputElement)
+						.attr('tabindex', tabindex);
+				}
 			}
 
 			if (inputMask) { jQuery(inputElement).mask(inputMask); }
