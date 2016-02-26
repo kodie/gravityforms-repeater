@@ -92,7 +92,7 @@ gform_repeater_init_done - Fires after the repeater is done setting up. Also fir
 
 ##### Information
 You can access all repeater information using the object `gfRepeater_repeaters`.
-```javascript
+```
 gfRepeater_repeaters
 [formId]
     [repeaterId]
