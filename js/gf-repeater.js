@@ -1016,11 +1016,13 @@ function gfRepeater_start() {
 
 // Initiation after gravity forms has rendered.
 jQuery(document).bind('gform_post_render', function(){
-	if (gfRepeater_getRepeaters()) {
-		gfRepeater_start();
-		jQuery(window).trigger('gform_repeater_init_done');
-	} else {
-		console.log('There was an error with one of your repeaters. This is usually caused by forgetting to include a repeater-end field or by trying to nest repeaters.');
+	if (jQuery.isEmptyObject(gfRepeater_repeaters)) {
+		if (gfRepeater_getRepeaters()) {
+			gfRepeater_start();
+			jQuery(window).trigger('gform_repeater_init_done');
+		} else {
+			console.log('There was an error with one of your repeaters. This is usually caused by forgetting to include a repeater-end field or by trying to nest repeaters.');
+		}
 	}
 });
 
