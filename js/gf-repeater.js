@@ -1,12 +1,15 @@
 var gfRepeater_debug = true;
 var gfRepeater_repeaters = {};
 var gfRepeater_submitted = false;
+var gfRepeater_init_done = false;
 
 /*
 	gfRepeater_getRepeaters()
 		Collects all repeater info and stores it inside of the global array "gfRepeater_repeaters". - First phase of setup.
 */
 function gfRepeater_getRepeaters() {
+	var error = false;
+
 	var repeaterData = jQuery('.gform_wrapper').each(function(){
 		var repeaters = {};
 		var formId = this.id.split('_')[2];
@@ -27,6 +30,9 @@ function gfRepeater_getRepeaters() {
 
 		// Remove ajax action from form because ajax enabled forms are not yet supported.
 		if (jQuery(form).attr('action') == '/ajax-test') { jQuery(form).removeAttr('action'); }
+
+		// Check if our php filter failed to disable ajax, if so, cancel repeater js.
+		if (jQuery(this).siblings('#gform_ajax_frame_'+formId).length) { error = true; return false; }
 
 		jQuery(this).find('.gfield').each(function(){
 			if (repeaterFound == 0) {
@@ -63,7 +69,7 @@ function gfRepeater_getRepeaters() {
 					repeaterFound = 1;
 				}
 			} else {
-				if (jQuery(this).has('.ginput_container_repeater').length) { return false; }
+				if (jQuery(this).has('.ginput_container_repeater').length) { error = true; return false; }
 				if (jQuery(this).has('.ginput_container_repeater-end').length) {
 					// Repeater End
 
@@ -246,15 +252,15 @@ function gfRepeater_getRepeaters() {
 		});
 
 		if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeaters Found: '+(repeaterId)); }
-		if (repeaterFound !== 0) { return false; }
+		if (repeaterFound !== 0) { error = true; return false; }
 
-		if (repeaters) {
+		if (!jQuery.isEmptyObject(repeaters)) {
 			gfRepeater_repeaters[formId] = repeaters;
 			return true;
-		}
+		} else { error = true; return false; }
 	});
 
-	if (repeaterData) { return true; } else { return false; }
+	if (!error) { return true; } else { return false; }
 }
 
 /*
@@ -1016,13 +1022,15 @@ function gfRepeater_start() {
 
 // Initiation after gravity forms has rendered.
 jQuery(document).bind('gform_post_render', function(){
-	if (jQuery.isEmptyObject(gfRepeater_repeaters)) {
+	if (gfRepeater_init_done == false && jQuery.isEmptyObject(gfRepeater_repeaters)) {
 		if (gfRepeater_getRepeaters()) {
 			gfRepeater_start();
 			jQuery(window).trigger('gform_repeater_init_done');
 		} else {
-			console.log('There was an error with one of your repeaters. This is usually caused by forgetting to include a repeater-end field or by trying to nest repeaters.');
+			alert('Notice to website owner: There was an error with one of your repeaters. This is usually caused by having ajax enabled on the form, forgetting to include a repeater-end field, or by trying to nest repeaters.');
 		}
+		
+		gfRepeater_init_done = true;
 	}
 });
 
