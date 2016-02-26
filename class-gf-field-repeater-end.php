@@ -18,8 +18,10 @@ class GF_Field_Repeater_End extends GF_Field {
 	}
 
 	public function get_form_editor_field_settings() {
-		return array(
-			'css_class_setting'
+		return apply_filters('gform_editor_repeater_end_field_settings',
+			array(
+				'css_class_setting'
+			)
 		);
 	}
 
