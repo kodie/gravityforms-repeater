@@ -665,9 +665,10 @@ function gfRepeater_replaceShortcodes(element) {
 
 		formId				The form Id.
 		repeaterId			The repeater ID number to repeat.
-		skipAnimation		Skips animation if set to true.
 */
-function gfRepeater_repeatRepeater(formId, repeaterId, skipAnimation) {
+function gfRepeater_repeatRepeater(formId, repeaterId) {
+	gfRepeater_select(formId, repeaterId).stop(true, true);
+
 	var repeater = gfRepeater_repeaters[formId][repeaterId];
 	var repeatId = repeater['data']['repeatCount'] + 1;
 	if (repeater['settings']['max'] && repeater['data']['repeatCount'] >= repeater['settings']['max']) { return; }
@@ -680,6 +681,11 @@ function gfRepeater_repeatRepeater(formId, repeaterId, skipAnimation) {
 	var lastElement = gfRepeater_select(formId, repeaterId).last();
 	var clonedElements = gfRepeater_select(formId, repeaterId, 1);
 
+	animateAdd['options']['always'] = function(animation, jumpedToEnd) {
+		jQuery(this).removeClass('gf_repeater_child_field_adding');
+		if (jQuery(this).attr('data-repeater-childid') == clonedElements.length) { gfRepeater_repeatRepeater_finish(); }
+	};
+
 	jQuery.each(clonedElements, function(key, element){
 		var clonedElement = jQuery(element).clone();
 		var childId = clonedElement.attr('data-repeater-childid');
@@ -687,18 +693,16 @@ function gfRepeater_repeatRepeater(formId, repeaterId, skipAnimation) {
 		gfRepeater_resetInputs(formId, repeaterId, childId, clonedElement);
 		gfRepeater_setRepeaterChildAttrs(formId, repeaterId, clonedElement);
 
-		if (!skipAnimation && animateAdd['options']['duration'] > 0) {
+		if (animateAdd['options']['duration'] > 0) {
 			clonedElement
-				.stop()
 				.addClass('gf_repeater_child_field_adding')
 				.css(animateAdd['css'])
 				.insertAfter(lastElement)
 				.animate(animateAdd['properties'], animateAdd['options'])
+
+			clonedElement
 				.delay(animateAdd['options']['duration'])
-				.queue(function(){
-					jQuery(this).removeClass('gf_repeater_child_field_adding');
-					if (childId == clonedElements.length) { gfRepeater_repeatRepeater_finish(); }
-				});
+				.dequeue();
 		} else {
 			clonedElement.insertAfter(lastElement);
 			if (childId == clonedElements.length) { gfRepeater_repeatRepeater_finish(); }
@@ -731,9 +735,10 @@ function gfRepeater_repeatRepeater(formId, repeaterId, skipAnimation) {
 		formId						The form Id.
 		repeaterId					The repeater ID number to unrepeat.
 		repeatId (Optional)			The repeat ID number to unrepeat. If an ID number is not specified, the last one will be chosen.
-		skipAnimation				Skips animation if set to true.
 */
-function gfRepeater_unrepeatRepeater(formId, repeaterId, repeatId, skipAnimation) {
+function gfRepeater_unrepeatRepeater(formId, repeaterId, repeatId) {
+	gfRepeater_select(formId, repeaterId).stop(true, true);
+
 	var repeater = gfRepeater_repeaters[formId][repeaterId];
 	if (repeater['data']['repeatCount'] <= repeater['settings']['min']) { return; }
 	if (!repeatId) { var repeatId = repeater['data']['repeatCount']; }
@@ -745,21 +750,24 @@ function gfRepeater_unrepeatRepeater(formId, repeaterId, repeatId, skipAnimation
 	var animateRemove = repeater['settings']['animations']['remove'];
 	var removedElements = gfRepeater_select(formId, repeaterId, repeatId);
 
+	animateRemove['options']['always'] = function(animation, jumpedToEnd) {
+		jQuery(this).remove();
+		if (jQuery(this).attr('data-repeater-childid') == removedElements.length) { gfRepeater_unrepeatRepeater_finish(); }
+	};
+
 	jQuery.each(removedElements, function(index, element){
 		var removedElement = jQuery(element);
 		var childId = removedElement.attr('data-repeater-childid');
 
-		if (!skipAnimation && animateRemove['options']['duration'] > 0) {
+		if (animateRemove['options']['duration'] > 0) {
 			removedElement
-				.stop()
 				.addClass('gf_repeater_child_field_removing')
 				.css(animateRemove['css'])
 				.animate(animateRemove['properties'], animateRemove['options'])
+
+			removedElement
 				.delay(animateRemove['options']['duration'])
-				.queue(function(){
-					jQuery(this).remove();
-					if (childId == removedElements.length) { gfRepeater_unrepeatRepeater_finish(); }
-				});
+				.dequeue();
 		} else {
 			removedElement.remove();
 			if (childId == removedElements.length) { gfRepeater_unrepeatRepeater_finish(); }
@@ -794,7 +802,7 @@ function gfRepeater_unrepeatRepeater(formId, repeaterId, repeatId, skipAnimation
 function gfRepeater_repeatRepeaterTimes(formId, repeaterId, timesX) {
 	if (!timesX) { var timesX = 1; }
 	for (i = 0; i < timesX; i++) {
-		gfRepeater_repeatRepeater(formId, repeaterId, true);
+		gfRepeater_repeatRepeater(formId, repeaterId);
 	}
 }
 
@@ -809,7 +817,7 @@ function gfRepeater_repeatRepeaterTimes(formId, repeaterId, timesX) {
 function gfRepeater_unrepeatRepeaterTimes(formId, repeaterId, timesX) {
 	if (!timesX) { var timesX = 1; }
 	for (i = 0; i < timesX; i++) {
-		gfRepeater_unrepeatRepeater(formId, repeaterId, null, true);
+		gfRepeater_unrepeatRepeater(formId, repeaterId);
 	}
 }
 
