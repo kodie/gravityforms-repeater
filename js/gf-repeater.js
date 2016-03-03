@@ -677,13 +677,14 @@ function gfRepeater_repeatRepeater(formId, repeaterId, skipAnimation) {
 		.trigger('gform_repeater_before_repeat', [repeaterId, repeatId]);
 
 	var animateAdd = repeater['settings']['animations']['add'];
-
 	var lastElement = gfRepeater_select(formId, repeaterId).last();
+	var clonedElements = gfRepeater_select(formId, repeaterId, 1);
 
-	jQuery.each(repeater['children'], function(key, value){
-		var clonedElement = jQuery(this.element).clone();
+	jQuery.each(clonedElements, function(key, element){
+		var clonedElement = jQuery(element).clone();
+		var childId = clonedElement.attr('data-repeater-childid');
 
-		gfRepeater_resetInputs(formId, repeaterId, key, clonedElement);
+		gfRepeater_resetInputs(formId, repeaterId, childId, clonedElement);
 		gfRepeater_setRepeaterChildAttrs(formId, repeaterId, clonedElement);
 
 		if (!skipAnimation && animateAdd['options']['duration'] > 0) {
@@ -696,27 +697,31 @@ function gfRepeater_repeatRepeater(formId, repeaterId, skipAnimation) {
 				.delay(animateAdd['options']['duration'])
 				.queue(function(){
 					jQuery(this).removeClass('gf_repeater_child_field_adding');
+					if (childId == clonedElements.length) { gfRepeater_repeatRepeater_finish(); }
 				});
 		} else {
 			clonedElement.insertAfter(lastElement);
+			if (childId == clonedElements.length) { gfRepeater_repeatRepeater_finish(); }
 		}
 
 		lastElement = clonedElement;
 	});
 
-	gfRepeater_conditionalLogic_setAll(formId, repeaterId, repeatId);
+	function gfRepeater_repeatRepeater_finish() {
+		gfRepeater_conditionalLogic_setAll(formId, repeaterId, repeatId);
 
-	repeater['data']['repeatCount'] += 1;
-	gfRepeater_updateDataElement(formId, repeaterId);
-	gfRepeater_updateRepeaterControls(formId, repeaterId);
+		repeater['data']['repeatCount'] += 1;
+		gfRepeater_updateDataElement(formId, repeaterId);
+		gfRepeater_updateRepeaterControls(formId, repeaterId);
 
-	if (window['gformInitDatepicker']) { gformInitDatepicker(); }
+		if (window['gformInitDatepicker']) { gformInitDatepicker(); }
 
-	jQuery(repeater['controllers']['start'])
-		.parents('form')
-		.trigger('gform_repeater_after_repeat', [repeaterId, repeatId]);
+		jQuery(repeater['controllers']['start'])
+			.parents('form')
+			.trigger('gform_repeater_after_repeat', [repeaterId, repeatId]);
 
-	if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - repeated'); }
+		if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - repeated'); }
+	}
 }
 
 /*
@@ -738,9 +743,11 @@ function gfRepeater_unrepeatRepeater(formId, repeaterId, repeatId, skipAnimation
 		.trigger('gform_repeater_before_unrepeat', [repeaterId, repeatId]);
 
 	var animateRemove = repeater['settings']['animations']['remove'];
+	var removedElements = gfRepeater_select(formId, repeaterId, repeatId);
 
-	jQuery.each(repeater['children'], function(childId, value){
-		var removedElement = gfRepeater_select(formId, repeaterId, repeatId, childId);
+	jQuery.each(removedElements, function(index, element){
+		var removedElement = jQuery(element);
+		var childId = removedElement.attr('data-repeater-childid');
 
 		if (!skipAnimation && animateRemove['options']['duration'] > 0) {
 			removedElement
@@ -751,25 +758,29 @@ function gfRepeater_unrepeatRepeater(formId, repeaterId, repeatId, skipAnimation
 				.delay(animateRemove['options']['duration'])
 				.queue(function(){
 					jQuery(this).remove();
+					if (childId == removedElements.length) { gfRepeater_unrepeatRepeater_finish(); }
 				});
 		} else {
 			removedElement.remove();
+			if (childId == removedElements.length) { gfRepeater_unrepeatRepeater_finish(); }
 		}
 	});
 
-	repeater['data']['repeatCount'] -= 1;
-	gfRepeater_updateDataElement(formId, repeaterId);
-	gfRepeater_updateRepeaterControls(formId, repeaterId);
+	function gfRepeater_unrepeatRepeater_finish() {
+		repeater['data']['repeatCount'] -= 1;
+		gfRepeater_updateDataElement(formId, repeaterId);
+		gfRepeater_updateRepeaterControls(formId, repeaterId);
 
-	if (repeatId !== repeater['data']['repeatCount'] + 1) {
-		gfRepeater_resetRepeaterChildrenAttrs(formId, repeaterId);
+		if (repeatId !== repeater['data']['repeatCount'] + 1) {
+			gfRepeater_resetRepeaterChildrenAttrs(formId, repeaterId);
+		}
+
+		jQuery(repeater['controllers']['start'])
+			.parents('form')
+			.trigger('gform_repeater_after_unrepeat', [repeaterId, repeatId]);
+
+		if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - Repeat #'+repeatId+' - unrepeated'); }
 	}
-
-	jQuery(repeater['controllers']['start'])
-		.parents('form')
-		.trigger('gform_repeater_after_unrepeat', [repeaterId, repeatId]);
-
-	if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - Repeat #'+repeatId+' - unrepeated'); }
 }
 
 /*
