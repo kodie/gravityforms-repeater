@@ -1,4 +1,4 @@
-var gfRepeater_debug = false;
+var gfRepeater_debug = true;
 var gfRepeater_repeaters = {};
 var gfRepeater_page = gf_repeater_js_admin_strings.page;
 
@@ -194,6 +194,7 @@ function gfRepeater_editforms_update(leaving) {
 			repeaterChildren.push(fieldId);
 		});
 
+		repeaterField['repeaterId'] = repeaterId;
 		repeaterField['repeaterRequiredChildren'] = requiredChildren;
 		repeaterField['repeaterChildren'] = repeaterChildren;
 	});
