@@ -112,6 +112,15 @@ class GF_Field_Repeater extends GF_Field {
 	public static function gform_appearance_settings($position, $form_id) {
 		if ($position == 400) {
 			echo "<li class=\"repeater_settings field_setting\">
+					<label for=\"field_repeater_animations\">Animation Properties ";
+
+			gform_tooltip('form_field_repeater_animations');
+
+			echo "	</label>
+					<input type=\"text\" id=\"field_repeater_animations\" class=\"fieldwidth-3\" onchange=\"SetFieldProperty('animations', this.value);\">
+				</li>";
+
+			echo "<li class=\"repeater_settings field_setting\">
 					<input type=\"checkbox\" id=\"field_repeater_hideLabel\" onchange=\"SetFieldProperty('hideLabel', this.checked);\"> 
 					<label for=\"field_repeater_hideLabel\" class=\"inline\">Hide Label & Description ";
 
@@ -129,6 +138,7 @@ class GF_Field_Repeater extends GF_Field {
 					jQuery('#field_repeater_start').val(field['start']);
 					jQuery('#field_repeater_min').val(field['min']);
 					jQuery('#field_repeater_max').val(field['max']);
+					jQuery('#field_repeater_animations').val(field['animations']);
 					jQuery('#field_repeater_hideLabel').prop('checked', field['hideLabel']);
 				});
 			</script>";
@@ -138,6 +148,7 @@ class GF_Field_Repeater extends GF_Field {
 		$tooltips['form_field_repeater_start'] = "The number of times the repeater will be repeated when the form is rendered. Leaving this field blank or setting it to a number higher than the maximum number is the same as setting it to 1.";
 		$tooltips['form_field_repeater_min'] = "The minimum number of times the repeater is allowed to be repeated. Leaving this field blank or setting it to a number higher than the maximum field is the same as setting it to 1.";
 		$tooltips['form_field_repeater_max'] = "The maximum number of times the repeater is allowed to be repeated. Leaving this field blank or setting it to a number lower than the minimum field is the same as setting it to unlimited.";
+		$tooltips['form_field_repeater_animations'] = "A JavaScript object to be passed for animation settings. For advanced users only. Do not include initial brackets.";
 		$tooltips['form_field_repeater_hideLabel'] = "If this is checked, the repeater label and description will not be shown to users on the form.";
 		return $tooltips;
 	}
@@ -257,18 +268,20 @@ class GF_Field_Repeater extends GF_Field {
 		if (is_admin()) {
 			return '';
 		} else {
-			$form_id			= $form['id'];
-			$is_entry_detail	= $this->is_entry_detail();
-			$is_form_editor		= $this->is_form_editor();
-			$id					= (int) $this->id;
-			$field_id			= $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
-			$tabindex  			= $this->get_tabindex();
-			$repeater_parem		= $this->inputName;
-			$repeater_start		= $this->start;
-			$repeater_min		= $this->min;
-			$repeater_max		= $this->max;
-			$repeater_required	= $this->repeaterRequiredChildren;
-			$repeater_children	= $this->repeaterChildren;
+			$form_id				= $form['id'];
+			$is_entry_detail		= $this->is_entry_detail();
+			$is_form_editor			= $this->is_form_editor();
+			$id						= (int) $this->id;
+			$field_id				= $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
+			$tabindex  				= $this->get_tabindex();
+			$repeater_id			= $this->repeaterId;
+			$repeater_parem			= $this->inputName;
+			$repeater_start			= $this->start;
+			$repeater_min			= $this->min;
+			$repeater_max			= $this->max;
+			$repeater_required		= $this->repeaterRequiredChildren;
+			$repeater_children		= $this->repeaterChildren;
+			$repeater_animations	= $this->animations;
 
 			if (!empty($repeater_parem)) {
 				$repeater_parem_value = GFFormsModel::get_parameter_value($repeater_parem, $value, $this);
@@ -327,8 +340,12 @@ class GF_Field_Repeater extends GF_Field {
 			if (!empty($repeater_min)) { $value['min'] = $repeater_min; }
 			if (!empty($repeater_max)) { $value['max'] = $repeater_max; }
 			if (!empty($repeater_children)) { $value['children'] = $repeater_children; }
-
 			$value = json_encode($value);
+
+			if (!empty($repeater_animations)) {
+				$animation_script = "var animations={".$repeater_animations."};jQuery.extend(true,gfRepeater_repeaters[".$form_id."][".$repeater_id."].settings.animations,animations);";
+				GFFormDisplay::add_init_script($form_id, 'repeater_animations', GFFormDisplay::ON_PAGE_RENDER, $animation_script);
+			}
 
 			return sprintf("<input name='input_%d' id='%s' type='hidden' class='gform_repeater' value='%s' %s />", $id, $field_id, $value, $tabindex);
 		}
