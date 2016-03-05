@@ -10,7 +10,7 @@ var gfRepeater_init_done = false;
 function gfRepeater_getRepeaters() {
 	var error = false;
 
-	var repeaterData = jQuery('.gform_wrapper').each(function(){
+	var repeaterData = jQuery('.gform_wrapper').has('.ginput_container_repeater').each(function(){
 		var repeaters = {};
 		var formId = this.id.split('_')[2];
 		var form = jQuery(this).children('form').first();
