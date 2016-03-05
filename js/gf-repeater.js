@@ -343,7 +343,7 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 			var inputName = this['name'];
 			var prePopulate = '';
 
-			if (childType == 'radio') {
+			if (childType == 'radio' || childType == 'time') {
 				var inputElement = gfRepeater_findElementByNameOrId(repeaterChildElement, null, inputId);
 			} else {
 				var inputElement = gfRepeater_findElementByNameOrId(repeaterChildElement, inputName, inputId);

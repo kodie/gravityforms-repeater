@@ -384,17 +384,23 @@ class GF_Field_Repeater extends GF_Field {
 							}
 
 							$input_field_id_num = explode('.', $inputName);
-							if (count($input_field_id_num) == 2) { $input_field_id_num = $input_field_id_num[1]; } else { $input_field_id_num = 0; }
+							if (count($input_field_id_num) == 2) { $input_field_id_num = $input_field_id_num[1]; } else { $input_field_id_num = null; }
 
 							$getInputData = rgpost(str_replace('.', '_', strval($getInputName)));
 
 							if (!empty($getInputData)) {
 								if (is_array($getInputData)) {
+									$inputCount = 0;
 									foreach ($getInputData as $theInputData) {
-										$inputData[$input_field_id_num] = $theInputData;
+										if (!$input_field_id_num) {
+											$inputCount++;
+											$inputData[$inputCount] = $theInputData;
+										} else {
+											$inputData[$input_field_id_num] = $theInputData;
+										}
 									}
 								} else {
-									$inputData[$input_field_id_num] = $getInputData;
+									$inputData[1] = $getInputData;
 								}
 							}
 						}
@@ -487,7 +493,7 @@ class GF_Field_Repeater extends GF_Field {
 
 					if (is_array($childValue)) {
 						if (count($childValue) == 1) {
-							$childValueOutput = $childValue[0];
+							$childValueOutput = reset($childValue);
 						} elseif (count($childValue) > 1) {
 							if ($format == 'html') {
 								if ($media == 'email') {
