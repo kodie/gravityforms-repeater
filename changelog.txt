@@ -1,6 +1,26 @@
+v1.1.0 (TBA)
+- Fixed bug where sometimes a javascript error would occur in the form editor when trying to save a form after deleting a repeater.
+- Fixed bug where sometimes a 'Undefined Index "conditionalLogic"' error is shown when submitting a form.
+- Fixed bug where repeated field values would be cleared if on a multipage form. (Issue #21)
+- Fixed bug where a PHP error is shown when viewing an entry's details if no repeater child fields have been filled out. (Issue #24) (Thanks @WebImage!)
+- Fixed bug where repeated field tab indexes would be set to "NaN" if tab indexes are disabled. (Issue #28)
+- Fixed bug where javascript erros would occur if there was more than one form on the same page.
+- Fixed bug where javascript functions would try to do things on other forms on the same page even if they didn't have a repeater field.
+- Fixed repeater start pre-populate setting.
+- gfRepeater_getChoiceValue now gets the input values instead of labels. (Issue #22)
+- Form editor will no longer let you screw up repeater fields and will notify you if you are trying to do something you shouldn't. (ie. Nesting repeaters, adding unsupported fields, etc.)
+- Repeater button in the form editor has been moved to the "Advanced Fields" section.
+- Repeater End button has been removed. Repeater end fields are now automatically added and deleted with the repeater start fields.
+- Repeated fields with multiple inputs are now stored with their "subId" as key instead of just an increasing numeric key.
+- Added support for conditional logic on the repeater start field. Repeater children and repeater end fields are also effected by their repeater start field.
+- Added support for fields with "max length" set.
+- Added support for fields with "enhanced user interface" enabled.
+- Added gform_editor_repeater_field_settings and gform_editor_repeater_end_field_settings filters.
+- Added support for animations! (Docs coming soon!)
+
 v1.0.9 (1/25/2016)
-- Fixed bug where in some cases a PHP error would occur when attempting to automatically disable ajax on a form.
-- Fixed bug where sometimes a javascript error would occur on date fields with a calendar icon.
+- Fixed bug where in some cases a PHP error would occur when attempting to automatically disable ajax on a form. (Issue #18)
+- Fixed bug where sometimes a javascript error would occur on date fields with a calendar icon. (Issue #15)
 - Fixed bug where removing a specific repeatId would cause some weird things to happen.
 - Fixed bug where repeaters in a multipage form that are not on the first page would appear to have failed validation even if the form hasn't been submitted.
 - Fixed bug where repeaters in a muttipage form that are not on the first page would forget their saved data and ignore their start setting.
@@ -16,7 +36,7 @@ v1.0.9 (1/25/2016)
 - When exporting entries, repeater child data is now exported in a comma-separated list.
 
 v1.0.8 (12/30/2015)
-- Fixed bug where sometimes for some reason an input name would be sent as an array and cause a PHP error to display.
+- Fixed bug where sometimes for some reason an input name would be sent as an array and cause a PHP error to display. (Issue #6)
 - Fixed bug where sometimes validation message would be displayed multiple times for same field.
 - Fixed bug where filters would not be loaded if Repeater was the first field on the form.
 - Fixed bug where sometimes captured repeater input data would be applied to other forms in cases where there are multiple forms on one page.
