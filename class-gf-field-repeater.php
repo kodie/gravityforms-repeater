@@ -276,12 +276,12 @@ class GF_Field_Repeater extends GF_Field {
 			$tabindex  				= $this->get_tabindex();
 			$repeater_id			= $this->repeaterId;
 			$repeater_parem			= $this->inputName;
-			$repeater_start			= apply_filters('gf_repeater_start', $this->start, $form_id, $repeater_id);
-			$repeater_min			= apply_filters('gf_repeater_min', $this->min, $form_id, $repeater_id);
-			$repeater_max			= apply_filters('gf_repeater_max', $this->max, $form_id, $repeater_id);
 			$repeater_required		= $this->repeaterRequiredChildren;
 			$repeater_children		= $this->repeaterChildren;
-			$repeater_animations	= apply_filters('gf_repeater_animations', $this->animations, $form_id, $repeater_id);
+			$repeater_start			= apply_filters('gf_repeater_start', $this->start, $form, $this);
+			$repeater_min			= apply_filters('gf_repeater_min', $this->min, $form, $this);
+			$repeater_max			= apply_filters('gf_repeater_max', $this->max, $form, $this);
+			$repeater_animations	= apply_filters('gf_repeater_animations', $this->animations, $form, $this);
 
 			if (!empty($repeater_parem)) {
 				$repeater_parem_value = GFFormsModel::get_parameter_value($repeater_parem, $value, $this);
