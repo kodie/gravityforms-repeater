@@ -109,11 +109,13 @@ function gfRepeater_getRepeaters() {
 
 					var repeaterAnimations_default = {
 						add: {
+							class: '',
 							css: {opacity: 0},
 							properties: {opacity: 1},
 							options: {duration: 300}
 						},
 						remove: {
+							class: '',
 							css: {opacity: 1},
 							properties: {opacity: 0},
 							options: {duration: 200}
@@ -695,7 +697,7 @@ function gfRepeater_repeatRepeater(formId, repeaterId) {
 
 		if (animateAdd['options']['duration'] > 0) {
 			clonedElement
-				.addClass('gf_repeater_child_field_adding')
+				.addClass('gf_repeater_child_field_adding ' + animateAdd['class'])
 				.css(animateAdd['css'])
 				.insertAfter(lastElement)
 				.animate(animateAdd['properties'], animateAdd['options'])
@@ -761,7 +763,7 @@ function gfRepeater_unrepeatRepeater(formId, repeaterId, repeatId) {
 
 		if (animateRemove['options']['duration'] > 0) {
 			removedElement
-				.addClass('gf_repeater_child_field_removing')
+				.addClass('gf_repeater_child_field_removing ' + animateRemove['class'])
 				.css(animateRemove['css'])
 				.animate(animateRemove['properties'], animateRemove['options'])
 
