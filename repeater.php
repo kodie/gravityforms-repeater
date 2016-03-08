@@ -47,7 +47,7 @@ if (class_exists("GFForms")) {
 					"deps"		=> array('jquery'),
 					"in_footer"	=> false,
 					"callback"	=> array($this, 'localize_scripts'),
-					"strings"	=> array('page' => rgget('page'), 'debug_mod' => GF_REPEATER_DEBUG_MODE),
+					"strings"	=> array('page' => rgget('page'), 'debug_mode' => GF_REPEATER_DEBUG_MODE),
 					"enqueue"	=> array(
 						array(
 							"admin_page" => array('form_editor', 'entry_view', 'entry_detail')
