@@ -1,4 +1,4 @@
-var gfRepeater_debug = gfRepeater_php.debug_mode;
+var gfRepeater_debug = gfRepeater_php.debug;
 var gfRepeater_repeaters = {};
 var gfRepeater_submitted = false;
 var gfRepeater_init_done = false;

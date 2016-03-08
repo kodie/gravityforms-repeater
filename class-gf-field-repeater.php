@@ -33,7 +33,7 @@ class GF_Field_Repeater extends GF_Field {
 				wp_register_script('gforms_repeater_js', plugins_url('js/gf-repeater.js', __FILE__), array('jquery'), GF_REPEATER_VERSION);
 				wp_register_style('gforms_repeater_css', plugins_url('css/gf-repeater.css', __FILE__), array(), GF_REPEATER_VERSION);
 
-				wp_localize_script('gforms_repeater_js', 'gfRepeater_php', array('debug_mode' => GF_REPEATER_DEBUG_MODE));
+				wp_localize_script('gforms_repeater_js', 'gfRepeater_php', array('debug' => GF_REPEATER_DEBUG));
 
 				wp_enqueue_script('gforms_repeater_postcapture_js');
 				wp_enqueue_script('gforms_repeater_js');
@@ -545,7 +545,7 @@ class GF_Field_Repeater extends GF_Field {
 
 		if ($count !== 0) {
 			if ($format == 'text') { $output = rtrim($output); }
-			if (GF_REPEATER_DEBUG_MODE && $format == 'html') { $output = '<pre>'.print_r($dataArray, true).'</pre>'.$output; }
+			if (GF_REPEATER_DEBUG && $format == 'html') { $output = '<pre style="height:100px;overflow:auto;resize:vertical;">'.print_r($dataArray, true).'</pre>'.$output; }
 			return $output;
 		} else { return ''; }
 	}

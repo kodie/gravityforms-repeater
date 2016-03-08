@@ -12,7 +12,7 @@ GitHub Branch: development
 
 define('GF_REPEATER_VERSION', '1.1.0-dev14');
 define('GF_REPEATER_PATH', basename(__DIR__).'/'.basename(__FILE__));
-define('GF_REPEATER_DEBUG_MODE', WP_DEBUG);
+define('GF_REPEATER_DEBUG', WP_DEBUG);
 
 add_filter('plugin_row_meta', 'gfrepeater_row_meta', 10, 2);
 function gfrepeater_row_meta($links, $file) {
@@ -47,7 +47,7 @@ if (class_exists("GFForms")) {
 					"deps"		=> array('jquery'),
 					"in_footer"	=> false,
 					"callback"	=> array($this, 'localize_scripts'),
-					"strings"	=> array('page' => rgget('page'), 'debug_mode' => GF_REPEATER_DEBUG_MODE),
+					"strings"	=> array('page' => rgget('page'), 'debug' => GF_REPEATER_DEBUG),
 					"enqueue"	=> array(
 						array(
 							"admin_page" => array('form_editor', 'entry_view', 'entry_detail')
