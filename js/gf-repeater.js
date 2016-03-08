@@ -684,7 +684,7 @@ function gfRepeater_repeatRepeater(formId, repeaterId) {
 	var clonedElements = gfRepeater_select(formId, repeaterId, 1);
 
 	animateAdd['options']['always'] = function(animation, jumpedToEnd) {
-		jQuery(this).removeClass('gf_repeater_child_field_adding');
+		jQuery(this).removeClass('gf_repeater_child_field_adding ' + animateAdd['class']);
 		if (jQuery(this).attr('data-repeater-childid') == clonedElements.length) { gfRepeater_repeatRepeater_finish(); }
 	};
 
