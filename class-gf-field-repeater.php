@@ -189,7 +189,6 @@ class GF_Field_Repeater extends GF_Field {
 
 			for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
 				foreach ($dataArray['children'] as $field_id=>$field) {
-					$inputNames = $field['inputs'];
 					$repeatSkips = array();
 
 					if (array_key_exists('conditionalLogic', $field)) {
@@ -200,7 +199,9 @@ class GF_Field_Repeater extends GF_Field {
 						}
 					}
 
-					if (!is_array($inputNames)) { continue; }
+					if (array_key_exists('inputs', $field)) {
+						$inputNames = $field['inputs'];
+					} else { continue; }
 
 					if (is_array($repeatSkips)) {
 						if (in_array($i, $repeatSkips) || in_array('all', $repeatSkips)) { continue; }
