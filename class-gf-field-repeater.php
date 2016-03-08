@@ -452,13 +452,19 @@ class GF_Field_Repeater extends GF_Field {
 				$repeatCount++;
 				$tableContents = '';
 
-				// No need to continue if value is null
-				if (null === $value) continue;
+				if (empty($value)) { continue; }
 				
 				if (!empty($value) && !is_array($value)) {
 					$save_value = $value;
 					unset($value);
 					$value[0] = $save_value;
+				} elseif (version_compare(phpversion(), '5.3') !== -1) {
+					uksort($value, function($a, $b) use($form){
+						$a_index = GF_Field_Repeater::get_field_index($form, 'id', $a);
+						$b_index = GF_Field_Repeater::get_field_index($form, 'id', $b);
+						if ($a_index > $b_index) { return 1; }
+						return 0;
+					});
 				}
 
 				foreach ($value as $childKey=>$childValue) {
