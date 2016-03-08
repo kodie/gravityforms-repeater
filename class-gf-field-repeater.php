@@ -29,9 +29,15 @@ class GF_Field_Repeater extends GF_Field {
 	public static function gform_enqueue_scripts($form, $is_ajax) {
 		if (!empty($form)) {
 			if (GF_Field_Repeater::get_field_index($form) !== false) {
-				wp_enqueue_script('gforms_repeater_postcapture_js', plugins_url('js/jquery.postcapture.min.js', __FILE__), array('jquery'), '0.0.1');
-				wp_enqueue_script('gforms_repeater_js', plugins_url('js/gf-repeater.js', __FILE__), array('jquery'), GF_REPEATER_VERSION);
-				wp_enqueue_style('gforms_repeater_css', plugins_url('css/gf-repeater.css', __FILE__), array(), GF_REPEATER_VERSION);
+				wp_register_script('gforms_repeater_postcapture_js', plugins_url('js/jquery.postcapture.min.js', __FILE__), array('jquery'), '0.0.1');
+				wp_register_script('gforms_repeater_js', plugins_url('js/gf-repeater.js', __FILE__), array('jquery'), GF_REPEATER_VERSION);
+				wp_register_style('gforms_repeater_css', plugins_url('css/gf-repeater.css', __FILE__), array(), GF_REPEATER_VERSION);
+
+				wp_localize_script('gforms_repeater_js', 'gfRepeater_php', array('debug_mode' => GF_REPEATER_DEBUG_MODE));
+
+				wp_enqueue_script('gforms_repeater_postcapture_js');
+				wp_enqueue_script('gforms_repeater_js');
+				wp_enqueue_style('gforms_repeater_css');
 			}
 		}
 	}
@@ -539,6 +545,7 @@ class GF_Field_Repeater extends GF_Field {
 
 		if ($count !== 0) {
 			if ($format == 'text') { $output = rtrim($output); }
+			if (GF_REPEATER_DEBUG_MODE && $format == 'html') { $output = '<pre>'.print_r($dataArray, true).'</pre>'.$output; }
 			return $output;
 		} else { return ''; }
 	}

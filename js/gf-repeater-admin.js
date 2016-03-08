@@ -1,4 +1,4 @@
-var gfRepeater_debug = true;
+var gfRepeater_debug = gf_repeater_js_admin_strings.debug_mode;
 var gfRepeater_repeaters = {};
 var gfRepeater_page = gf_repeater_js_admin_strings.page;
 
