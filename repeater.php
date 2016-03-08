@@ -12,7 +12,7 @@ GitHub Branch: development
 
 define('GF_REPEATER_VERSION', '1.1.0-dev14');
 define('GF_REPEATER_PATH', basename(__DIR__).'/'.basename(__FILE__));
-define('GF_REPEATER_DEBUG_MODE', false);
+define('GF_REPEATER_DEBUG_MODE', WP_DEBUG);
 
 add_filter('plugin_row_meta', 'gfrepeater_row_meta', 10, 2);
 function gfrepeater_row_meta($links, $file) {
