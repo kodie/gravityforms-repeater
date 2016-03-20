@@ -104,8 +104,8 @@ class GF_Field_Repeater_End extends GF_Field {
 			$field_content = "<div class=\"ginput_container ginput_container_repeater-end\">\n";
 
 			if (!$hideButtons) {
-				$field_content .= "<span class=\"gf_repeater_add\" {$tabindex}>{$add_html}</span>";
 				$field_content .= "<span class=\"gf_repeater_remove\" {$tabindex}>{$remove_html}</span>";
+				$field_content .= "<span class=\"gf_repeater_add\" {$tabindex}>{$add_html}</span>";
 			}
 
 			$field_content .= "</div>";
