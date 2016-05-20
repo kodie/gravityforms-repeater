@@ -506,7 +506,7 @@ class GF_Field_Repeater extends GF_Field {
 
 					if (is_array($childValue)) {
 						if (count($childValue) == 1) {
-							$childValueOutput = reset($childValue);
+							$childValueOutput = apply_filters('gform_entry_field_value', reset($childValue), $form['fields'][$field_index], array(), $form);
 						} elseif (count($childValue) > 1) {
 							if ($format == 'html') {
 								if ($media == 'email') {
@@ -517,6 +517,7 @@ class GF_Field_Repeater extends GF_Field {
 							}
 
 							foreach ($childValue as $childValueData) {
+								$childValueData = apply_filters('gform_entry_field_value', reset($childValue), $form['fields'][$field_index], array(), $form);
 								if ($format == 'html') {
 									$childValueOutput .= "<li>".$childValueData."</li>";
 								} else {
