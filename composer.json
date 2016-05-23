@@ -1,0 +1,24 @@
+{
+  "name": "kodie/repeater-add-on-for-gravity-forms",
+  "type": "wordpress-plugin",
+  "license": "MIT",
+  "description": "A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.",
+  "homepage": "https://github.com/kodie/gravityforms-repeater",
+  "authors": [
+    {
+      "name": "Kodie Grantham",
+      "email": "kodie.grantham@gmail.com",
+      "homepage": "http://kodieg.com"
+    }
+  ],
+  "keywords": [
+    "wordpress"
+  ],
+  "support": {
+    "issues": "https://github.com/kodie/gravityforms-repeater/issues",
+    "forum": "https://wordpress.org/support/plugin/repeater-add-on-for-gravity-forms"
+  },
+  "require": {
+    "php": ">=5.3.0"
+  }
+}
