@@ -1,3 +1,5 @@
+[Looking for contributors!](https://github.com/kodie/gravityforms-repeater/issues/75)
+
 ![](/assets/icon-256x256.png?raw=true)
 # Gravity Forms Repeater Add-On
 A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.
