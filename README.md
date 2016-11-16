@@ -1,4 +1,4 @@
-[Looking for contributors!](https://github.com/kodie/gravityforms-repeater/issues/75)
+*[Looking for contributors!](https://github.com/kodie/gravityforms-repeater/issues/75)*
 
 ![](/assets/icon-256x256.png?raw=true)
 # Gravity Forms Repeater Add-On
