@@ -363,6 +363,7 @@ class GF_Field_Repeater extends GF_Field {
 		$value = Array();
 
 		for ($i = 1; $i < $dataArray['repeatCount'] + 1; $i++) {
+			$childValue = Array();
 			if( !array_key_exists('children', $dataArray) && !isset($dataArray['children']) ){
 				continue;
 			}
