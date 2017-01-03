@@ -243,7 +243,7 @@ function gfRepeater_editforms_fieldCheck(type, index) {
 	var supportedTypes = ['text', 'textarea', 'select', 'multiselect', 'number',
 							'checkbox', 'radio', 'hidden', 'html', 'section',
 							'name', 'date', 'time', 'phone', 'address',
-							'website', 'email', 'product', 'quanity', 'option',
+							'website', 'email', 'product', 'quantity', 'option',
 							'shipping', 'total'];
 	
 	if (gfRepeater_isIndexInsideRepeater(index)) {
