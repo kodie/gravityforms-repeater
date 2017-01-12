@@ -479,6 +479,8 @@ function gfRepeater_resetRepeaterChildrenAttrs(formId, repeaterId) {
 	var repeaterChildren = gfRepeater_select(formId, repeaterId);
 	var x = 0;
 
+	var repeater = gfRepeater_repeaters[formId][repeaterId];
+
 	jQuery(repeaterChildren).each(function(){
 		if (jQuery(this).attr('data-repeater-childid') == 1) {
 			x += 1;
@@ -487,8 +489,17 @@ function gfRepeater_resetRepeaterChildrenAttrs(formId, repeaterId) {
 		if (jQuery(this).attr('data-repeater-repeatid') !== x) {
 			gfRepeater_setRepeaterChildAttrs(formId, repeaterId, jQuery(this), x);
 
-			// Refresh conditional-logic after ID:s have been refreshed
-			gfRepeater_conditionalLogic_setAll(formId, repeaterId, x);
+			var repeaterChild = repeater['children'][jQuery(this).data('repeater-childid')];
+
+			if(repeaterChild.conditionalLogic) {
+				// Refresh conditional-logic after ID:s have been refreshed
+				gfRepeater_conditionalLogic_set(
+					formId,
+					repeaterId,
+					jQuery(this).data('repeater-childid'), 
+					jQuery(this).data('repeater-repeatid')
+				);
+			}
 		}
 	});
 }
