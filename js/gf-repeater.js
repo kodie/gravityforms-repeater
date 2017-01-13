@@ -488,18 +488,6 @@ function gfRepeater_resetRepeaterChildrenAttrs(formId, repeaterId) {
 
 		if (jQuery(this).attr('data-repeater-repeatid') !== x) {
 			gfRepeater_setRepeaterChildAttrs(formId, repeaterId, jQuery(this), x);
-
-			var repeaterChild = repeater['children'][jQuery(this).data('repeater-childid')];
-
-			if(repeaterChild.conditionalLogic) {
-				// Refresh conditional-logic after ID:s have been refreshed
-				gfRepeater_conditionalLogic_set(
-					formId,
-					repeaterId,
-					jQuery(this).data('repeater-childid'), 
-					jQuery(this).data('repeater-repeatid')
-				);
-			}
 		}
 	});
 }
@@ -826,6 +814,11 @@ function gfRepeater_unrepeatRepeater(formId, repeaterId, repeatId) {
 		jQuery(repeater['controllers']['start'])
 			.parents('form')
 			.trigger('gform_repeater_after_unrepeat', [repeaterId, repeatId]);
+
+		// Refresh all conditional logic for elements after the unrepeated one
+		for(var i=(repeatId-1);i<repeater['data']['repeatCount'];++i) {
+			gfRepeater_conditionalLogic_setAll(formId, repeaterId, i + 1);
+		}
 
 		if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - Repeat #'+repeatId+' - unrepeated'); }
 	}
