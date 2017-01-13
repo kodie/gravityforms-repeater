@@ -35,6 +35,12 @@ class GF_Field_Repeater extends GF_Field {
 
 				wp_localize_script('gforms_repeater_js', 'gfRepeater_php', array('debug' => GF_REPEATER_DEBUG));
 
+				wp_localize_script('gforms_repeater_js', 'GF_Repeater_Phrases',
+					array(
+						'field_required'	=> __( 'This field is required.', 'gravityformsrepeater' ),
+					)
+				);
+
 				wp_enqueue_script('gforms_repeater_postcapture_js');
 				wp_enqueue_script('gforms_repeater_js');
 				wp_enqueue_style('gforms_repeater_css');
@@ -151,11 +157,11 @@ class GF_Field_Repeater extends GF_Field {
 	}
 
 	public static function gform_tooltips($tooltips) {
-		$tooltips['form_field_repeater_start'] = "The number of times the repeater will be repeated when the form is rendered. Leaving this field blank or setting it to a number higher than the maximum number is the same as setting it to 1.";
-		$tooltips['form_field_repeater_min'] = "The minimum number of times the repeater is allowed to be repeated. Leaving this field blank or setting it to a number higher than the maximum field is the same as setting it to 1.";
-		$tooltips['form_field_repeater_max'] = "The maximum number of times the repeater is allowed to be repeated. Leaving this field blank or setting it to a number lower than the minimum field is the same as setting it to unlimited.";
-		$tooltips['form_field_repeater_animations'] = "A JavaScript object to be passed for animation settings. For advanced users only. Do not include initial brackets.";
-		$tooltips['form_field_repeater_hideLabel'] = "If this is checked, the repeater label and description will not be shown to users on the form.";
+		$tooltips['form_field_repeater_start'] = __( "The number of times the repeater will be repeated when the form is rendered. Leaving this field blank or setting it to a number higher than the maximum number is the same as setting it to 1.", 'gravityformsrepeater' );
+		$tooltips['form_field_repeater_min'] = __( "The minimum number of times the repeater is allowed to be repeated. Leaving this field blank or setting it to a number higher than the maximum field is the same as setting it to 1.", 'gravityformsrepeater' );
+		$tooltips['form_field_repeater_max'] = __( "The maximum number of times the repeater is allowed to be repeated. Leaving this field blank or setting it to a number lower than the minimum field is the same as setting it to unlimited.", 'gravityformsrepeater' );
+		$tooltips['form_field_repeater_animations'] = __( "A JavaScript object to be passed for animation settings. For advanced users only. Do not include initial brackets.", 'gravityformsrepeater' );
+		$tooltips['form_field_repeater_hideLabel'] = __( "If this is checked, the repeater label and description will not be shown to users on the form.", 'gravityformsrepeater' );
 		return $tooltips;
 	}
 
@@ -177,13 +183,13 @@ class GF_Field_Repeater extends GF_Field {
 
 			if ($dataArray['repeatCount'] < $this->min) {
 				$this->failed_validation  = true;
-				$this->validation_message = "A minimum number of ".$this->min." is required.";
+				$this->validation_message = sprintf( __( "A minimum number of %s is required.", 'gravityformsrepeater' ), $this->min );
 				return;
 			}
 
 			if ($this->max && $dataArray['repeatCount'] > $this->max) {
 				$this->failed_validation  = true;
-				$this->validation_message = "A maximum number of ".$this->max." is allowed.";
+				$this->validation_message = sprintf( __( "A maximum number of %s is allowed.", 'gravityformsrepeater' ), $this->max );
 				return;
 			}
 
@@ -240,7 +246,7 @@ class GF_Field_Repeater extends GF_Field {
 
 							if ($failedValidation) {
 								$this->failed_validation  = true;
-								if ($this->errorMessage) { $this->validation_message = $this->errorMessage; } else { $this->validation_message = "A required field was left blank."; }
+								if ($this->errorMessage) { $this->validation_message = $this->errorMessage; } else { $this->validation_message = __( "A required field was left blank.", 'gravityformsrepeater' ); }
 								return;
 							}
 						}

@@ -76,9 +76,9 @@ class GF_Field_Repeater_End extends GF_Field {
 	}
 
 	public static function gform_tooltips($tooltips) {
-		$tooltips['form_field_repeater_end_add'] = "The HTML to replace the default add button. This HTML will be placed inside of a span tag with the class 'gf_repeater_add'.";
-		$tooltips['form_field_repeater_end_remove'] = "The HTML to replace the default remove button. This HTML will be placed inside of a span tag with the class 'gf_repeater_remove'.";
-		$tooltips['form_field_repeater_end_hideButtons'] = "If enabled, no add and remove buttons will be displayed. This is useful if you plan on using custom javascript to trigger the repeater.";
+		$tooltips['form_field_repeater_end_add'] = __( "The HTML to replace the default add button. This HTML will be placed inside of a span tag with the class 'gf_repeater_add'.", 'gravityformsrepeater' );
+		$tooltips['form_field_repeater_end_remove'] = __( "The HTML to replace the default remove button. This HTML will be placed inside of a span tag with the class 'gf_repeater_remove'.", 'gravityformsrepeater' );
+		$tooltips['form_field_repeater_end_hideButtons'] = __( "If enabled, no add and remove buttons will be displayed. This is useful if you plan on using custom javascript to trigger the repeater.", 'gravityformsrepeater' );
 		return $tooltips;
 	}
 
