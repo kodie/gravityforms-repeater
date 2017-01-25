@@ -459,7 +459,7 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 				if (failedValidation) {
 					repeaterChildElement.addClass('gfield_error');
 					if (!repeaterChildElement.has('.validation_message').length) {
-						repeaterChildElement.append("<div class=\"gfield_description validation_message\">This field is required.</div>");
+						repeaterChildElement.append("<div class=\"gfield_description validation_message\">" + GF_Repeater_Phrases.field_required + "</div>");
 					}
 				} else {
 					repeaterChildElement
@@ -478,6 +478,8 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 function gfRepeater_resetRepeaterChildrenAttrs(formId, repeaterId) {
 	var repeaterChildren = gfRepeater_select(formId, repeaterId);
 	var x = 0;
+
+	var repeater = gfRepeater_repeaters[formId][repeaterId];
 
 	jQuery(repeaterChildren).each(function(){
 		if (jQuery(this).attr('data-repeater-childid') == 1) {
@@ -655,9 +657,33 @@ function gfRepeater_doShortcode(element, shortcode, value) {
 function gfRepeater_replaceShortcodes(element) {
 	var shortcodes = ['count', 'buttons', 'add', 'remove'];
 
-	jQuery.each(shortcodes, function(key, shortcode){
-		var html = element.html();
-		element.html(html.replace('[gfRepeater-'+shortcode+']', '<span class=\"gfRepeater-shortcode-'+shortcode+'\"></span>'));
+	var elementChildren = element.find('*');
+
+	jQuery.each(shortcodes, function(key, shortcode) {
+		elementChildren.each(function() {
+			var childTextElements = jQuery(this).contents().filter(function () {
+				return this.nodeType == 3;
+			});
+
+			childTextElements.each(function() {
+				var replaceWith = jQuery(this).text().replace('[gfRepeater-'+shortcode+']', '<span class="gfRepeater-shortcode-'+shortcode+'"></span>');
+
+				jQuery(this).replaceWith(replaceWith);
+			});
+		});
+
+		var textElements = element.contents().filter(function () {
+			return this.nodeType == 3;
+		});
+
+		textElements.each(function() {
+			var replaceWith = jQuery(this).text().replace('[gfRepeater-'+shortcode+']', '<span class="gfRepeater-shortcode-'+shortcode+'"></span>');
+
+			jQuery(this).replaceWith(replaceWith);
+		});
+
+		// var html = element.html();
+		// element.html(html.replace('[gfRepeater-'+shortcode+']', '<span class=\"gfRepeater-shortcode-'+shortcode+'\"></span>'));
 	});
 }
 
@@ -788,6 +814,11 @@ function gfRepeater_unrepeatRepeater(formId, repeaterId, repeatId) {
 		jQuery(repeater['controllers']['start'])
 			.parents('form')
 			.trigger('gform_repeater_after_unrepeat', [repeaterId, repeatId]);
+
+		// Refresh all conditional logic for elements after the unrepeated one
+		for(var i=(repeatId-1);i<repeater['data']['repeatCount'];++i) {
+			gfRepeater_conditionalLogic_setAll(formId, repeaterId, i + 1);
+		}
 
 		if (gfRepeater_debug) { console.log('Form #'+formId+' - Repeater #'+repeaterId+' - Repeat #'+repeatId+' - unrepeated'); }
 	}
