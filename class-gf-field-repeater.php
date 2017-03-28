@@ -527,7 +527,7 @@ class GF_Field_Repeater extends GF_Field {
 							}
 
 							foreach ($childValue as $childValueData) {
-								$childValueData = apply_filters('gform_entry_field_value', reset($childValue), $form['fields'][$field_index], array(), $form);
+								$childValueData = apply_filters('gform_entry_field_value', $childValueData, $form['fields'][$field_index], array(), $form);
 								if ($format == 'html') {
 									$childValueOutput .= "<li>".$childValueData."</li>";
 								} else {
