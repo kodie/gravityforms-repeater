@@ -538,7 +538,7 @@ class GF_Field_Repeater extends GF_Field {
 							if ($format == 'html') { $childValueOutput .= "</ul>\n"; }
 						}
 
-						if ($media == 'email') { $tableStyling = ''; } else { $tableStyling = ' class=\"entry-view-field-value\"'; }
+						if ($media == 'email') { $tableStyling = ''; } else { $tableStyling = ' class="entry-view-field-value"'; }
 
 						if ($format == 'html') {
 							$tableContents .= "<tr>\n<td colspan=\"2\"".$tableStyling.">".$childValueOutput."</td>\n</tr>\n";
