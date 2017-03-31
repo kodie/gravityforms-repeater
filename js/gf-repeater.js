@@ -427,7 +427,12 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 				if (newInputName) {
 					var savedValue = jQuery.captures(newInputName);
 					if (savedValue) {
-						gfRepeater_setInputValue(inputElement, savedValue);
+						if ( jQuery.isArray(savedValue) ) {
+							arrkey = parseInt(key, 10) - 1;
+							gfRepeater_setInputValue(inputElement, savedValue[arrkey] );
+						} else {
+							gfRepeater_setInputValue(inputElement, savedValue);
+						}
 					}
 				}
 
