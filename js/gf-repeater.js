@@ -345,7 +345,7 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 			var inputName = this['name'];
 			var prePopulate = '';
 
-			if (childType == 'radio' || childType == 'time' || childType == 'multiselect') {
+			if (childType == 'radio' || childType == 'time' || childType == 'multiselect' || childType == 'date') {
 				var inputElement = gfRepeater_findElementByNameOrId(repeaterChildElement, null, inputId);
 			} else {
 				var inputElement = gfRepeater_findElementByNameOrId(repeaterChildElement, inputName, inputId);
@@ -427,7 +427,12 @@ function gfRepeater_setRepeaterChildAttrs(formId, repeaterId, repeaterChildEleme
 				if (newInputName) {
 					var savedValue = jQuery.captures(newInputName);
 					if (savedValue) {
-						gfRepeater_setInputValue(inputElement, savedValue);
+						if ( jQuery.isArray(savedValue) ) {
+							arrkey = parseInt(key, 10) - 1;
+							gfRepeater_setInputValue(inputElement, savedValue[arrkey] );
+						} else {
+							gfRepeater_setInputValue(inputElement, savedValue);
+						}
 					}
 				}
 

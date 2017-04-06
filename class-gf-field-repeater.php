@@ -518,27 +518,31 @@ class GF_Field_Repeater extends GF_Field {
 						if (count($childValue) == 1) {
 							$childValueOutput = apply_filters('gform_entry_field_value', reset($childValue), $form['fields'][$field_index], array(), $form);
 						} elseif (count($childValue) > 1) {
-							if ($format == 'html') {
-								if ($media == 'email') {
-									$childValueOutput = "<ul style=\"list-style:none;margin:0;padding:0;\">\n";
-								} else {
-									$childValueOutput = "<ul>\n";
-								}
-							}
-
-							foreach ($childValue as $childValueData) {
-								$childValueData = apply_filters('gform_entry_field_value', reset($childValue), $form['fields'][$field_index], array(), $form);
-								if ($format == 'html') {
-									$childValueOutput .= "<li>".$childValueData."</li>";
-								} else {
-									$childValueOutput .= $childValueData."\n";
-								}
-							}
-							
-							if ($format == 'html') { $childValueOutput .= "</ul>\n"; }
+                            if ($form['fields'][$field_index]['type'] == 'date') {
+                                $childValueOutput = implode('/', $childValue);                                
+                            } else {
+                                if ($format == 'html') {
+                                    if ($media == 'email') {
+                                        $childValueOutput = "<ul style=\"list-style:none;margin:0;padding:0;\">\n";
+                                    } else {
+                                        $childValueOutput = "<ul>\n";
+                                    }
+                                }
+    
+                                foreach ($childValue as $childValueData) {
+                                    $childValueData = apply_filters('gform_entry_field_value', $childValueData, $form['fields'][$field_index], array(), $form);
+                                    if ($format == 'html') {
+                                        $childValueOutput .= "<li>".$childValueData."</li>";
+                                    } else {
+                                        $childValueOutput .= $childValueData."\n";
+                                    }
+                                }
+                                
+                                if ($format == 'html') { $childValueOutput .= "</ul>\n"; }
+                            }
 						}
 
-						if ($media == 'email') { $tableStyling = ''; } else { $tableStyling = ' class=\"entry-view-field-value\"'; }
+						if ($media == 'email') { $tableStyling = ''; } else { $tableStyling = ' class="entry-view-field-value"'; }
 
 						if ($format == 'html') {
 							$tableContents .= "<tr>\n<td colspan=\"2\"".$tableStyling.">".$childValueOutput."</td>\n</tr>\n";
