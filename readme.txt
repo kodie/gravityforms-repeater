@@ -7,6 +7,9 @@ Stable tag: 1.0.9
 
 A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.
 
+== WAIT! ==
+**This plugin is no longer maintained and is probably broken, go use [Gravity Forms Nested Forms by Gravity Wiz](https://gravitywiz.com/documentation/gravity-forms-nested-forms/?ref=145) instead!**
+
 == Description ==
 A Gravity Forms add-on that allows specified groups of fields to be repeated by the user.
 

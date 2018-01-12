@@ -1,4 +1,5 @@
-**[Looking for contributors!](https://github.com/kodie/gravityforms-repeater/issues/75)**
+# WAIT!
+**This plugin is no longer maintained and is probably broken, go use [Gravity Forms Nested Forms by Gravity Wiz](https://gravitywiz.com/documentation/gravity-forms-nested-forms/?ref=145) instead!**
 
 ![](/assets/icon-256x256.png?raw=true)
 # Gravity Forms Repeater Add-On
